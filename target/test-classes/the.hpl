@@ -1,0 +1,116 @@
+Manifest-Version: 1.0
+Short-Name: extended-choice-parameter
+Long-Name: Extended Choice Parameter Plug-In
+Url: http://wiki.hudson-ci.org/display/HUDSON/Extended+Choice+Paramete
+ r+plugin
+Plugin-Version: 0.1-SNAPSHOT (private-07/14/2010 09:14-vimil.varghese)
+Hudson-Version: 1.343
+Plugin-Developers: Vimil Saju:vimil:
+Libraries: C:\Tools\Hudson\plugins\extended-choice-parameter\target\cl
+ asses,C:\Documents and Settings\vimil.varghese\.m2\repository\org\jvn
+ et\hudson\main\hudson-war\1.343\hudson-war-1.343.war,C:\Documents and
+  Settings\vimil.varghese\.m2\repository\junit\junit\4.3.1\junit-4.3.1
+ .jar,C:\Documents and Settings\vimil.varghese\.m2\repository\org\jvne
+ t\hudson\main\hudson-test-harness\1.343\hudson-test-harness-1.343.jar
+ ,C:\Documents and Settings\vimil.varghese\.m2\repository\org\jvnet\hu
+ dson\main\hudson-war\1.343\hudson-war-1.343-war-for-test.jar,C:\Docum
+ ents and Settings\vimil.varghese\.m2\repository\org\jvnet\hudson\main
+ \maven-plugin\1.343\maven-plugin-1.343.jar,C:\Documents and Settings\
+ vimil.varghese\.m2\repository\org\jvnet\hudson\main\maven-agent\1.343
+ \maven-agent-1.343.jar,C:\Documents and Settings\vimil.varghese\.m2\r
+ epository\org\jvnet\hudson\main\maven-interceptor\1.343\maven-interce
+ ptor-1.343.jar,C:\Documents and Settings\vimil.varghese\.m2\repositor
+ y\org\apache\maven\maven-core\2.0.9\maven-core-2.0.9.jar,C:\Documents
+  and Settings\vimil.varghese\.m2\repository\org\apache\maven\maven-se
+ ttings\2.0.9\maven-settings-2.0.9.jar,C:\Documents and Settings\vimil
+ .varghese\.m2\repository\org\apache\maven\maven-model\2.0.9\maven-mod
+ el-2.0.9.jar,C:\Documents and Settings\vimil.varghese\.m2\repository\
+ org\codehaus\plexus\plexus-utils\1.5.1\plexus-utils-1.5.1.jar,C:\Docu
+ ments and Settings\vimil.varghese\.m2\repository\org\codehaus\plexus\
+ plexus-container-default\1.0-alpha-9-stable-1\plexus-container-defaul
+ t-1.0-alpha-9-stable-1.jar,C:\Documents and Settings\vimil.varghese\.
+ m2\repository\classworlds\classworlds\1.1\classworlds-1.1.jar,C:\Docu
+ ments and Settings\vimil.varghese\.m2\repository\org\apache\maven\wag
+ on\wagon-file\1.0-beta-2\wagon-file-1.0-beta-2.jar,C:\Documents and S
+ ettings\vimil.varghese\.m2\repository\org\apache\maven\wagon\wagon-pr
+ ovider-api\1.0-beta-2\wagon-provider-api-1.0-beta-2.jar,C:\Documents 
+ and Settings\vimil.varghese\.m2\repository\org\apache\maven\maven-plu
+ gin-parameter-documenter\2.0.9\maven-plugin-parameter-documenter-2.0.
+ 9.jar,C:\Documents and Settings\vimil.varghese\.m2\repository\slide\s
+ lide-webdavlib\2.1\slide-webdavlib-2.1.jar,C:\Documents and Settings\
+ vimil.varghese\.m2\repository\commons-httpclient\commons-httpclient\3
+ .1\commons-httpclient-3.1.jar,C:\Documents and Settings\vimil.varghes
+ e\.m2\repository\de\zeigermann\xml\xml-im-exporter\1.1\xml-im-exporte
+ r-1.1.jar,C:\Documents and Settings\vimil.varghese\.m2\repository\org
+ \apache\maven\wagon\wagon-http-lightweight\1.0-beta-2\wagon-http-ligh
+ tweight-1.0-beta-2.jar,C:\Documents and Settings\vimil.varghese\.m2\r
+ epository\org\apache\maven\wagon\wagon-http-shared\1.0-beta-2\wagon-h
+ ttp-shared-1.0-beta-2.jar,C:\Documents and Settings\vimil.varghese\.m
+ 2\repository\org\apache\maven\reporting\maven-reporting-api\2.0.9\mav
+ en-reporting-api-2.0.9.jar,C:\Documents and Settings\vimil.varghese\.
+ m2\repository\org\apache\maven\doxia\doxia-sink-api\1.0-alpha-10\doxi
+ a-sink-api-1.0-alpha-10.jar,C:\Documents and Settings\vimil.varghese\
+ .m2\repository\org\apache\maven\maven-profile\2.0.9\maven-profile-2.0
+ .9.jar,C:\Documents and Settings\vimil.varghese\.m2\repository\org\ap
+ ache\maven\maven-artifact\2.0.9\maven-artifact-2.0.9.jar,C:\Documents
+  and Settings\vimil.varghese\.m2\repository\org\apache\maven\maven-re
+ pository-metadata\2.0.9\maven-repository-metadata-2.0.9.jar,C:\Docume
+ nts and Settings\vimil.varghese\.m2\repository\org\apache\maven\maven
+ -error-diagnostics\2.0.9\maven-error-diagnostics-2.0.9.jar,C:\Documen
+ ts and Settings\vimil.varghese\.m2\repository\org\apache\maven\maven-
+ project\2.0.9\maven-project-2.0.9.jar,C:\Documents and Settings\vimil
+ .varghese\.m2\repository\org\apache\maven\maven-artifact-manager\2.0.
+ 9\maven-artifact-manager-2.0.9.jar,C:\Documents and Settings\vimil.va
+ rghese\.m2\repository\org\apache\maven\maven-plugin-registry\2.0.9\ma
+ ven-plugin-registry-2.0.9.jar,C:\Documents and Settings\vimil.varghes
+ e\.m2\repository\org\apache\maven\maven-plugin-api\2.0.9\maven-plugin
+ -api-2.0.9.jar,C:\Documents and Settings\vimil.varghese\.m2\repositor
+ y\org\apache\maven\wagon\wagon-ssh-external\1.0-beta-2\wagon-ssh-exte
+ rnal-1.0-beta-2.jar,C:\Documents and Settings\vimil.varghese\.m2\repo
+ sitory\org\apache\maven\wagon\wagon-ssh-common\1.0-beta-2\wagon-ssh-c
+ ommon-1.0-beta-2.jar,C:\Documents and Settings\vimil.varghese\.m2\rep
+ ository\org\codehaus\plexus\plexus-interactivity-api\1.0-alpha-4\plex
+ us-interactivity-api-1.0-alpha-4.jar,C:\Documents and Settings\vimil.
+ varghese\.m2\repository\org\apache\maven\maven-plugin-descriptor\2.0.
+ 9\maven-plugin-descriptor-2.0.9.jar,C:\Documents and Settings\vimil.v
+ arghese\.m2\repository\org\apache\maven\maven-monitor\2.0.9\maven-mon
+ itor-2.0.9.jar,C:\Documents and Settings\vimil.varghese\.m2\repositor
+ y\org\apache\maven\wagon\wagon-ssh\1.0-beta-2\wagon-ssh-1.0-beta-2.ja
+ r,C:\Documents and Settings\vimil.varghese\.m2\repository\com\jcraft\
+ jsch\0.1.27\jsch-0.1.27.jar,C:\Documents and Settings\vimil.varghese\
+ .m2\repository\org\jvnet\hudson\maven2.1-interceptor\1.2\maven2.1-int
+ erceptor-1.2.jar,C:\Documents and Settings\vimil.varghese\.m2\reposit
+ ory\org\apache\maven\maven-embedder\2.0.4\maven-embedder-2.0.4.jar,C:
+ \Documents and Settings\vimil.varghese\.m2\repository\org\jvnet\hudso
+ n\wagon-webdav\1.0-beta-2-hudson-1\wagon-webdav-1.0-beta-2-hudson-1.j
+ ar,C:\Documents and Settings\vimil.varghese\.m2\repository\org\jvnet\
+ hudson\plugins\subversion\1.7\subversion-1.7.jar,C:\Documents and Set
+ tings\vimil.varghese\.m2\repository\org\jvnet\hudson\svnkit\svnkit\1.
+ 3.0-hudson-2\svnkit-1.3.0-hudson-2.jar,C:\Documents and Settings\vimi
+ l.varghese\.m2\repository\org\mortbay\jetty\jetty\6.1.11\jetty-6.1.11
+ .jar,C:\Documents and Settings\vimil.varghese\.m2\repository\org\mort
+ bay\jetty\jetty-util\6.1.11\jetty-util-6.1.11.jar,C:\Documents and Se
+ ttings\vimil.varghese\.m2\repository\org\mortbay\jetty\servlet-api-2.
+ 5\6.1.11\servlet-api-2.5-6.1.11.jar,C:\Documents and Settings\vimil.v
+ arghese\.m2\repository\org\jvnet\mock-javamail\mock-javamail\1.7\mock
+ -javamail-1.7.jar,C:\Documents and Settings\vimil.varghese\.m2\reposi
+ tory\org\jvnet\hudson\htmlunit\2.6-hudson-1\htmlunit-2.6-hudson-1.jar
+ ,C:\Documents and Settings\vimil.varghese\.m2\repository\xalan\xalan\
+ 2.7.1\xalan-2.7.1.jar,C:\Documents and Settings\vimil.varghese\.m2\re
+ pository\xalan\serializer\2.7.1\serializer-2.7.1.jar,C:\Documents and
+  Settings\vimil.varghese\.m2\repository\org\jvnet\hudson\htmlunit-cor
+ e-js\2.6-hudson-1\htmlunit-core-js-2.6-hudson-1.jar,C:\Documents and 
+ Settings\vimil.varghese\.m2\repository\xerces\xercesImpl\2.9.1\xerces
+ Impl-2.9.1.jar,C:\Documents and Settings\vimil.varghese\.m2\repositor
+ y\net\sourceforge\nekohtml\nekohtml\1.9.13\nekohtml-1.9.13.jar,C:\Doc
+ uments and Settings\vimil.varghese\.m2\repository\net\sourceforge\css
+ parser\cssparser\0.9.5\cssparser-0.9.5.jar,C:\Documents and Settings\
+ vimil.varghese\.m2\repository\org\w3c\css\sac\1.3\sac-1.3.jar,C:\Docu
+ ments and Settings\vimil.varghese\.m2\repository\org\jvnet\hudson\emb
+ edded-rhino-debugger\1.1\embedded-rhino-debugger-1.1.jar,C:\Documents
+  and Settings\vimil.varghese\.m2\repository\org\jvnet\hudson\netx\0.5
+ -hudson-2\netx-0.5-hudson-2.jar,C:\Documents and Settings\vimil.vargh
+ ese\.m2\repository\org\easymock\easymock\2.4\easymock-2.4.jar
+Resource-Path: C:\Tools\Hudson\plugins\extended-choice-parameter\src\m
+ ain\webapp
+

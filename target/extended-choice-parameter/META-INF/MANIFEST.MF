@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Built-By: vimil.varghese
+Created-By: Apache Maven
+Build-Jdk: 1.6.0_20
+Extension-Name: extended-choice-parameter
+Implementation-Title: extended-choice-parameter
+Implementation-Version: 0.1-SNAPSHOT
+Short-Name: extended-choice-parameter
+Long-Name: Extended Choice Parameter Plug-In
+Url: http://wiki.hudson-ci.org/display/HUDSON/Extended+Choice+Paramete
+ r+plugin
+Plugin-Version: 0.1-SNAPSHOT (private-07/14/2010 09:14-vimil.varghese)
+Hudson-Version: 1.343
+Plugin-Developers: Vimil Saju:vimil:
+

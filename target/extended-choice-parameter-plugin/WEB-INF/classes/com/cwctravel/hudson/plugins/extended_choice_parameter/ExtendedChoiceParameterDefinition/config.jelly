@@ -1,0 +1,46 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:entry title="Name" field="name">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Description" field="description">
+    <f:textbox />
+  </f:entry>
+  <f:entry name="type" title="Parameter Type" field="type">
+    <select name="type">
+        <j:choose>
+            <j:when test="${instance.type eq 'PT_SINGLE_SELECT'}">
+                <option value="PT_SINGLE_SELECT" selected="selected">Single Select</option>
+            </j:when>
+            <j:otherwise>
+    	       <option value="PT_SINGLE_SELECT">Single Select</option>
+    	    </j:otherwise>
+    	</j:choose>
+    	<j:choose>
+    	   <j:when test="${instance.type eq 'PT_MULTI_SELECT'}">       
+    	       <option value="PT_MULTI_SELECT" selected="selected">Multi Select</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_MULTI_SELECT">Multi Select</option>
+           </j:otherwise>    
+    	</j:choose>   
+    </select>
+  </f:entry>
+  <f:entry title="Value" field="value">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Property File" field="propertyFile">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Property Key" field="propertyKey">
+    <f:textbox />
+  </f:entry>    
+  <f:entry title="Default Value" field="defaultValue">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Default Property File" field="defaultPropertyFile">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Default Property Key" field="defaultPropertyKey">
+    <f:textbox />
+  </f:entry>
+</j:jelly>
