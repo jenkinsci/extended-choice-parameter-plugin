@@ -102,9 +102,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				}
 			}
 		}
-		if (!StringUtils.isBlank(strValue)) {
-			strValue = "\"" + strValue + "\"";
-		}
+		strValue = "\"" + strValue + "\"";
 		ExtendedChoiceParameterValue extendedChoiceParameterValue = new ExtendedChoiceParameterValue(jO.getString("name"), strValue);
 		return extendedChoiceParameterValue;
 	}
