@@ -148,7 +148,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getDefaultValue() {
-		return defaultValue;
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey);
 	}
 
 	public void setDefaultValue(String defaultValue) {
@@ -172,7 +172,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getValue() {
-		return value;
+		return computeValue(value, propertyFile, propertyKey);
 	}
 
 	public void setValue(String value) {
