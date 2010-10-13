@@ -43,4 +43,7 @@
   <f:entry title="Default Property Key" field="defaultPropertyKey">
     <f:textbox />
   </f:entry>
+  <f:entry title="Quote Value" field="quoteValue">
+    <f:checkbox checked="${instance.quoteValue}"/>
+  </f:entry>
 </j:jelly>

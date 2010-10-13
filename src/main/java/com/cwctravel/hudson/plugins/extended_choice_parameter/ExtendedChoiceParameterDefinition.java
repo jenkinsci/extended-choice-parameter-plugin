@@ -33,6 +33,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 	}
 
+	private boolean quoteValue;
+
 	private String type;
 
 	private String value;
@@ -51,7 +53,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
-			String defaultPropertyFile, String defaultPropertyKey, String description) {
+			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, String description) {
 		super(name, description);
 		this.type = type;
 
@@ -63,6 +65,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		this.value = computeValue(value, propertyFile, propertyKey);
 		this.defaultValue = computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey);
+		this.quoteValue = quoteValue;
 
 		computeDefaultValueMap();
 	}
@@ -102,7 +105,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				}
 			}
 		}
-		strValue = "\"" + strValue + "\"";
+
+		if (quoteValue) {
+			strValue = "\"" + strValue + "\"";
+		}
 		ExtendedChoiceParameterValue extendedChoiceParameterValue = new ExtendedChoiceParameterValue(jO.getString("name"), strValue);
 		return extendedChoiceParameterValue;
 	}
@@ -111,7 +117,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public ParameterValue getDefaultParameterValue() {
 		String defaultValue = getDefaultValue();
 		if (!StringUtils.isBlank(defaultValue)) {
-			defaultValue = "\"" + defaultValue + "\"";
+			if (quoteValue) {
+				defaultValue = "\"" + defaultValue + "\"";
+			}
 			return new ExtendedChoiceParameterValue(getName(), defaultValue);
 		}
 		return super.getDefaultParameterValue();
@@ -189,6 +197,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public String getDefaultPropertyFile() {
 		return defaultPropertyFile;
+	}
+
+	public boolean isQuoteValue() {
+		return quoteValue;
+	}
+
+	public void setQuoteValue(boolean quoteValue) {
+		this.quoteValue = quoteValue;
 	}
 
 	public void setDefaultPropertyFile(String defaultPropertyFile) {
