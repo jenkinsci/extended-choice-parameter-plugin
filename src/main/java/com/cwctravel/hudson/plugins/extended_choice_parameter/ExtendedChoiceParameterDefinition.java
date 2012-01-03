@@ -3,12 +3,16 @@ package com.cwctravel.hudson.plugins.extended_choice_parameter;
 import hudson.Extension;
 import hudson.model.ParameterValue;
 import hudson.model.ParameterDefinition;
+import hudson.util.FormValidation;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.ServletException;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -16,6 +20,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
@@ -29,7 +34,40 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public static class DescriptorImpl extends ParameterDescriptor {
 		@Override
 		public String getDisplayName() {
-			return "Extended Choice Parameter";
+			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
+		}
+		
+		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey) throws IOException, ServletException {
+			if (StringUtils.isBlank(propertyFile)) {
+				return FormValidation.ok();
+			}
+			File prop = new File(propertyFile);
+			if (!prop.exists()) {
+				return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
+			}
+			Properties p = new Properties();
+			p.load(new FileInputStream(prop));
+			if (StringUtils.isNotBlank(propertyKey)) {
+				if (p.containsKey(propertyKey)) {
+					return FormValidation.ok();
+				} else {
+					return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButProvidedKeyIsInvalid(), propertyFile, propertyKey);
+				}
+			} else {
+				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButNoProvidedKey(), propertyFile);
+			}
+		}
+		
+		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey)  throws IOException, ServletException {
+			return doCheckPropertyFile(propertyFile, propertyKey);
+		}
+		
+		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile, @QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
+			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
+		}
+		
+		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile, @QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
+			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
 		}
 	}
 
