@@ -49,8 +49,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String defaultPropertyKey;
 
-	private Map<String, Boolean> defaultValueMap;
-
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
 			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, String description) {
@@ -62,22 +60,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		this.defaultPropertyFile = defaultPropertyFile;
 		this.defaultPropertyKey = defaultPropertyKey;
-
-		this.value = computeValue(value, propertyFile, propertyKey);
-		this.defaultValue = computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey);
+		this.value = value;
+		this.defaultValue = defaultValue;
 		this.quoteValue = quoteValue;
-
-		computeDefaultValueMap();
 	}
 
-	private void computeDefaultValueMap() {
-		if (!StringUtils.isBlank(defaultValue)) {
+	private Map<String,Boolean> computeDefaultValueMap() {
+		Map<String,Boolean> defaultValueMap = null;
+		String effectiveDefaultValue = getEffectiveDefaultValue();
+		if (!StringUtils.isBlank(effectiveDefaultValue)) {
 			defaultValueMap = new HashMap<String, Boolean>();
-			String[] defaultValues = StringUtils.split(defaultValue, ',');
+			String[] defaultValues = StringUtils.split(effectiveDefaultValue, ',');
 			for(String value: defaultValues) {
-				defaultValueMap.put(value, true);
+				defaultValueMap.put(StringUtils.trim(value), true);
 			}
 		}
+		return defaultValueMap;
 	}
 
 	@Override
@@ -98,24 +96,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if (value instanceof JSONArray) {
 			JSONArray jsonValues = (JSONArray)value;
-			for(int i = 0; i < jsonValues.size(); i++) {
-				strValue += jsonValues.getString(i);
-				if (i < jsonValues.size() - 1) {
-					strValue += ",";
-				}
-			}
+			strValue = StringUtils.join(jsonValues.iterator(), ',');	
 		}
 
 		if (quoteValue) {
 			strValue = "\"" + strValue + "\"";
 		}
-		ExtendedChoiceParameterValue extendedChoiceParameterValue = new ExtendedChoiceParameterValue(jO.getString("name"), strValue);
-		return extendedChoiceParameterValue;
+		return new ExtendedChoiceParameterValue(getName(), strValue);
 	}
 
 	@Override
 	public ParameterValue getDefaultParameterValue() {
-		String defaultValue = getDefaultValue();
+		String defaultValue = getEffectiveDefaultValue();
 		if (!StringUtils.isBlank(defaultValue)) {
 			if (quoteValue) {
 				defaultValue = "\"" + defaultValue + "\"";
@@ -155,8 +147,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.type = type;
 	}
 
-	public String getDefaultValue() {
+	public String getEffectiveDefaultValue() {
 		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey);
+	}
+	
+	public String getDefaultValue() {
+		return defaultValue;
 	}
 
 	public void setDefaultValue(String defaultValue) {
@@ -178,9 +174,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public void setDefaultPropertyKey(String defaultPropertyKey) {
 		this.defaultPropertyKey = defaultPropertyKey;
 	}
+	
+	public String getEffectiveValue() {
+		return computeValue(value, propertyFile, propertyKey);
+	}
 
 	public String getValue() {
-		return computeValue(value, propertyFile, propertyKey);
+		return value;
 	}
 
 	public void setValue(String value) {
@@ -212,7 +212,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public Map<String, Boolean> getDefaultValueMap() {
-		return defaultValueMap;
+		return computeDefaultValueMap();
 	}
 
 }
