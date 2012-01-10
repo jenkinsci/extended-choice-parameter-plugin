@@ -5,13 +5,13 @@
 		<artifactId>plugin</artifactId>
 		<version>1.392</version>
 		<!-- which version of Hudson is this plugin built against? -->
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<groupId>org.jvnet.hudson.plugins</groupId>
 	<artifactId>extended-choice-parameter</artifactId>  
 	<packaging>hpi</packaging>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.5</version>
 	<name>Extended Choice Parameter Plug-In</name>
 	<url>http://wiki.hudson-ci.org/display/HUDSON/Extended+Choice+Parameter+plugin</url>
 
