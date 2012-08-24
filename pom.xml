@@ -9,11 +9,11 @@
 	</parent>
 
 	<groupId>org.jvnet.hudson.plugins</groupId>
-	<artifactId>extended-choice-parameter</artifactId>  
+	<artifactId>extended-choice-parameter</artifactId>
 	<packaging>hpi</packaging>
 	<version>0.6-SNAPSHOT</version>
 	<name>Extended Choice Parameter Plug-In</name>
-	<url>http://wiki.hudson-ci.org/display/HUDSON/Extended+Choice+Parameter+plugin</url>
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
 	<developers>
 		<developer>
