@@ -17,8 +17,9 @@ import javax.servlet.ServletException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Property;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -36,37 +37,41 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		public String getDisplayName() {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
-		
+
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey) throws IOException, ServletException {
-			if (StringUtils.isBlank(propertyFile)) {
+			if(StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
 			File prop = new File(propertyFile);
-			if (!prop.exists()) {
+			if(!prop.exists()) {
 				return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 			Properties p = new Properties();
 			p.load(new FileInputStream(prop));
-			if (StringUtils.isNotBlank(propertyKey)) {
-				if (p.containsKey(propertyKey)) {
+			if(StringUtils.isNotBlank(propertyKey)) {
+				if(p.containsKey(propertyKey)) {
 					return FormValidation.ok();
-				} else {
+				}
+				else {
 					return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButProvidedKeyIsInvalid(), propertyFile, propertyKey);
 				}
-			} else {
+			}
+			else {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButNoProvidedKey(), propertyFile);
 			}
 		}
-		
-		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey)  throws IOException, ServletException {
+
+		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey) throws IOException, ServletException {
 			return doCheckPropertyFile(propertyFile, propertyKey);
 		}
-		
-		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile, @QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
+
+		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
+				@QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
 		}
-		
-		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile, @QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
+
+		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
+				@QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
 		}
 	}
@@ -87,6 +92,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String defaultPropertyKey;
 
+	private transient Map<File, Long> fileTimestampMap = new HashMap<File, Long>();
+	private transient Map<File, Project> fileProjectMap = new HashMap<File, Project>();
+
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
 			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, String description) {
@@ -103,10 +111,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.quoteValue = quoteValue;
 	}
 
-	private Map<String,Boolean> computeDefaultValueMap() {
-		Map<String,Boolean> defaultValueMap = null;
+	private Map<String, Boolean> computeDefaultValueMap() {
+		Map<String, Boolean> defaultValueMap = null;
 		String effectiveDefaultValue = getEffectiveDefaultValue();
-		if (!StringUtils.isBlank(effectiveDefaultValue)) {
+		if(!StringUtils.isBlank(effectiveDefaultValue)) {
 			defaultValueMap = new HashMap<String, Boolean>();
 			String[] defaultValues = StringUtils.split(effectiveDefaultValue, ',');
 			for(String value: defaultValues) {
@@ -119,7 +127,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	@Override
 	public ParameterValue createValue(StaplerRequest request) {
 		String value[] = request.getParameterValues(getName());
-		if (value == null) {
+		if(value == null) {
 			return getDefaultParameterValue();
 		}
 		return null;
@@ -129,15 +137,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public ParameterValue createValue(StaplerRequest request, JSONObject jO) {
 		Object value = jO.get("value");
 		String strValue = "";
-		if (value instanceof String) {
+		if(value instanceof String) {
 			strValue = (String)value;
 		}
-		else if (value instanceof JSONArray) {
+		else if(value instanceof JSONArray) {
 			JSONArray jsonValues = (JSONArray)value;
-			strValue = StringUtils.join(jsonValues.iterator(), ',');	
+			strValue = StringUtils.join(jsonValues.iterator(), ',');
 		}
 
-		if (quoteValue) {
+		if(quoteValue) {
 			strValue = "\"" + strValue + "\"";
 		}
 		return new ExtendedChoiceParameterValue(getName(), strValue);
@@ -146,8 +154,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	@Override
 	public ParameterValue getDefaultParameterValue() {
 		String defaultValue = getEffectiveDefaultValue();
-		if (!StringUtils.isBlank(defaultValue)) {
-			if (quoteValue) {
+		if(!StringUtils.isBlank(defaultValue)) {
+			if(quoteValue) {
 				defaultValue = "\"" + defaultValue + "\"";
 			}
 			return new ExtendedChoiceParameterValue(getName(), defaultValue);
@@ -155,28 +163,47 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return super.getDefaultParameterValue();
 	}
 
-	private String computeValue(String value, String propertyFile, String propertyKey) {
-		if (!StringUtils.isBlank(propertyFile) && !StringUtils.isBlank(propertyKey)) {
-			FileInputStream fIS = null;
+	private String computeValue(String value, String propertyFilePath, String propertyKey) {
+		if(fileTimestampMap == null) {
+			fileTimestampMap = new HashMap<File, Long>();
+		}
+
+		if(fileProjectMap == null) {
+			fileProjectMap = new HashMap<File, Project>();
+		}
+
+		if(!StringUtils.isBlank(propertyFile) && !StringUtils.isBlank(propertyKey)) {
 			try {
-				fIS = new FileInputStream(new File(propertyFile));
-				Properties properties = new Properties();
-				properties.load(fIS);
-				return properties.getProperty(propertyKey);
+				File propertyFile = new File(propertyFilePath);
+
+				Project project = fileProjectMap.get(propertyFile);
+
+				Long lastTimestamp = fileTimestampMap.get(propertyFile);
+				long currentTimestamp = propertyFile.lastModified();
+				if(project == null || lastTimestamp == null || currentTimestamp != lastTimestamp) {
+					project = new Project();
+					Property property = new Property();
+					property.setProject(project);
+
+					property.setFile(propertyFile);
+					property.execute();
+					fileProjectMap.put(propertyFile, project);
+					fileTimestampMap.put(propertyFile, currentTimestamp);
+				}
+
+				return project.getProperty(propertyKey);
 			}
 			catch(Exception e) {
 
 			}
-			finally {
-				IOUtils.closeQuietly(fIS);
-			}
 		}
-		else if (!StringUtils.isBlank(value)) {
+		else if(!StringUtils.isBlank(value)) {
 			return value;
 		}
 		return null;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -188,7 +215,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public String getEffectiveDefaultValue() {
 		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey);
 	}
-	
+
 	public String getDefaultValue() {
 		return defaultValue;
 	}
@@ -212,7 +239,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public void setDefaultPropertyKey(String defaultPropertyKey) {
 		this.defaultPropertyKey = defaultPropertyKey;
 	}
-	
+
 	public String getEffectiveValue() {
 		return computeValue(value, propertyFile, propertyKey);
 	}
