@@ -11,7 +11,7 @@
 	<groupId>org.jvnet.hudson.plugins</groupId>
 	<artifactId>extended-choice-parameter</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.8</version>
+	<version>0.9-SNAPSHOT</version>
 	<name>Extended Choice Parameter Plug-In</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
