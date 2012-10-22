@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.392</version>
+		<version>1.399</version>
 		<!-- which version of Hudson is this plugin built against? -->
 		<relativePath />
 	</parent>
@@ -121,6 +121,22 @@
 								</pluginExecutionFilter>
 								<action>
 									<ignore />
+								</action>
+							</pluginExecution>
+							<pluginExecution>
+								<pluginExecutionFilter>
+									<groupId>org.jenkins-ci.tools</groupId>
+									<artifactId>maven-hpi-plugin</artifactId>
+									<versionRange>[1.64,)</versionRange>
+									<goals>
+										<goal>apt-compile</goal>
+										<goal>insert-test</goal>
+										<goal>resolve-test-dependencies</goal>
+										<goal>test-hpl</goal>
+									</goals>
+								</pluginExecutionFilter>
+								<action>
+									<ignore></ignore>
 								</action>
 							</pluginExecution>
 						</pluginExecutions>
