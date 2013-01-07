@@ -92,9 +92,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String defaultPropertyKey;
 
-	private transient Map<File, Long> fileTimestampMap = new HashMap<File, Long>();
-	private transient Map<File, Project> fileProjectMap = new HashMap<File, Project>();
-
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
 			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, String description) {
@@ -164,32 +161,16 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String computeValue(String value, String propertyFilePath, String propertyKey) {
-		if(fileTimestampMap == null) {
-			fileTimestampMap = new HashMap<File, Long>();
-		}
-
-		if(fileProjectMap == null) {
-			fileProjectMap = new HashMap<File, Project>();
-		}
-
 		if(!StringUtils.isBlank(propertyFile) && !StringUtils.isBlank(propertyKey)) {
 			try {
 				File propertyFile = new File(propertyFilePath);
 
-				Project project = fileProjectMap.get(propertyFile);
+				Project project = new Project();
+				Property property = new Property();
+				property.setProject(project);
 
-				Long lastTimestamp = fileTimestampMap.get(propertyFile);
-				long currentTimestamp = propertyFile.lastModified();
-				if(project == null || lastTimestamp == null || currentTimestamp != lastTimestamp) {
-					project = new Project();
-					Property property = new Property();
-					property.setProject(project);
-
-					property.setFile(propertyFile);
-					property.execute();
-					fileProjectMap.put(propertyFile, project);
-					fileTimestampMap.put(propertyFile, currentTimestamp);
-				}
+				property.setFile(propertyFile);
+				property.execute();
 
 				return project.getProperty(propertyKey);
 			}
