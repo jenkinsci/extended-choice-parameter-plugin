@@ -1,0 +1,37 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+  <j:set var="defaultValueMap" value="${it.defaultValueMap}"/>
+  <j:set var="effectiveValue" value="${it.effectiveValue}"/>
+  <div id="ecp_${it.name}" style="float:left;overflow:auto">
+  	  <j:set var="index" value="0"/>
+  	  <table id="tbl_ecp_${it.name}">
+		  <j:forEach var="value" items="${effectiveValue}">
+		    <tr id="ecp_${it.name}_${index}" >
+		    	<td>
+		    		<f:radio name="value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
+		    		<label class="attach-previous">${value}</label>
+		    	</td>
+		    </tr>	
+		    <j:set var="index" value="${index + 1}"/>
+		  </j:forEach>
+	  </table>
+  </div>	  
+<script>
+<![CDATA[  
+  		(function() {
+  			var height = 0;
+  			var maxCount = ${index};
+  			if(maxCount > ${it.visibleItemCount}) {
+  				maxCount = ${it.visibleItemCount};
+  			}
+  			for(var i=0; i< maxCount; i++) {
+  				height += document.getElementById("ecp_${it.name}_" + i).offsetHeight;
+  			}
+  			
+  			document.getElementById("ecp_${it.name}").style.height = height + "px";
+  			document.getElementById("ecp_${it.name}").style.width= (document.getElementById("tbl_ecp_${it.name}").offsetWidth + 20 ) + "px";
+  		})();
+]]>  		
+  </script>  	  
+</j:jelly>

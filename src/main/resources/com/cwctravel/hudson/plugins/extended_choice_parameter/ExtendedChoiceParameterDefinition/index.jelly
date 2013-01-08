@@ -4,17 +4,23 @@
   <f:entry title="${it.name}" description="${it.description}">
     <div name="parameter" description="${it.description}">
       <j:set var="type" value="${it.type}"/>
-      <input type="hidden" name="name" value="${it.name}" />
-      <j:if test="${type eq 'PT_SINGLE_SELECT'}">
+      <input type="hidden" name="name" value="${it.name}" />      
+      <j:if test="${type eq 'PT_SINGLE_SELECT'}">      	
         <select name="value">
           <st:include page="selectContent.jelly"/>
         </select>
       </j:if>
       <j:if test="${type eq 'PT_MULTI_SELECT'}">
-        <select name="value" multiple="multiple" size="5">
+        <select name="value" multiple="multiple" size="${it.visibleItemCount}">
           <st:include page="selectContent.jelly"/>
         </select>
       </j:if>
+      <j:if test="${type eq 'PT_RADIO'}">
+          <st:include page="radioContent.jelly"/>
+      </j:if>  
+      <j:if test="${type eq 'PT_CHECKBOX'}">
+          <st:include page="checkboxContent.jelly"/>
+      </j:if>    
     </div>
   </f:entry>
 </j:jelly>

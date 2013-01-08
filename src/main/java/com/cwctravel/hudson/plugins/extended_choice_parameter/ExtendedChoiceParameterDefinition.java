@@ -31,6 +31,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public static final String PARAMETER_TYPE_MULTI_SELECT = "PT_MULTI_SELECT";
 
+	public static final String PARAMETER_TYPE_CHECK_BOX = "PT_CHECKBOX";
+
+	public static final String PARAMETER_TYPE_RADIO = "PT_RADIO";
+
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
 		@Override
@@ -44,7 +48,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 			File prop = new File(propertyFile);
 			if(!prop.exists()) {
-				return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
+				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 			Properties p = new Properties();
 			p.load(new FileInputStream(prop));
@@ -53,7 +57,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					return FormValidation.ok();
 				}
 				else {
-					return FormValidation.error(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButProvidedKeyIsInvalid(), propertyFile, propertyKey);
+					return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileExistsButProvidedKeyIsInvalid(), propertyFile, propertyKey);
 				}
 			}
 			else {
@@ -78,6 +82,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private boolean quoteValue;
 
+	private int visibleItemCount;
+
 	private String type;
 
 	private String value;
@@ -94,7 +100,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
-			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, String description) {
+			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, int visibleItemCount, String description) {
 		super(name, description);
 		this.type = type;
 
@@ -106,6 +112,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.value = value;
 		this.defaultValue = defaultValue;
 		this.quoteValue = quoteValue;
+		if(visibleItemCount == 0) {
+			visibleItemCount = 5;
+		}
+		this.visibleItemCount = visibleItemCount;
 	}
 
 	private Map<String, Boolean> computeDefaultValueMap() {
@@ -251,6 +261,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setQuoteValue(boolean quoteValue) {
 		this.quoteValue = quoteValue;
+	}
+
+	public int getVisibleItemCount() {
+		return visibleItemCount;
+	}
+
+	public void setVisibleItemCount(int visibleItemCount) {
+		this.visibleItemCount = visibleItemCount;
 	}
 
 	public void setDefaultPropertyFile(String defaultPropertyFile) {
