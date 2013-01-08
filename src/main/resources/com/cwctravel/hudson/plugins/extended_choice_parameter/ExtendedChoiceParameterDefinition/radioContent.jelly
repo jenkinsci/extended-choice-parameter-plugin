@@ -7,7 +7,7 @@
   	  <j:set var="index" value="0"/>
   	  <table id="tbl_ecp_${it.name}">
 		  <j:forEach var="value" items="${effectiveValue}">
-		    <tr id="ecp_${it.name}_${index}" >
+		    <tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>
 		    		<f:radio name="value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
 		    		<label class="attach-previous">${value}</label>
