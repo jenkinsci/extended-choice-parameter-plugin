@@ -6,11 +6,10 @@ import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletException;
 
@@ -46,14 +45,28 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			if(StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
+
+			Project project = new Project();
+			Property property = new Property();
+			property.setProject(project);
+
 			File prop = new File(propertyFile);
-			if(!prop.exists()) {
+			try {
+				if(prop.exists()) {
+					property.setFile(prop);
+				}
+				else {
+					URL propertyFileUrl = new URL(propertyFile);
+					property.setUrl(propertyFileUrl);
+				}
+				property.execute();
+			}
+			catch(Exception e) {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
-			Properties p = new Properties();
-			p.load(new FileInputStream(prop));
+
 			if(StringUtils.isNotBlank(propertyKey)) {
-				if(p.containsKey(propertyKey)) {
+				if(project.getProperty(propertyKey) != null) {
 					return FormValidation.ok();
 				}
 				else {
@@ -173,13 +186,19 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String computeValue(String value, String propertyFilePath, String propertyKey) {
 		if(!StringUtils.isBlank(propertyFile) && !StringUtils.isBlank(propertyKey)) {
 			try {
-				File propertyFile = new File(propertyFilePath);
 
 				Project project = new Project();
 				Property property = new Property();
 				property.setProject(project);
 
-				property.setFile(propertyFile);
+				File propertyFile = new File(propertyFilePath);
+				if(propertyFile.exists()) {
+					property.setFile(propertyFile);
+				}
+				else {
+					URL propertyFileUrl = new URL(propertyFilePath);
+					property.setUrl(propertyFileUrl);
+				}
 				property.execute();
 
 				return project.getProperty(propertyKey);
