@@ -20,7 +20,10 @@
       </j:if>  
       <j:if test="${type eq 'PT_CHECKBOX'}">
           <st:include page="checkboxContent.jelly"/>
-      </j:if>    
+      </j:if> 
+      <j:if test="${type eq 'PT_TEXTBOX'}">
+          <st:include page="textboxContent.jelly"/>
+      </j:if>     
     </div>
   </f:entry>
 </j:jelly>

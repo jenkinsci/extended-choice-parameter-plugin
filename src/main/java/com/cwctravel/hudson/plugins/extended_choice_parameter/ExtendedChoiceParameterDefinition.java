@@ -34,6 +34,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public static final String PARAMETER_TYPE_RADIO = "PT_RADIO";
 
+	public static final String PARAMETER_TYPE_TEXT_BOX = "PT_TEXTBOX";
+
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
 		@Override

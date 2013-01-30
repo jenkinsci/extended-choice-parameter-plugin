@@ -38,7 +38,15 @@
     	   <j:otherwise>
                <option value="PT_CHECKBOX">Check Boxes</option>
            </j:otherwise>    
-    	</j:choose>       	  	   
+    	</j:choose>    
+    	<j:choose>
+    	   <j:when test="${instance.type eq 'PT_TEXTBOX'}">       
+    	       <option value="PT_TEXTBOX" selected="selected">Text Box</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_TEXTBOX">Text Box</option>
+           </j:otherwise>    
+    	</j:choose>       	   	  	   
     </select>
   </f:entry>
   <f:entry title="Value" field="value">

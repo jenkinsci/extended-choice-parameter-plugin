@@ -20,17 +20,22 @@
 <script>
 <![CDATA[  
   		(function() {
-  			var height = 0;
-  			var maxCount = ${index};
-  			if(maxCount > ${it.visibleItemCount}) {
-  				maxCount = ${it.visibleItemCount};
-  			}
-  			for(var i=0; i< maxCount; i++) {
-  				height += document.getElementById("ecp_${it.name}_" + i).offsetHeight;
-  			}
-  			
-  			document.getElementById("ecp_${it.name}").style.height = height + "px";
-  			document.getElementById("ecp_${it.name}").style.width= (document.getElementById("tbl_ecp_${it.name}").offsetWidth + 20 ) + "px";
+  			var f = function() {
+	  			var height = 0;
+	  			var maxCount = ${index};
+	  			if(maxCount > ${it.visibleItemCount}) {
+	  				maxCount = ${it.visibleItemCount};
+	  			}
+	  			for(var i=0; i< maxCount; i++) {
+	  				height += document.getElementById("ecp_${it.name}_" + i).offsetHeight;
+	  			}
+	  			
+	  			document.getElementById("ecp_${it.name}").style.height = height + "px";
+	  			document.getElementById("ecp_${it.name}").style.width = (document.getElementById("tbl_ecp_${it.name}").offsetWidth + 40) + "px";
+	  		};
+	  		
+	  		f();
+	  		setTimeout(f, 500);
   		})();
 ]]>  		
   </script>  	  
