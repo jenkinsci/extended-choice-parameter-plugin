@@ -35,7 +35,7 @@
 	  		};
 	  		
 	  		f();
-	  		setTimeout(f, 500);
+	  		document.onload = f;
   		})();
 ]]>  		
   </script>  	  
