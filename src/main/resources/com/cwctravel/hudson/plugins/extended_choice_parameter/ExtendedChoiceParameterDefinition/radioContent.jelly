@@ -3,7 +3,7 @@
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   <j:set var="defaultValueMap" value="${it.defaultValueMap}"/>
   <j:set var="effectiveValue" value="${it.effectiveValue}"/>
-  <div id="ecp_${it.name}" style="float:left;overflow:auto">
+  <div id="ecp_${it.name}" style="float:left; overflow-y:auto; padding-right:25px">
   	  <j:set var="index" value="0"/>
   	  <table id="tbl_ecp_${it.name}">
 		  <j:forEach var="value" items="${effectiveValue}">
@@ -20,33 +20,26 @@
 <script>
 <![CDATA[  
   		(function() {
-  			var addEvent = function(evnt, elem, func) {
-			   if (elem.addEventListener)  
-			      elem.addEventListener(evnt,func,false);
-			   else if (elem.attachEvent) {
-			      elem.attachEvent("on"+evnt, func);
-			   }
-			   else { 
-			      elem[evnt] = func;
-			   }
-			};
-			
   			var f = function() {
 	  			var height = 0;
 	  			var maxCount = ${index};
 	  			if(maxCount > ${it.visibleItemCount}) {
 	  				maxCount = ${it.visibleItemCount};
 	  			}
-	  			for(var i=0; i< maxCount; i++) {
-	  				height += document.getElementById("ecp_${it.name}_" + i).offsetHeight;
-	  			}
 	  			
+	  			if(maxCount > 0 && document.getElementById("ecp_${it.name}_0").offsetHeight !=0) {
+		  			for(var i=0; i< maxCount; i++) {
+		  				height += document.getElementById("ecp_${it.name}_" + i).offsetHeight + 3;
+		  			}
+		  		}
+	  			else {
+	  				height = maxCount * 25.5;
+	  			}
+	  			height = Math.floor(height);
 	  			document.getElementById("ecp_${it.name}").style.height = height + "px";
-	  			document.getElementById("ecp_${it.name}").style.width = (document.getElementById("tbl_ecp_${it.name}").offsetWidth + 40) + "px";
 	  		};
 	  		
 	  		f();
-	  		addEvent("load", window, f);
   		})();
 ]]>  		
   </script>  	  
