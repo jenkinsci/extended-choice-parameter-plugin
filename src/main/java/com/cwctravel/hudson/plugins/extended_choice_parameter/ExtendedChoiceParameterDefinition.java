@@ -8,8 +8,12 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
@@ -148,9 +152,32 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	@Override
 	public ParameterValue createValue(StaplerRequest request) {
-		String value[] = request.getParameterValues(getName());
-		if(value == null) {
+		String[] values = request.getParameterValues(getName());
+		if(values == null || values.length == 0) {
 			return getDefaultParameterValue();
+		}
+		if(PARAMETER_TYPE_TEXT_BOX.equals(type)) {
+			return new ExtendedChoiceParameterValue(getName(), values[0]);
+		}
+		else {
+			String defaultValueStr = getEffectiveDefaultValue();
+			if(defaultValueStr != null) {
+				List<String> result = new ArrayList<String>();
+
+				String[] defaultValues = defaultValueStr.split(",");
+				Set<String> defaultValueSet = new HashSet<String>();
+				for(String defaultValue: defaultValues) {
+					defaultValueSet.add(defaultValue);
+				}
+
+				for(String value: values) {
+					if(defaultValueSet.contains(value)) {
+						result.add(value);
+					}
+				}
+
+				return new ExtendedChoiceParameterValue(getName(), StringUtils.join(result, ","));
+			}
 		}
 		return null;
 	}
