@@ -10,7 +10,6 @@
 		    <tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>
 		    		<f:radio name="value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
-		    		<label class="attach-previous">${value}</label>
 		    	</td>
 		    </tr>	
 		    <j:set var="index" value="${index + 1}"/>
