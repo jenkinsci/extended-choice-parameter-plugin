@@ -152,27 +152,27 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	@Override
 	public ParameterValue createValue(StaplerRequest request) {
-		String[] values = request.getParameterValues(getName());
-		if(values == null || values.length == 0) {
+		String[] requestValues = request.getParameterValues(getName());
+		if(requestValues == null || requestValues.length == 0) {
 			return getDefaultParameterValue();
 		}
 		if(PARAMETER_TYPE_TEXT_BOX.equals(type)) {
-			return new ExtendedChoiceParameterValue(getName(), values[0]);
+			return new ExtendedChoiceParameterValue(getName(), requestValues[0]);
 		}
 		else {
-			String defaultValueStr = getEffectiveDefaultValue();
-			if(defaultValueStr != null) {
+			String valueStr = getEffectiveValue();
+			if(valueStr != null) {
 				List<String> result = new ArrayList<String>();
 
-				String[] defaultValues = defaultValueStr.split(",");
-				Set<String> defaultValueSet = new HashSet<String>();
-				for(String defaultValue: defaultValues) {
-					defaultValueSet.add(defaultValue);
+				String[] values = valueStr.split(",");
+				Set<String> valueSet = new HashSet<String>();
+				for(String value: values) {
+					valueSet.add(value);
 				}
 
-				for(String value: values) {
-					if(defaultValueSet.contains(value)) {
-						result.add(value);
+				for(String requestValue: requestValues) {
+					if(valueSet.contains(requestValue)) {
+						result.add(requestValue);
 					}
 				}
 
