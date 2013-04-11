@@ -139,7 +139,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		this.visibleItemCount = visibleItemCount;
 		
-		if (multiSelectDelimter.equals("")) {
+		if(multiSelectDelimiter.equals("")) {
 			multiSelectDelimiter = ",";
 		}
 		this.multiSelectDelimiter = multiSelectDelimiter;
