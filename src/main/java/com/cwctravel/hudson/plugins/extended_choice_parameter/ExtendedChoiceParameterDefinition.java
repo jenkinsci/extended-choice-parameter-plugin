@@ -116,10 +116,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String defaultPropertyFile;
 
 	private String defaultPropertyKey;
+	
+	private String multiSelectDelimiter;
 
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
-			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, int visibleItemCount, String description) {
+			String defaultPropertyFile, String defaultPropertyKey, boolean quoteValue, int visibleItemCount, String description,
+			String multiSelectDelimiter) {
 		super(name, description);
 		this.type = type;
 
@@ -135,6 +138,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			visibleItemCount = 5;
 		}
 		this.visibleItemCount = visibleItemCount;
+		
+		if(multiSelectDelimiter.equals("")) {
+			multiSelectDelimiter = ",";
+		}
+		this.multiSelectDelimiter = multiSelectDelimiter;
 	}
 
 	private Map<String, Boolean> computeDefaultValueMap() {
@@ -176,7 +184,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					}
 				}
 
-				return new ExtendedChoiceParameterValue(getName(), StringUtils.join(result, ","));
+				return new ExtendedChoiceParameterValue(getName(), StringUtils.join(result, getMultiSelectDelimiter()));
 			}
 		}
 		return null;
@@ -191,7 +199,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if(value instanceof JSONArray) {
 			JSONArray jsonValues = (JSONArray)value;
-			strValue = StringUtils.join(jsonValues.iterator(), ',');
+			strValue = StringUtils.join(jsonValues.iterator(), getMultiSelectDelimiter());
 		}
 
 		if(quoteValue) {
@@ -317,6 +325,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setVisibleItemCount(int visibleItemCount) {
 		this.visibleItemCount = visibleItemCount;
+	}
+	
+	public String getMultiSelectDelimiter() {
+		return this.multiSelectDelimiter;
+	}
+	
+	public void setMultiSelectDelimiter(final String multiSelectDelimiter) {
+		this.multiSelectDelimiter = multiSelectDelimiter;
 	}
 
 	public void setDefaultPropertyFile(String defaultPropertyFile) {
