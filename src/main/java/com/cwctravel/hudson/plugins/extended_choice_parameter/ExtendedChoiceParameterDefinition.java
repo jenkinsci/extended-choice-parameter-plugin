@@ -117,7 +117,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String defaultPropertyKey;
 	
-	private String multiSelectDelimiter = ","
+	private String multiSelectDelimiter = ",";
 
 	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String propertyKey, String defaultValue,
