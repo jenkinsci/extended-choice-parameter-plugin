@@ -75,7 +75,7 @@
     <f:textbox value="${visibleItemCount}"/>
   </f:entry>
   
-  <f:entry title="Delimiter for multiple selections" field="multiSelectDelimiter">
+  <f:entry title="Delimiter" field="multiSelectDelimiter">
     <f:textbox value="${multiSelectDelimiter}"/>
   </f:entry>
 
