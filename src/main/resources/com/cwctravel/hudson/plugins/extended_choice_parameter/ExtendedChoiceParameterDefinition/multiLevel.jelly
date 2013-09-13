@@ -3,25 +3,25 @@
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
 	
 	<script type="text/javascript">
-			var hiddenNextSelectionId = "";
-		  var currentSelection = "";
+			var hidden${it.name}NextSelectionId = "";
+		  var current${it.name}Selection = "";
 		
-			function unhideNextMultiLevelSelection(name)
+			function unhideNext${it.name}()
 			{
-				var addAnotherButton = document.getElementById(name + " addAnotherButton");
+				var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
 				addAnotherButton.style.display = "none";
 		
-				var hiddenNextSelection = document.getElementById(hiddenNextSelectionId);
+				var hiddenNextSelection = document.getElementById(hidden${it.name}NextSelectionId);
 				hiddenNextSelection.style.display = "inline";
 			}
 		
-			function selectionChanged(select, name)
+			function ${it.name}Changed(select)
 			{
-				if ( typeof selectionChanged.currentMultiLevelMultiSelect == 'undefined' ) {
-					selectionChanged.currentMultiLevelMultiSelect = 0;
+				if ( typeof ${it.name}Changed.currentMultiLevelMultiSelect == 'undefined' ) {
+					${it.name}Changed.currentMultiLevelMultiSelect = 0;
 				}
 		
-		    var currentMultiLevelMultiSelectDiv = document.getElementById(name + " dropdowns for MultiLevelMultiSelect " + selectionChanged.currentMultiLevelMultiSelect);
+		    var currentMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
 				var dropdown = currentMultiLevelMultiSelectDiv.firstChild;
 				while (dropdown)
 				{
@@ -35,11 +35,11 @@
 				select.name = "value";
 		
 				var selectedItem = select.options[select.selectedIndex].value;
-				if (currentSelection !== "")
+				if (current${it.name}Selection !== "")
 				{
-					currentSelection += ", ";
+					current${it.name}Selection += ", ";
 				}
-				currentSelection += selectedItem;
+				current${it.name}Selection += selectedItem;
 		
 		    var nextDropdown = document.getElementById(select.id + " " + selectedItem);
 		    if (nextDropdown)
@@ -50,8 +50,8 @@
 				{
 		      var nextMultiLevelMultiSelectDiv = currentMultiLevelMultiSelectDiv.cloneNode(true);
 		
-					selectionChanged.currentMultiLevelMultiSelect += 1;						
-					nextMultiLevelMultiSelectDiv.setAttribute("id", name + " dropdowns for MultiLevelMultiSelect " + selectionChanged.currentMultiLevelMultiSelect);
+					${it.name}Changed.currentMultiLevelMultiSelect += 1;						
+					nextMultiLevelMultiSelectDiv.setAttribute("id", "${it.name} dropdowns for MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
 						
 					var nextDropdown = nextMultiLevelMultiSelectDiv.firstChild;
 					var hiddenNextSelectionIdUpdated = false;
@@ -62,13 +62,13 @@
 						{
 							nextDropdown.style.display = "none";
 		
-							id = id.replace("dropdown MultiLevelMultiSelect " + (selectionChanged.currentMultiLevelMultiSelect - 1),
-															"dropdown MultiLevelMultiSelect " + selectionChanged.currentMultiLevelMultiSelect);
+							id = id.replace("dropdown MultiLevelMultiSelect " + (${it.name}Changed.currentMultiLevelMultiSelect - 1),
+															"dropdown MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
 							nextDropdown.setAttribute("id", id);
 		
 							if (hiddenNextSelectionIdUpdated === false)
 							{
-								hiddenNextSelectionId = id;
+								hidden${it.name}NextSelectionId = id;
 								hiddenNextSelectionIdUpdated = true;
 							}
 						}
@@ -81,31 +81,23 @@
 						nextDropdown = nextDropdown.nextSibling;
 					}
 		
-					var multiLevelSelections = document.getElementById(name + " MultiLevelSelections");
+					var multiLevelSelections = document.getElementById("${it.name} MultiLevelSelections");
 					
 		      multiLevelSelections.appendChild(nextMultiLevelMultiSelectDiv);
 		
-					var currentSelections = document.getElementById("currentSelections");
+					var currentSelections = document.getElementById("current${it.name}");
 					var li = document.getElementById("li to clone").cloneNode();
-					li.appendChild(li.ownerDocument.createTextNode(currentSelection));
-					currentSelection = "";
+					li.appendChild(li.ownerDocument.createTextNode(current${it.name}Selection));
+					current${it.name}Selection = "";
 					li.setAttribute("id", "");
 					li.style.display = "";
 					currentSelections.appendChild(li);
 					currentSelections.style.display = "inline";
 		
 					<j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
-						var addAnotherButton = document.getElementById(name + " addAnotherButton");
+						var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
 						addAnotherButton.style.display = "inline";
 					</j:if>
-		      // pickup here: make getMultiLevelDropdowns and getChoicesByDropdown
-		      // generated from file.
-					
-		      // I should probably just skip specifying the color per selection.
-		      // I should update the color to note that colors will recycle if not enough specified.
-		      // I expect people will usually just sample the rainbow anyway.
-					
-					// also, consider cleaning up the warnings
 				}
 		  }
 	</script>
@@ -117,7 +109,7 @@
 	<div id="${it.name} MultiLevelSelections">
 		<div id="${it.name} dropdowns for MultiLevelMultiSelect 0">
 			<j:forEach var="dropdown" items="${dropdowns}">
-				<select name="tmp name" onchange="selectionChanged(this, '${it.name}')"
+				<select name="tmp name" onchange="${it.name}Changed(this, '${it.name}')"
 								id="${dropdown}" style="${style}">
 					<j:forEach var="choice" items="${choicesByDropdown[dropdown]}">
 						<option value="${choice}">${choice}</option>
@@ -130,9 +122,9 @@
 	</div>
 	<input id="${it.name} addAnotherButton" type="button" value="Add Another"
 				 style="display:none"
-				 onclick="unhideNextMultiLevelSelection('${it.name}');" />
+				 onclick="unhideNext${it.name}('${it.name}');" />
 	<p></p>
-	<ol id ="currentSelections" style="display:none">
+	<ol id ="current${it.name}" style="display:none">
 		<li id="li to clone" style="display:none"></li>
 	</ol>
 </j:jelly>

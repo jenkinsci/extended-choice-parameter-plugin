@@ -220,14 +220,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					{
 						if (i % valuesBetweenLevels == 0)
 						{
-							// todo: insert a new line here
-							//       unfortunately StringParameterValue doesn't support newlines,
-							//       but TextParameterValue does
-							strValue += "__END_OF_MULILEVEL_SELECTION__";
+							// note that StringParameterValue doesn't support newlines,
+							// which might have otherwise been better than using two
+							// delimitters here
+							strValue += getMultiSelectDelimiter() + getMultiSelectDelimiter();
 						}
 						else
 						{
-							strValue += ",";
+							strValue += getMultiSelectDelimiter();
 						}
 					}
 					strValue += it.next();
