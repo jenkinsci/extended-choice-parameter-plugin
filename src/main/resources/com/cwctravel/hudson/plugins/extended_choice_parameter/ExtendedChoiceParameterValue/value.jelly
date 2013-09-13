@@ -4,4 +4,5 @@
 	<f:entry name="value" title="${it.name}" description="${it.description}">
         ${it.value}
 	</f:entry>
+        <p>Hello from value.jelly!</p>
 </j:jelly>

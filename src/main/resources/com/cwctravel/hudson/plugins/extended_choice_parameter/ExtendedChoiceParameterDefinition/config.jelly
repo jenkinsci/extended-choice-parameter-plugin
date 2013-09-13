@@ -1,3 +1,4 @@
+<!-- this is for the configuration page where the job creator configures the parameters -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:entry title="Name" field="name">
     <f:textbox />
@@ -45,8 +46,24 @@
     	   </j:when>
     	   <j:otherwise>
                <option value="PT_TEXTBOX">Text Box</option>
-           </j:otherwise>    
-    	</j:choose>       	   	  	   
+           </j:otherwise>
+    	</j:choose>
+        <j:choose>
+           <j:when test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">       
+    	       <option value="PT_MULTI_LEVEL_SINGLE_SELECT" selected="selected">Multi-Level Single Select</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_MULTI_LEVEL_SINGLE_SELECT">Multi-Level Single Select</option>
+           </j:otherwise>
+    	</j:choose>
+        <j:choose>
+           <j:when test="${instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">       
+    	       <option value="PT_MULTI_LEVEL_MULTI_SELECT" selected="selected">Multi-Level Multi Select</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_MULTI_LEVEL_MULTI_SELECT">Multi-Level Multi Select</option>
+           </j:otherwise>
+    	</j:choose>        	   	  	   
     </select>
   </f:entry>
   <f:entry title="Value" field="value">

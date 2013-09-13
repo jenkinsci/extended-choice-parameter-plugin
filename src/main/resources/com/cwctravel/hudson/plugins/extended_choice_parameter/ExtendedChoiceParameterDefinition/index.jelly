@@ -1,10 +1,11 @@
+<!-- this is for the build page where the user selects parameters -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   <f:entry title="${it.name}" description="${it.description}">
     <div name="parameter" description="${it.description}">
       <j:set var="type" value="${it.type}"/>
-      <input type="hidden" name="name" value="${it.name}" />      
+      <input type="hidden" name="name" value="${it.name}" />
       <j:if test="${type eq 'PT_SINGLE_SELECT'}">      	
         <select name="value">
           <st:include page="selectContent.jelly"/>
@@ -23,6 +24,12 @@
       </j:if> 
       <j:if test="${type eq 'PT_TEXTBOX'}">
           <st:include page="textboxContent.jelly"/>
+      </j:if>
+      <j:if test="${type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">
+          <st:include page="multiLevel.jelly"/>
+      </j:if>
+      <j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
+					<st:include page="multiLevel.jelly"/>
       </j:if>     
     </div>
   </f:entry>
