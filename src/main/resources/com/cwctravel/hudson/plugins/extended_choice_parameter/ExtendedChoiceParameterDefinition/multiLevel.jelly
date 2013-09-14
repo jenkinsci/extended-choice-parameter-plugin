@@ -122,7 +122,6 @@
 	<input id="${it.name} addAnotherButton" type="button" value="Add Another"
 				 style="display:none"
 				 onclick="unhideNext${it.name}('${it.name}');" />
-	<p></p>
 	<ol id ="current${it.name}" style="display:none">
 		<li id="li to clone" style="display:none"></li>
 	</ol>
