@@ -125,7 +125,7 @@
 			</j:forEach>
 		</div>
 	</div>
-	<input id="${it.name} addAnotherButton" type="button" value="Add Another"
+	<input id="${it.name} addAnotherButton" type="button" value="Select another..."
 				 style="display:none"
 				 onclick="unhideNext${it.name}('${it.name}');"/>
 	<br id="${it.name} addAnotherButton linebreak"></br>
