@@ -116,7 +116,6 @@
 					</j:forEach>
 				</select>
 				<j:set var="style" value="display:none"/>
-				<p></p>
 			</j:forEach>
 		</div>
 	</div>
