@@ -57,7 +57,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
 
-		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey) throws IOException, ServletException {
+		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			if(StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
@@ -81,7 +81,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 
-			if(StringUtils.isNotBlank(propertyKey)) {
+			if(   type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT)
+				 || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT))
+			{
+				return FormValidation.ok();
+			}
+			else if(StringUtils.isNotBlank(propertyKey)) {
 				if(project.getProperty(propertyKey) != null) {
 					return FormValidation.ok();
 				}
@@ -94,18 +99,20 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 
-		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey) throws IOException, ServletException {
-			return doCheckPropertyFile(propertyFile, propertyKey);
+		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
+						@QueryParameter final String type) throws IOException, ServletException {
+			return doCheckPropertyFile(propertyFile, propertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
-			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
+				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
+			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey) throws IOException, ServletException {
-			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey);
+						@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException
+		{
+			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 	}
 
