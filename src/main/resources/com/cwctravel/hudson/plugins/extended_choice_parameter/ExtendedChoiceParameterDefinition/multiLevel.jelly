@@ -11,6 +11,9 @@
 				var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
 				addAnotherButton.style.display = "none";
 		
+				var addAnotherButtonLineBreak = document.getElementById("${it.name} addAnotherButton linebreak");
+				addAnotherButtonLineBreak.style.display = "none";
+		
 				var hiddenNextSelection = document.getElementById(hidden${it.name}NextSelectionId);
 				hiddenNextSelection.style.display = "inline";
 			}
@@ -97,6 +100,9 @@
 					<j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
 						var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
 						addAnotherButton.style.display = "inline";
+						
+						var addAnotherButtonLineBreak = document.getElementById("${it.name} addAnotherButton linebreak");
+						addAnotherButtonLineBreak.style.display = "inline";
 					</j:if>
 				}
 		  }
@@ -121,8 +127,10 @@
 	</div>
 	<input id="${it.name} addAnotherButton" type="button" value="Add Another"
 				 style="display:none"
-				 onclick="unhideNext${it.name}('${it.name}');" />
+				 onclick="unhideNext${it.name}('${it.name}');"/>
+	<br id="${it.name} addAnotherButton linebreak"></br>
 	<ol id ="current${it.name}" style="display:none">
 		<li id="li to clone" style="display:none"></li>
 	</ol>
+	<br></br>
 </j:jelly>
