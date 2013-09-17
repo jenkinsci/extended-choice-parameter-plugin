@@ -5,6 +5,7 @@
 	<script type="text/javascript">
 			var hidden${it.name}NextSelectionId = "";
 		  var current${it.name}Selection = "";
+			var current${it.name}SelectionIds = [];
 		
 			function unhideNext${it.name}()
 			{
@@ -36,6 +37,7 @@
 				}
 		
 				select.name = "value";
+				current${it.name}SelectionIds.push(select.id);
 		
 				var selectedItem = select.options[select.selectedIndex].value;
 				if (current${it.name}Selection !== "")
@@ -94,6 +96,28 @@
 					current${it.name}Selection = "";
 					li.setAttribute("id", "");
 					li.style.display = "";
+					var br = document.getElementById("br to clone").cloneNode();
+					br.style.display = "inline";
+					li.appendChild(br);
+					var button = document.getElementById("remove button to clone").cloneNode();
+					button.style.display = "inline";
+					button.onclick = (function (selectionIds, liToHide)
+					{
+						return function() {
+							for (var i = 0; i != selectionIds.length; i++) <!-- the less than character results in a JellyTagException... wtf??? -->
+							{
+								var selection = document.getElementById(selectionIds[i]);
+								selection.name = "tmp name";
+							}
+							liToHide.style.display = "none";
+							// pickup here: decide how to implement undo midway through a selection
+							//							showing the prior dropdowns and allowing modifications would be cool
+						};
+					}) (current${it.name}SelectionIds, li);
+					current${it.name}SelectionIds = [];
+					li.appendChild(button);
+					li.appendChild(br.cloneNode());
+					li.appendChild(br.cloneNode());
 					currentSelections.appendChild(li);
 					currentSelections.style.display = "inline";
 		
@@ -132,5 +156,7 @@
 	<ol id ="current${it.name}" style="display:none">
 		<li id="li to clone" style="display:none"></li>
 	</ol>
+	<input id="remove button to clone" type="button" value="Remove" style="display:none"/>
+	<br id="br to clone" style="display:none"/>
 	<br></br>
 </j:jelly>
