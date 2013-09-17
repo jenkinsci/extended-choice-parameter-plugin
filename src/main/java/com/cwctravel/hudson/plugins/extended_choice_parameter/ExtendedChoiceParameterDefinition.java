@@ -1,3 +1,8 @@
+/*
+ *Copyright (c) 2013 Costco, Vimil Saju
+ *See the file license.txt for copying permission.
+ */
+
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
 import hudson.Extension;
