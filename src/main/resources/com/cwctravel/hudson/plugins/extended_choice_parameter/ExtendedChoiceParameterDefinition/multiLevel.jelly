@@ -4,8 +4,17 @@
 	
 	<script type="text/javascript">
 			var hidden${it.name}NextSelectionId = "";
-		  var current${it.name}Selection = "";
-			var current${it.name}SelectionIds = [];
+		
+		  function currentMultiLevelSelectNumber(currentSelect)
+			{
+				var selectId = currentSelect.getAttribute("id");
+				var indexOfNumber = selectId.indexOf("MultiLevelMultiSelect ");
+				var tmp1 = selectId.substr(indexOfNumber);
+		    var tmp2 = tmp1.split(" ");
+				var tmp3 = tmp2[1];
+				var tmp4 = parseInt(tmp3);
+				return parseInt(selectId.substr(indexOfNumber).split(" ")[1]);
+			}
 		
 			function unhideNext${it.name}()
 			{
@@ -21,31 +30,30 @@
 		
 			function ${it.name}Changed(select)
 			{
-				if ( typeof ${it.name}Changed.currentMultiLevelMultiSelect == 'undefined' ) {
-					${it.name}Changed.currentMultiLevelMultiSelect = 0;
-				}
+				var currentSelectNumber = currentMultiLevelSelectNumber(select);
 		
-		    var currentMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
+		    var currentMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect "
+					+ currentSelectNumber);
+		
 				var dropdown = currentMultiLevelMultiSelectDiv.firstChild;
 				while (dropdown)
 				{
-					if (dropdown.getAttribute("id") !== null)
+					var dropdownId = dropdown.getAttribute("id");
+					if (dropdownId !== null)
 					{
-						dropdown.style.display = "none";
+						var dropdownShouldNotBeDisplayed = select.getAttribute("id").indexOf(dropdownId) == -1;
+						if (dropdownShouldNotBeDisplayed)
+						{
+						  // this allows a user to choose a different selection
+							dropdown.style.display = "none";
+							dropdown.name = "tmp name";
+						}
 					}
 					dropdown = dropdown.nextSibling;
 				}
 		
 				select.name = "value";
-				current${it.name}SelectionIds.push(select.id);
-		
 				var selectedItem = select.options[select.selectedIndex].value;
-				if (current${it.name}Selection !== "")
-				{
-					current${it.name}Selection += ", ";
-				}
-				current${it.name}Selection += selectedItem;
-		
 		    var nextDropdown = document.getElementById(select.id + " " + selectedItem);
 		    if (nextDropdown)
 		    {
@@ -54,9 +62,8 @@
 		    else
 				{
 		      var nextMultiLevelMultiSelectDiv = currentMultiLevelMultiSelectDiv.cloneNode(true);
-		
-					${it.name}Changed.currentMultiLevelMultiSelect += 1;						
-					nextMultiLevelMultiSelectDiv.setAttribute("id", "${it.name} dropdowns for MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
+							
+					nextMultiLevelMultiSelectDiv.setAttribute("id", "${it.name} dropdowns for MultiLevelMultiSelect " + (currentSelectNumber + 1));
 						
 					var nextDropdown = nextMultiLevelMultiSelectDiv.firstChild;
 					var hiddenNextSelectionIdUpdated = false;
@@ -67,8 +74,8 @@
 						{
 							nextDropdown.style.display = "none";
 		
-							id = id.replace("dropdown MultiLevelMultiSelect " + (${it.name}Changed.currentMultiLevelMultiSelect - 1),
-															"dropdown MultiLevelMultiSelect " + ${it.name}Changed.currentMultiLevelMultiSelect);
+							id = id.replace("dropdown MultiLevelMultiSelect " + currentSelectNumber,
+															"dropdown MultiLevelMultiSelect " + (currentSelectNumber + 1));
 							nextDropdown.setAttribute("id", id);
 		
 							if (hiddenNextSelectionIdUpdated === false)
@@ -90,36 +97,15 @@
 					
 		      multiLevelSelections.appendChild(nextMultiLevelMultiSelectDiv);
 		
-					var currentSelections = document.getElementById("current${it.name}");
-					var li = document.getElementById("li to clone").cloneNode();
-					li.appendChild(li.ownerDocument.createTextNode(current${it.name}Selection));
-					current${it.name}Selection = "";
-					li.setAttribute("id", "");
-					li.style.display = "";
-					var br = document.getElementById("br to clone").cloneNode();
-					br.style.display = "inline";
-					li.appendChild(br);
 					var button = document.getElementById("remove button to clone").cloneNode();
 					button.style.display = "inline";
-					button.onclick = (function (selectionIds, liToHide)
+					button.onclick = (function (divToRemove)
 					{
 						return function() {
-							for (var i = 0; i != selectionIds.length; i++) <!-- the less than character results in a JellyTagException... wtf??? -->
-							{
-								var selection = document.getElementById(selectionIds[i]);
-								selection.name = "tmp name";
-							}
-							liToHide.style.display = "none";
-							// pickup here: decide how to implement undo midway through a selection
-							//							showing the prior dropdowns and allowing modifications would be cool
+							divToRemove.parentNode.removeChild(divToRemove);
 						};
-					}) (current${it.name}SelectionIds, li);
-					current${it.name}SelectionIds = [];
-					li.appendChild(button);
-					li.appendChild(br.cloneNode());
-					li.appendChild(br.cloneNode());
-					currentSelections.appendChild(li);
-					currentSelections.style.display = "inline";
+					}) (currentMultiLevelMultiSelectDiv);
+					currentMultiLevelMultiSelectDiv.appendChild(button);
 		
 					<j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
 						var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
@@ -153,9 +139,6 @@
 				 style="display:none"
 				 onclick="unhideNext${it.name}('${it.name}');"/>
 	<br id="${it.name} addAnotherButton linebreak"></br>
-	<ol id ="current${it.name}" style="display:none">
-		<li id="li to clone" style="display:none"></li>
-	</ol>
 	<input id="remove button to clone" type="button" value="Remove" style="display:none"/>
 	<br id="br to clone" style="display:none"/>
 	<br></br>
