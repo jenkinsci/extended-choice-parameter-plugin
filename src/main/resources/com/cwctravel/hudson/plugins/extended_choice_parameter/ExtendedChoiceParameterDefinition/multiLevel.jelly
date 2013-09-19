@@ -3,8 +3,39 @@
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
 	
 	<script type="text/javascript">
-			var hidden${it.name}NextSelectionId = "";
+				
+			function ${it.name}RemoveSelectDiv(selectDiv)
+			{
+				var selectDivs = document.getElementsByClassName("${it.name} select div");
+				if (selectDivs.length == 1)
+				{
+					unhideNext${it.name}()
+				}
 		
+				var parent = selectDiv.parentNode;
+				parent.removeChild(selectDiv);
+			}
+		
+			function onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs()
+			{
+				// first determine whether or not there are multiple visible select div
+		    // elements for ${it.name}
+		    var visibleSelectDivs = 0;
+				var selectDivs = document.getElementsByClassName("${it.name} select div");
+				for (var i=0; i != selectDivs.length; i++)
+				{
+					visibleSelectDivs++;
+				}
+		
+				var removeButtonsForDiv = document.getElementsByClassName("${it.name} remove button");
+				for(var i=0; i != removeButtonsForDiv.length; i++)
+				{
+					removeButtonsForDiv[i].style.display = visibleSelectDivs > 1 ? "inline" : "none";
+				}
+			}
+		
+		  // todo: rename this function to include ${it.name} in it
+		  // maybe it should be named ${it.name}MultiLevelSelectNumber(selectNodeOrParentDiv)
 		  function currentMultiLevelSelectNumber(currentSelect)
 			{
 				var selectId = currentSelect.getAttribute("id");
@@ -17,15 +48,52 @@
 			}
 		
 			function unhideNext${it.name}()
-			{
-				var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
-				addAnotherButton.style.display = "none";
-		
-				var addAnotherButtonLineBreak = document.getElementById("${it.name} addAnotherButton linebreak");
-				addAnotherButtonLineBreak.style.display = "none";
-		
-				var hiddenNextSelection = document.getElementById(hidden${it.name}NextSelectionId);
-				hiddenNextSelection.style.display = "inline";
+			{	
+				var selectDivs = document.getElementsByClassName("${it.name} select div");
+				var lastSelect = selectDivs[selectDivs.length - 1];
+				
+				var lastSelectNumber = currentMultiLevelSelectNumber(lastSelect);
+				
+				var lastMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect "
+					+ lastSelectNumber);
+				
+				var nextMultiLevelMultiSelectDiv = lastMultiLevelMultiSelectDiv.cloneNode(true);
+							
+				nextMultiLevelMultiSelectDiv.setAttribute("id", "${it.name} dropdowns for MultiLevelMultiSelect " + (lastSelectNumber + 1));
+
+				var nextDropdown = nextMultiLevelMultiSelectDiv.firstChild;
+				var hiddenNextSelectionIdMadeVisible = false;
+				while (nextDropdown)
+				{		
+					var id = nextDropdown.getAttribute("id");
+					if (id !== null)
+					{
+						nextDropdown.style.display = "none";
+
+						id = id.replace("dropdown MultiLevelMultiSelect " + lastSelectNumber,
+														"dropdown MultiLevelMultiSelect " + (lastSelectNumber + 1));
+						nextDropdown.setAttribute("id", id);
+
+						if (hiddenNextSelectionIdMadeVisible === false)
+						{
+							nextDropdown.style.display = "inline";
+							hiddenNextSelectionIdMadeVisible = true;
+						}
+					}
+
+					if (nextDropdown.name === "value")
+					{
+						nextDropdown.name = "tmp name";
+					}
+
+					nextDropdown = nextDropdown.nextSibling;
+				}
+
+				var multiLevelSelections = document.getElementById("${it.name} MultiLevelSelections");
+
+				multiLevelSelections.appendChild(nextMultiLevelMultiSelectDiv);
+				
+				onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs();
 			}
 		
 			function ${it.name}Changed(select)
@@ -34,22 +102,23 @@
 		
 		    var currentMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect "
 					+ currentSelectNumber);
-		
-				var dropdown = currentMultiLevelMultiSelectDiv.firstChild;
-				while (dropdown)
+				
+				// todo: rename child to dropdown
+				var child = currentMultiLevelMultiSelectDiv.firstChild;
+				while (child)
 				{
-					var dropdownId = dropdown.getAttribute("id");
-					if (dropdownId !== null)
+					var childId = child.getAttribute("id");
+					if (childId !== null)
 					{
-						var dropdownShouldNotBeDisplayed = select.getAttribute("id").indexOf(dropdownId) == -1;
+						var dropdownShouldNotBeDisplayed = select.getAttribute("id").indexOf(childId) == -1;
 						if (dropdownShouldNotBeDisplayed)
 						{
-						  // this allows a user to choose a different selection
-							dropdown.style.display = "none";
-							dropdown.name = "tmp name";
+							// this allows a user to got back and choose a different selection
+							child.style.display = "none";
+							child.name = "tmp name";
 						}
 					}
-					dropdown = dropdown.nextSibling;
+					child = child.nextSibling;
 				}
 		
 				select.name = "value";
@@ -61,56 +130,9 @@
 				}
 		    else
 				{
-		      var nextMultiLevelMultiSelectDiv = currentMultiLevelMultiSelectDiv.cloneNode(true);
-							
-					nextMultiLevelMultiSelectDiv.setAttribute("id", "${it.name} dropdowns for MultiLevelMultiSelect " + (currentSelectNumber + 1));
-						
-					var nextDropdown = nextMultiLevelMultiSelectDiv.firstChild;
-					var hiddenNextSelectionIdUpdated = false;
-					while (nextDropdown)
-					{		
-						var id = nextDropdown.getAttribute("id");
-						if (id !== null)
-						{
-							nextDropdown.style.display = "none";
-		
-							id = id.replace("dropdown MultiLevelMultiSelect " + currentSelectNumber,
-															"dropdown MultiLevelMultiSelect " + (currentSelectNumber + 1));
-							nextDropdown.setAttribute("id", id);
-		
-							if (hiddenNextSelectionIdUpdated === false)
-							{
-								hidden${it.name}NextSelectionId = id;
-								hiddenNextSelectionIdUpdated = true;
-							}
-						}
-						
-						if (nextDropdown.name === "value")
-						{
-							nextDropdown.name = "tmp name";
-						}
-		
-						nextDropdown = nextDropdown.nextSibling;
-					}
-		
-					var multiLevelSelections = document.getElementById("${it.name} MultiLevelSelections");
-					
-		      multiLevelSelections.appendChild(nextMultiLevelMultiSelectDiv);
-		
-					var button = document.getElementById("remove button to clone").cloneNode();
-					button.style.display = "inline";
-					button.onclick = (function (divToRemove)
-					{
-						return function() {
-							divToRemove.parentNode.removeChild(divToRemove);
-						};
-					}) (currentMultiLevelMultiSelectDiv);
-					currentMultiLevelMultiSelectDiv.appendChild(button);
-		
 					<j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
 						var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
 						addAnotherButton.style.display = "inline";
-						
 						var addAnotherButtonLineBreak = document.getElementById("${it.name} addAnotherButton linebreak");
 						addAnotherButtonLineBreak.style.display = "inline";
 					</j:if>
@@ -123,7 +145,8 @@
 	<j:set var="style" value="display:inline"/>
 	
 	<div id="${it.name} MultiLevelSelections">
-		<div id="${it.name} dropdowns for MultiLevelMultiSelect 0">
+		<div id="${it.name} dropdowns for MultiLevelMultiSelect 0"
+				 class="${it.name} select div">
 			<j:forEach var="dropdown" items="${dropdowns}">
 				<select name="tmp name" onchange="${it.name}Changed(this, '${it.name}')"
 								id="${dropdown}" style="${style}">
@@ -133,13 +156,14 @@
 				</select>
 				<j:set var="style" value="display:none"/>
 			</j:forEach>
+			<input class="${it.name} remove button" type="button" value="Remove"
+						 style="display:none" onclick="${it.name}RemoveSelectDiv(this.parentNode)"/>
 		</div>
 	</div>
 	<input id="${it.name} addAnotherButton" type="button" value="Select another..."
 				 style="display:none"
-				 onclick="unhideNext${it.name}('${it.name}');"/>
+				 onclick="unhideNext${it.name}();"/>
 	<br id="${it.name} addAnotherButton linebreak"></br>
-	<input id="remove button to clone" type="button" value="Remove" style="display:none"/>
 	<br id="br to clone" style="display:none"/>
 	<br></br>
 </j:jelly>
