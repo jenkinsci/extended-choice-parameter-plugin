@@ -143,8 +143,8 @@
 	<j:set var="choicesByDropdown" value="${it.choicesByDropdownId}"/>
 	<j:set var="style" value="display:inline"/>
 	
-	<div id="${it.name} MultiLevelSelections">
-		<div id="${it.name} dropdowns for MultiLevelMultiSelect 0"
+	<ol id="${it.name} MultiLevelSelections">
+		<li id="${it.name} dropdowns for MultiLevelMultiSelect 0"
 				 class="${it.name} select div">
 			<j:forEach var="dropdown" items="${dropdowns}">
 				<select name="tmp name" onchange="${it.name}Changed(this, '${it.name}')"
@@ -157,8 +157,8 @@
 			</j:forEach>
 			<input class="${it.name} remove button" type="button" value="Remove"
 						 style="display:none" onclick="${it.name}RemoveSelectDiv(this.parentNode)"/>
-		</div>
-	</div>
+		</li>
+	</ol>
 	<input id="${it.name} addAnotherButton" type="button" value="Select another..."
 				 style="display:none"
 				 onclick="unhideNext${it.name}();"/>
