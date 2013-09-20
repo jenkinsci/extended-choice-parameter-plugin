@@ -143,9 +143,14 @@
 	<j:set var="choicesByDropdown" value="${it.choicesByDropdownId}"/>
 	<j:set var="style" value="display:inline"/>
 	
+	<j:set var="liststyle" value="display:list-item"/>
+	<j:if test="${type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">
+		<j:set var="liststyle" value="display:inline"/>
+	</j:if>
+	
 	<ol id="${it.name} MultiLevelSelections">
 		<li id="${it.name} dropdowns for MultiLevelMultiSelect 0"
-				 class="${it.name} select div">
+				 class="${it.name} select div" style="${liststyle}">
 			<j:forEach var="dropdown" items="${dropdowns}">
 				<select name="tmp name" onchange="${it.name}Changed(this, '${it.name}')"
 								id="${dropdown}" style="${style}">
