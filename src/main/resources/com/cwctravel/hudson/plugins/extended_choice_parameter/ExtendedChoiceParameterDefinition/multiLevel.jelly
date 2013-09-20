@@ -34,11 +34,9 @@
 				}
 			}
 		
-		  // todo: rename this function to include ${it.name} in it
-		  // maybe it should be named ${it.name}MultiLevelSelectNumber(selectNodeOrParentDiv)
-		  function currentMultiLevelSelectNumber(currentSelect)
+		  function ${it.name}MultiLevelSelectNumber(selectNodeOrParentDiv)
 			{
-				var selectId = currentSelect.getAttribute("id");
+				var selectId = selectNodeOrParentDiv.getAttribute("id");
 				var indexOfNumber = selectId.indexOf("MultiLevelMultiSelect ");
 				var tmp1 = selectId.substr(indexOfNumber);
 		    var tmp2 = tmp1.split(" ");
@@ -52,7 +50,7 @@
 				var selectDivs = document.getElementsByClassName("${it.name} select div");
 				var lastSelect = selectDivs[selectDivs.length - 1];
 				
-				var lastSelectNumber = currentMultiLevelSelectNumber(lastSelect);
+				var lastSelectNumber = ${it.name}MultiLevelSelectNumber(lastSelect);
 				
 				var lastMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect "
 					+ lastSelectNumber);
@@ -98,27 +96,26 @@
 		
 			function ${it.name}Changed(select)
 			{
-				var currentSelectNumber = currentMultiLevelSelectNumber(select);
+				var currentSelectNumber = ${it.name}MultiLevelSelectNumber(select);
 		
 		    var currentMultiLevelMultiSelectDiv = document.getElementById("${it.name} dropdowns for MultiLevelMultiSelect "
 					+ currentSelectNumber);
 				
-				// todo: rename child to dropdown
-				var child = currentMultiLevelMultiSelectDiv.firstChild;
-				while (child)
+				var dropdown = currentMultiLevelMultiSelectDiv.firstChild;
+				while (dropdown)
 				{
-					var childId = child.getAttribute("id");
-					if (childId !== null)
+					var dropdownId = dropdown.getAttribute("id");
+					if (dropdownId !== null)
 					{
-						var dropdownShouldNotBeDisplayed = select.getAttribute("id").indexOf(childId) == -1;
+						var dropdownShouldNotBeDisplayed = select.getAttribute("id").indexOf(dropdownId) == -1;
 						if (dropdownShouldNotBeDisplayed)
 						{
 							// this allows a user to got back and choose a different selection
-							child.style.display = "none";
-							child.name = "tmp name";
+							dropdown.style.display = "none";
+							dropdown.name = "tmp name";
 						}
 					}
-					child = child.nextSibling;
+					dropdown = dropdown.nextSibling;
 				}
 		
 				select.name = "value";
