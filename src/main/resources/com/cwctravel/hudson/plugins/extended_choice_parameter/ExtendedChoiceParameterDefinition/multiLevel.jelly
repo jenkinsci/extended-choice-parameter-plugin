@@ -126,6 +126,11 @@
 		    if (nextDropdown)
 		    {
 					nextDropdown.style.display = "inline";
+					
+					// in case this was previously selected from, then made invisible, and then made visible again,
+					// we need to set the first case as selected
+		
+					nextDropdown.options[0].selected = true;
 				}
 		    else
 				{
