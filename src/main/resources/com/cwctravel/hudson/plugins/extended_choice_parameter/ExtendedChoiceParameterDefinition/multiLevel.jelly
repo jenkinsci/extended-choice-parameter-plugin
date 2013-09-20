@@ -14,6 +14,8 @@
 		
 				var parent = selectDiv.parentNode;
 				parent.removeChild(selectDiv);
+		
+				onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs();
 			}
 		
 			function onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs()
