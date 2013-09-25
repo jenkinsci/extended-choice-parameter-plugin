@@ -12,7 +12,7 @@
     <div name="parameter" description="${it.description}">
       <j:set var="type" value="${it.type}"/>
       <input type="hidden" name="name" value="${it.name}" />
-      <j:if test="${type eq 'PT_SINGLE_SELECT'}">      	
+      <j:if test="${type eq 'PT_SINGLE_SELECT'}"> 
         <select name="value">
           <st:include page="selectContent.jelly"/>
         </select>
@@ -35,7 +35,7 @@
           <st:include page="multiLevel.jelly"/>
       </j:if>
       <j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
-					<st:include page="multiLevel.jelly"/>
+          <st:include page="multiLevel.jelly"/>
       </j:if>     
     </div>
   </f:entry>
