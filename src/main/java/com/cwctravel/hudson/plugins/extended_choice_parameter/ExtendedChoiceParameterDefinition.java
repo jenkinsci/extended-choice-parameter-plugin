@@ -221,28 +221,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if(value instanceof JSONArray) {
 			JSONArray jsonValues = (JSONArray)value;
-			if (type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT))
+			if (   type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT)
+				  || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT))
 			{
 				final int valuesBetweenLevels = this.value.split(",").length;
 				
 				Iterator it = jsonValues.iterator();
-				for (int i = 0; it.hasNext(); i++)
+				for (int i = 1; it.hasNext(); i++)
 				{
-					if (i != 0)
+					String nextValue = it.next().toString();
+					if (i % valuesBetweenLevels == 0)
 					{
-						if (i % valuesBetweenLevels == 0)
-						{
-							// note that StringParameterValue doesn't support newlines,
-							// which might have otherwise been better than using two
-							// delimitters here
-							strValue += getMultiSelectDelimiter() + getMultiSelectDelimiter();
-						}
-						else
+						if (strValue.length() > 0)
 						{
 							strValue += getMultiSelectDelimiter();
 						}
+						strValue += nextValue;
 					}
-					strValue += it.next();
 				}
 			}
 			else
