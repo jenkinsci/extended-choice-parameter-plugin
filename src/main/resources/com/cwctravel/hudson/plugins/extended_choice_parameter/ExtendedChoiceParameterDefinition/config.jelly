@@ -52,8 +52,24 @@
     	   </j:when>
     	   <j:otherwise>
                <option value="PT_TEXTBOX">Text Box</option>
-           </j:otherwise>    
-    	</j:choose>       	   	  	   
+           </j:otherwise>
+    	</j:choose>
+        <j:choose>
+           <j:when test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">       
+    	       <option value="PT_MULTI_LEVEL_SINGLE_SELECT" selected="selected">Multi-Level Single Select</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_MULTI_LEVEL_SINGLE_SELECT">Multi-Level Single Select</option>
+           </j:otherwise>
+    	</j:choose>
+        <j:choose>
+           <j:when test="${instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">       
+    	       <option value="PT_MULTI_LEVEL_MULTI_SELECT" selected="selected">Multi-Level Multi Select</option>
+    	   </j:when>
+    	   <j:otherwise>
+               <option value="PT_MULTI_LEVEL_MULTI_SELECT">Multi-Level Multi Select</option>
+           </j:otherwise>
+    	</j:choose>        	   	  	   
     </select>
   </f:entry>
   <f:entry title="Value" field="value">
