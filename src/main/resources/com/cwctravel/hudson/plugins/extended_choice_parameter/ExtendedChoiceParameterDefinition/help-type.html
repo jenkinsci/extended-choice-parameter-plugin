@@ -1,0 +1,24 @@
+<div>
+    The type of parameter:
+    <ul>
+        <li>Single Select: user chooses a single selection from a drop down menu, populated by either explicit values (see Value field below) or a property file (see Property File and Property Key fields below)<br><br></li>
+        <li>Multi Select: a user can choose multiple selections from a multi-line box, populated by either explicit values (see Value field below) or a property file (see Property File and Property Key fields below)<br><br></li>
+        <li>Check Boxes: user can check off zero or more check boxes, labeled by either explicit values (see Value field below) or a property file (see Property File and Property Key fields below)<br><br></li>
+        <li>Multi-Level Single Select: user chooses a selection from a drop down, and then a another drop down appears with selections that depend on the first value, and upon second selection a third drop down may appear depending on the first two selections, and so on.<br><br>
+            The property file is a tab delimited file, with levels defined in columns and choices defined in rows.  For example, to have a 2 level selection where you first select a country and then a city, you could specify a file such as the following:<br><br>
+            <pre>
+Country	City
+United States	San Francisco
+United States	Chicago
+Mexico	Mexico City
+Mexico	Cancun
+            </pre>
+            This would result in a first drop down with the options "Select a country...", "United States", and "Mexico" (the initial selection is "Select a country...", which serves as a label for the drop down).  After the user selects a country, a "City" drop down would appear.  If United States was chosen first, then San Francisco and Chicago would be options, but if Mexico was selected then instead Mexico City and Cancun would be options.
+            <br><br>
+            The columns that should represent levels must be specified in the value field.  For example "Country,City" could be valid values.
+            <br><br>
+						Note that default values are not supported for multi-level selects.<br><br>
+        </li>
+        <li>Multi-Level Multi Select: same as single select, but after all levels are chosen, a button appears to "Select another..." and an additional multi-level selection is presented.					
+    </ul>
+</div>

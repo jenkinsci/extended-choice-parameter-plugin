@@ -1,0 +1,177 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+	xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+	
+<script type="text/javascript">
+
+	function ${it.name}RemoveSelectDiv(selectDiv)
+	{
+		var selectDivs = document.getElementsByClassName("${it.name} select div");
+		if (selectDivs.length == 1)
+		{
+			unhideNext${it.name}()
+		}
+
+		var parent = selectDiv.parentNode;
+		parent.removeChild(selectDiv);
+
+		onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs();
+	}
+		
+	function onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs()
+	{
+		// first determine whether or not there are multiple visible select div
+		// elements for ${it.name}
+		var visibleSelectDivs = 0;
+		var selectDivs = document.getElementsByClassName("${it.name} select div");
+		for (var i=0; i != selectDivs.length; i++)
+		{
+			visibleSelectDivs++;
+		}
+	
+		var removeButtonsForDiv = document.getElementsByClassName("${it.name} remove button");
+		for(var i=0; i != removeButtonsForDiv.length; i++)
+		{
+			removeButtonsForDiv[i].style.display = visibleSelectDivs > 1 ? "inline" : "none";
+		}
+	}
+	
+	function ${it.name}MultiLevelSelectNumber(selectNodeOrParentDiv)
+	{
+		var selectId = selectNodeOrParentDiv.getAttribute("id");
+		var indexOfNumber = selectId.indexOf("MultiLevelMultiSelect ");
+		return parseInt(selectId.substr(indexOfNumber).split(" ")[1]);
+	}
+	
+	function unhideNext${it.name}()
+	{	
+		var selectDivs = document.getElementsByClassName("${it.name} select div");
+		var lastSelect = selectDivs[selectDivs.length - 1];
+
+		var lastSelectNumber = ${it.name}MultiLevelSelectNumber(lastSelect);
+		
+		var lastMultiLevelMultiSelectDiv = document.getElementById(
+			"${it.name} dropdowns for MultiLevelMultiSelect " + lastSelectNumber);
+		
+		var nextMultiLevelMultiSelectDiv = lastMultiLevelMultiSelectDiv.cloneNode(true);
+
+		nextMultiLevelMultiSelectDiv.setAttribute("id", 
+			"${it.name} dropdowns for MultiLevelMultiSelect " + (lastSelectNumber + 1));
+
+		var nextDropdown = nextMultiLevelMultiSelectDiv.firstChild;
+		var hiddenNextSelectionIdMadeVisible = false;
+		while (nextDropdown)
+		{		
+			var id = nextDropdown.getAttribute("id");
+			if (id !== null)
+			{
+				nextDropdown.style.display = "none";
+
+				id = id.replace("dropdown MultiLevelMultiSelect " + lastSelectNumber,
+					"dropdown MultiLevelMultiSelect " + (lastSelectNumber + 1));
+				nextDropdown.setAttribute("id", id);
+
+				if (hiddenNextSelectionIdMadeVisible === false)
+				{
+					nextDropdown.style.display = "inline";
+					hiddenNextSelectionIdMadeVisible = true;
+				}
+			}
+
+			if (nextDropdown.name === "value")
+			{
+				nextDropdown.name = "tmp name";
+			}
+
+			nextDropdown = nextDropdown.nextSibling;
+		}
+
+		var multiLevelSelections = document.getElementById("${it.name} MultiLevelSelections");
+
+		multiLevelSelections.appendChild(nextMultiLevelMultiSelectDiv);
+
+		onlyShowRemoveButtonsWhenMultiple${it.name}VisibleSelectionDivs();
+	}
+
+	function ${it.name}Changed(select)
+	{
+		var currentSelectNumber = ${it.name}MultiLevelSelectNumber(select);
+
+		var currentMultiLevelMultiSelectDiv = document.getElementById(
+			"${it.name} dropdowns for MultiLevelMultiSelect " + currentSelectNumber);
+
+		var dropdown = currentMultiLevelMultiSelectDiv.firstChild;
+		while (dropdown)
+		{
+			var dropdownId = dropdown.getAttribute("id");
+			if (dropdownId !== null)
+			{
+				var dropdownShouldNotBeDisplayed =
+					select.getAttribute("id").indexOf(dropdownId) == -1;
+
+				if (dropdownShouldNotBeDisplayed)
+				{
+					// this allows a user to got back and choose a different selection
+					dropdown.style.display = "none";
+					dropdown.name = "tmp name";
+				}
+			}
+			dropdown = dropdown.nextSibling;
+		}
+
+		select.name = "value";
+		var selectedItem = select.options[select.selectedIndex].value;
+		var nextDropdown = document.getElementById(select.id + " " + selectedItem);
+		if (nextDropdown)
+		{
+			nextDropdown.style.display = "inline";
+			
+			// in case this was previously selected from, then made invisible, and then made 
+			// visible again, we need to set the first case as selected
+
+			nextDropdown.options[0].selected = true;
+		}
+		else
+		{
+			<j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
+				var addAnotherButton = document.getElementById("${it.name} addAnotherButton");
+				addAnotherButton.style.display = "inline";
+				var addAnotherButtonLineBreak =
+					document.getElementById("${it.name} addAnotherButton linebreak");
+				addAnotherButtonLineBreak.style.display = "inline";
+			</j:if>
+		}
+	}
+</script>
+	
+	<j:set var="dropdowns" value="${it.multiLevelDropdownIds}"/>
+	<j:set var="choicesByDropdown" value="${it.choicesByDropdownId}"/>
+	<j:set var="style" value="display:inline"/>
+	
+	<j:set var="liststyle" value="display:list-item"/>
+	<j:if test="${type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">
+		<j:set var="liststyle" value="display:inline"/>
+	</j:if>
+	
+	<ol id="${it.name} MultiLevelSelections">
+		<li id="${it.name} dropdowns for MultiLevelMultiSelect 0"
+				 class="${it.name} select div" style="${liststyle}">
+			<j:forEach var="dropdown" items="${dropdowns}">
+				<select name="tmp name" onchange="${it.name}Changed(this, '${it.name}')"
+					id="${dropdown}" style="${style}">
+					<j:forEach var="choice" items="${choicesByDropdown[dropdown]}">
+						<option value="${choice}">${choice}</option>
+					</j:forEach>
+				</select>
+				<j:set var="style" value="display:none"/>
+			</j:forEach>
+			<input class="${it.name} remove button" type="button" value="Remove" 
+				style="display:none" onclick="${it.name}RemoveSelectDiv(this.parentNode)"/>
+		</li>
+	</ol>
+	<input id="${it.name} addAnotherButton" type="button" value="Select another..."
+		style="display:none" onclick="unhideNext${it.name}();"/>
+	<br id="${it.name} addAnotherButton linebreak"></br>
+	<br id="br to clone" style="display:none"/>
+	<br></br>
+</j:jelly>
