@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.399</version>
+		<version>1.466</version>
 		<!-- which version of Hudson is this plugin built against? -->
 		<relativePath />
 	</parent>
@@ -21,6 +21,14 @@
 		</developer>
 	</developers>
 
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.0</version>
+		</dependency>
+	</dependencies>
+
 	<!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
 	<repositories>
 		<repository>
@@ -35,110 +43,9 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-	<distributionManagement>
-	<repository>
-		<id>maven.jenkins-ci.org</id>
-		<url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
-	</repository>
-	</distributionManagement>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
 	</scm>
-	<build>		
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-
-					<lifecycleMappingMetadata>
-						<pluginExecutions>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>org.codehaus.groovy.maven</groupId>
-									<artifactId>gmaven-plugin</artifactId>
-									<versionRange>[1.0-rc-5,)</versionRange>
-									<goals>
-										<goal>generateTestStubs</goal>
-										<goal>testCompile</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore />
-								</action>
-							</pluginExecution>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>org.jvnet.hudson.tools</groupId>
-									<artifactId>maven-hpi-plugin</artifactId>
-									<versionRange>[1.54,)</versionRange>
-									<goals>
-										<goal>apt-compile</goal>
-										<goal>insert-test</goal>
-										<goal>resolve-test-dependencies</goal>
-										<goal>test-hpl</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore />
-								</action>
-							</pluginExecution>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>org.jvnet.localizer</groupId>
-									<artifactId>maven-localizer-plugin</artifactId>
-									<versionRange>[1.8,)</versionRange>
-									<goals>
-										<goal>generate</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore />
-								</action>
-							</pluginExecution>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>org.jenkins-ci.tools</groupId>
-									<artifactId>maven-hpi-plugin</artifactId>
-									<versionRange>[1.64,)</versionRange>
-									<goals>
-										<goal>apt-compile</goal>
-										<goal>insert-test</goal>
-										<goal>resolve-test-dependencies</goal>
-										<goal>test-hpl</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore />
-								</action>
-							</pluginExecution>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>
-										org.apache.maven.plugins
-									</groupId>
-									<artifactId>
-										maven-enforcer-plugin
-									</artifactId>
-									<versionRange>[1.0,)</versionRange>
-									<goals>
-										<goal>display-info</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<ignore></ignore>
-								</action>
-							</pluginExecution>
-						</pluginExecutions>
-					</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 </project>
