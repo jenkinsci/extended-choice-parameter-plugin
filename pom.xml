@@ -43,6 +43,12 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<distributionManagement>
+		<repository>
+		<id>maven.jenkins-ci.org</id>
+		<url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
+	</repository>
+	</distributionManagement>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
