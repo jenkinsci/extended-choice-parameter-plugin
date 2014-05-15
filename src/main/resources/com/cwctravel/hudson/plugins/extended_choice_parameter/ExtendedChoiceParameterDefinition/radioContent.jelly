@@ -15,7 +15,7 @@
 		  <j:forEach var="value" items="${effectiveValue}">
 		    <tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>
-		    		<f:radio name="value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
+		    		<f:radio name=“${it.name}.value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
 		    	</td>
 		    </tr>	
 		    <j:set var="index" value="${index + 1}"/>
