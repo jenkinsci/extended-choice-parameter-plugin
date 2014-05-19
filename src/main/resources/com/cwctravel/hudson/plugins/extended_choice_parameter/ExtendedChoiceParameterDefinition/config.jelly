@@ -90,7 +90,7 @@
 		  <f:section title="Choose Source for Value">
 			  <f:radioBlock name="propertySource" title="Value" value="0" checked="${not empty instance.value}">
 				  <f:entry title="Value" field="propertyValue">
-				    <f:textbox />
+				    <f:textbox value="${instance.value}"/>
 				  </f:entry>
 			  </f:radioBlock>
 			  
