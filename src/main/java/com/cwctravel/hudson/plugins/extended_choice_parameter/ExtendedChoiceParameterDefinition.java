@@ -151,7 +151,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			type = formData.getString("type");
 			description = formData.getString("description");
 			quoteValue = formData.getBoolean("quoteValue");
-			visibleItemCount = formData.getInt("visibleItemCount");
+			visibleItemCount = formData.optInt("visibleItemCount");
 			multiSelectDelimiter = formData.getString("multiSelectDelimiter");
 
 			JSONObject propertySourceJSON = (JSONObject)formData.get("propertySource");
