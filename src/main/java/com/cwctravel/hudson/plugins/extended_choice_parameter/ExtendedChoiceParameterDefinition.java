@@ -8,7 +8,6 @@ package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
 import groovy.lang.GroovyShell;
 import hudson.Extension;
-import hudson.RelativePath;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
@@ -69,7 +68,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@RelativePath("..") @QueryParameter final String type) throws IOException, ServletException {
+				@QueryParameter final String type) throws IOException, ServletException {
 			if(StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
@@ -110,17 +109,17 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@RelativePath("..") @QueryParameter final String type) throws IOException, ServletException {
+				@QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(propertyFile, propertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @RelativePath("..") @QueryParameter final String type) throws IOException, ServletException {
+				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @RelativePath("..") @QueryParameter final String type) throws IOException, ServletException {
+				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
@@ -148,57 +147,71 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String defaultBindings = null;
 
 			name = formData.getString("name");
-			type = formData.getString("type");
 			description = formData.getString("description");
-			quoteValue = formData.getBoolean("quoteValue");
-			visibleItemCount = formData.optInt("visibleItemCount");
-			multiSelectDelimiter = formData.getString("multiSelectDelimiter");
 
-			JSONObject propertySourceJSON = (JSONObject)formData.get("propertySource");
-			if(propertySourceJSON != null) {
-				if(propertySourceJSON.getInt("value") == 0) {
-					propertyValue = propertySourceJSON.getString("propertyValue");
+			JSONObject parameterGroup = formData.getJSONObject("parameterGroup");
+			if(parameterGroup != null) {
+				int value = parameterGroup.getInt("value");
+				if(value == 0) {
+					type = parameterGroup.getString("type");
+					quoteValue = parameterGroup.getBoolean("quoteValue");
+					visibleItemCount = parameterGroup.optInt("visibleItemCount", 5);
+					multiSelectDelimiter = parameterGroup.getString("multiSelectDelimiter");
+					if(StringUtils.isEmpty(multiSelectDelimiter)) {
+						multiSelectDelimiter = ",";
+					}
+
+					JSONObject propertySourceJSON = (JSONObject)parameterGroup.get("propertySource");
+					if(propertySourceJSON != null) {
+						if(propertySourceJSON.getInt("value") == 0) {
+							propertyValue = propertySourceJSON.getString("propertyValue");
+						}
+						else if(propertySourceJSON.getInt("value") == 1) {
+							propertyFile = propertySourceJSON.getString("propertyFile");
+							propertyKey = propertySourceJSON.getString("propertyKey");
+						}
+						else if(propertySourceJSON.getInt("value") == 2) {
+							groovyScript = propertySourceJSON.getString("groovyScript");
+							bindings = propertySourceJSON.getString("bindings");
+						}
+						else if(propertySourceJSON.getInt("value") == 3) {
+							groovyScriptFile = propertySourceJSON.getString("groovyScriptFile");
+							bindings = propertySourceJSON.getString("bindings");
+						}
+					}
+
+					JSONObject defaultPropertySourceJSON = (JSONObject)parameterGroup.get("defaultPropertySource");
+					if(defaultPropertySourceJSON != null) {
+						if(defaultPropertySourceJSON.getInt("value") == 0) {
+							defaultPropertyValue = defaultPropertySourceJSON.getString("defaultPropertyValue");
+						}
+						else if(defaultPropertySourceJSON.getInt("value") == 1) {
+							defaultPropertyFile = defaultPropertySourceJSON.getString("defaultPropertyFile");
+							defaultPropertyKey = defaultPropertySourceJSON.getString("defaultPropertyKey");
+						}
+						else if(defaultPropertySourceJSON.getInt("value") == 2) {
+							defaultGroovyScript = defaultPropertySourceJSON.getString("defaultGroovyScript");
+							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
+						}
+						else if(defaultPropertySourceJSON.getInt("value") == 3) {
+							defaultGroovyScriptFile = defaultPropertySourceJSON.getString("defaultGroovyScriptFile");
+							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
+						}
+					}
 				}
-				else if(propertySourceJSON.getInt("value") == 1) {
-					propertyFile = propertySourceJSON.getString("propertyFile");
-					propertyKey = propertySourceJSON.getString("propertyKey");
-				}
-				else if(propertySourceJSON.getInt("value") == 2) {
-					groovyScript = propertySourceJSON.getString("groovyScript");
-					bindings = propertySourceJSON.getString("bindings");
-				}
-				else if(propertySourceJSON.getInt("value") == 3) {
-					groovyScriptFile = propertySourceJSON.getString("groovyScriptFile");
-					bindings = propertySourceJSON.getString("bindings");
+				else if(value == 1) {
+					type = parameterGroup.getString("type");
+					propertyFile = parameterGroup.getString("propertyFile");
+					propertyValue = parameterGroup.optString("propertyValue");
 				}
 			}
 			else {
+				type = formData.getString("type");
 				propertyFile = formData.getString("propertyFile");
 				propertyKey = formData.getString("propertyKey");
 				propertyValue = formData.optString("value");
-			}
-
-			JSONObject defaultPropertySourceJSON = (JSONObject)formData.get("defaultPropertySource");
-			if(defaultPropertySourceJSON != null) {
-				if(defaultPropertySourceJSON.getInt("value") == 0) {
-					defaultPropertyValue = defaultPropertySourceJSON.getString("defaultPropertyValue");
-				}
-				else if(defaultPropertySourceJSON.getInt("value") == 1) {
-					defaultPropertyFile = defaultPropertySourceJSON.getString("defaultPropertyFile");
-					defaultPropertyKey = defaultPropertySourceJSON.getString("defaultPropertyKey");
-				}
-				else if(defaultPropertySourceJSON.getInt("value") == 2) {
-					defaultGroovyScript = defaultPropertySourceJSON.getString("defaultGroovyScript");
-					defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
-				}
-				else if(defaultPropertySourceJSON.getInt("value") == 3) {
-					defaultGroovyScriptFile = defaultPropertySourceJSON.getString("defaultGroovyScriptFile");
-					defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
-				}
-			}
-			else {
-				defaultPropertyFile = formData.getString("defaultPropertyFile");
-				defaultPropertyKey = formData.getString("defaultPropertyKey");
+				defaultPropertyFile = formData.optString("defaultPropertyFile");
+				defaultPropertyKey = formData.optString("defaultPropertyKey");
 				defaultPropertyValue = formData.optString("defaultValue");
 			}
 
@@ -265,7 +278,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		this.visibleItemCount = visibleItemCount;
 
-		if(multiSelectDelimiter.equals("")) {
+		if(multiSelectDelimiter == null || "".equals(multiSelectDelimiter)) {
 			multiSelectDelimiter = ",";
 		}
 		this.multiSelectDelimiter = multiSelectDelimiter;
@@ -374,7 +387,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
-			String bindings) {
+			String bindings, boolean isDefault) {
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
 				File propertyFile = new File(propertyFilePath);
@@ -405,7 +418,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			try {
 				GroovyShell groovyShell = new GroovyShell();
 				setBindings(groovyShell, bindings);
-				return (String)groovyShell.evaluate(groovyScript);
+				Object groovyValue = groovyShell.evaluate(groovyScript);
+				String processedGroovyValue = processGroovyValue(isDefault, groovyValue);
+				return processedGroovyValue;
 			}
 			catch(Exception e) {
 
@@ -416,7 +431,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				GroovyShell groovyShell = new GroovyShell();
 				setBindings(groovyShell, bindings);
 				groovyScript = Util.loadFile(new File(groovyScriptFile));
-				return (String)groovyShell.evaluate(groovyScript);
+				Object groovyValue = groovyShell.evaluate(groovyScript);
+				String processedGroovyValue = processGroovyValue(isDefault, groovyValue);
+				return processedGroovyValue;
 			}
 			catch(Exception e) {
 
@@ -426,6 +443,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			return value;
 		}
 		return null;
+	}
+
+	private String processGroovyValue(boolean isDefault, Object groovyValue) {
+		String value = null;
+		if(groovyValue instanceof String[]) {
+			String[] groovyValues = (String[])groovyValue;
+			if(!isDefault) {
+				value = StringUtils.join((String[])groovyValue, multiSelectDelimiter);
+			}
+			else if(groovyValues.length > 0) {
+				value = groovyValues[0];
+			}
+		}
+		else if(groovyValue instanceof String) {
+			value = (String)groovyValue;
+		}
+		return value;
 	}
 
 	private void setBindings(GroovyShell shell, String bindings) throws IOException {
@@ -448,7 +482,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getEffectiveDefaultValue() {
-		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings);
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, true);
 	}
 
 	public String getDefaultValue() {
@@ -500,7 +534,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getEffectiveValue() {
-		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings);
+		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, false);
 	}
 
 	private ArrayList<Integer> columnIndicesForDropDowns(String[] headerColumns) {
