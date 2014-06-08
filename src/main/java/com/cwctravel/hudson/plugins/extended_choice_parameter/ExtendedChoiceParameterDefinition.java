@@ -42,6 +42,9 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import au.com.bytecode.opencsv.CSVReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
@@ -552,9 +555,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		return columnIndicesForDropDowns;
 	}
+	
+	LinkedHashMap<String, LinkedHashSet<String>> calculateChoicesByDropdownId() throws Exception
+	{
+            Reader rdr;
+            File src = new File(propertyFile);
+            if( src.exists()) {
+                    rdr =new FileReader(src);
+            } else {             
+                URL propertyFileUrl = new URL(propertyFile);
+                rdr = new BufferedReader(
+                    new InputStreamReader(propertyFileUrl.openStream()));
+             }
+                                 
+            List<String[]> fileLines = new CSVReader(rdr, '\t').readAll();
+  
 
-	LinkedHashMap<String, LinkedHashSet<String>> calculateChoicesByDropdownId() throws Exception {
-		List<String[]> fileLines = new CSVReader(new FileReader(propertyFile), '\t').readAll();
+
 
 		if(fileLines.size() < 2) {
 			throw new Exception("Multi level tab delimited file must have at least 2 " + "lines (one for the header, and one or more for the data)");
