@@ -17,9 +17,11 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -351,7 +353,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			if(type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT)) {
 				final int valuesBetweenLevels = this.value.split(",").length;
 
-				Iterator it = jsonValues.iterator();
+				Iterator<?> it = jsonValues.iterator();
 				for(int i = 1; it.hasNext(); i++) {
 					String nextValue = it.next().toString();
 					if(i % valuesBetweenLevels == 0) {
@@ -554,7 +556,29 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	LinkedHashMap<String, LinkedHashSet<String>> calculateChoicesByDropdownId() throws Exception {
-		List<String[]> fileLines = new CSVReader(new FileReader(propertyFile), '\t').readAll();
+		File file = new File(propertyFile);
+		List<String[]> fileLines = Collections.emptyList();
+		if(file.isFile()) {
+			CSVReader csvReader = null;
+			try {
+				csvReader = new CSVReader(new FileReader(file), '\t');
+				fileLines = csvReader.readAll();
+			}
+			finally {
+				csvReader.close();
+			}
+		}
+		else {
+			URL propertyFileUrl = new URL(propertyFile);
+			CSVReader csvReader = null;
+			try {
+				csvReader = new CSVReader(new InputStreamReader(propertyFileUrl.openStream()), '\t');
+				fileLines = csvReader.readAll();
+			}
+			finally {
+				csvReader.close();
+			}
+		}
 
 		if(fileLines.size() < 2) {
 			throw new Exception("Multi level tab delimited file must have at least 2 " + "lines (one for the header, and one or more for the data)");
