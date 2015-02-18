@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -46,6 +47,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import au.com.bytecode.opencsv.CSVReader;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
+	private final static Logger LOGGER = Logger.getLogger(ExtendedChoiceParameterDefinition.class.getName());
+
 	private static final long serialVersionUID = -2946187268529865645L;
 
 	public static final String PARAMETER_TYPE_SINGLE_SELECT = "PT_SINGLE_SELECT";
@@ -413,7 +416,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 			}
 			catch(Exception e) {
-
+				LOGGER.severe(e.getMessage());
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
@@ -425,7 +428,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				return processedGroovyValue;
 			}
 			catch(Exception e) {
-
+				LOGGER.severe(e.getMessage());
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScriptFile)) {
@@ -438,7 +441,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				return processedGroovyValue;
 			}
 			catch(Exception e) {
-
+				LOGGER.severe(e.getMessage());
 			}
 		}
 		else if(!StringUtils.isBlank(value)) {
