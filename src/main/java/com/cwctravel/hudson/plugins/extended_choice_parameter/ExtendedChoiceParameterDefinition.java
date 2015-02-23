@@ -1,5 +1,4 @@
 /*
- *Copyright (c) 2015 Len Isac 
  *Copyright (c) 2013 Costco, Vimil Saju
  *Copyright (c) 2013 John DiMatteo
  *See the file license.txt for copying permission.
