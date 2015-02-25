@@ -1,6 +1,12 @@
 /target/
 /work/
+<<<<<<< HEAD
 /classes/
 .project
 .classpath
 .settings/
+=======
+.classpath
+.project
+classes/
+>>>>>>> len-storeMultipleValues2
