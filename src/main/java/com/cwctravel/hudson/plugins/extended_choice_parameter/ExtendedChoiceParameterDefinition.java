@@ -327,7 +327,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String valueStr = getEffectiveValue();
 			if(valueStr != null) {
 				List<String> result = new ArrayList<String>();
-				Map<Integer, List<String>> allCols = new HashMap<Integer, List<String>>();
 
 				String[] values = valueStr.split(",");
 				Set<String> valueSet = new HashSet<String>();
@@ -405,7 +404,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(quoteValue) {
 			strValue = "\"" + strValue + "\"";
 		}
-		return new ExtendedChoiceParameterValue(getName(), strValue, multiSelectTotal, allCols);
+		return new ExtendedChoiceParameterValue(getName(), strValue);
 	}
 
 	@Override
