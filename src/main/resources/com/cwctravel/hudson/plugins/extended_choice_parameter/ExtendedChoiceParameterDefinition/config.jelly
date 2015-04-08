@@ -94,6 +94,9 @@
                   <f:entry field="bindings" title="${%Variable bindings}">
                       <f:textarea value="${instance.bindings}" />
                   </f:entry>
+                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+                      <f:textarea value="${instance.groovyClasspath}" />
+                  </f:entry>
               </f:advanced>     
           </f:radioBlock>
           
@@ -105,6 +108,9 @@
                   <f:entry field="bindings" title="${%Variable bindings}">
                       <f:textarea value="${instance.bindings}" />
                   </f:entry>
+                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+                      <f:textarea value="${instance.groovyClasspath}" />
+                  </f:entry>                  
               </f:advanced>
           </f:radioBlock>
       </f:section>
@@ -133,6 +139,9 @@
 	              <f:entry field="defaultBindings" title="${%Variable bindings}">
 	                  <f:textarea value="${instance.defaultBindings}" />
 	              </f:entry>
+                  <f:entry field="defaultGroovyClasspath" title="${%Default Groovy Classpath}">
+                      <f:textarea value="${instance.defaultGroovyClasspath}" />
+                  </f:entry>    	              
 	          </f:advanced>     
 	      </f:radioBlock>
 	      
@@ -144,6 +153,9 @@
 	              <f:entry field="defaultBindings" title="${%Variable bindings}">
 	                  <f:textarea value="${instance.defaultBindings}" />
 	              </f:entry>
+                  <f:entry field="defaultGroovyClasspath" title="${%Default Groovy Classpath}">
+                      <f:textarea value="${instance.defaultGroovyClasspath}" />
+                  </f:entry>   	              
 	          </f:advanced>
 	      </f:radioBlock>
 	  </f:section>  

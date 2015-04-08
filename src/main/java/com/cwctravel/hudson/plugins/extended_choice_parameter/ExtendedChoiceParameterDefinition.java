@@ -40,6 +40,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -140,6 +141,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String groovyScript = null;
 			String groovyScriptFile = null;
 			String bindings = null;
+			String groovyClasspath = null;
 
 			String defaultPropertyValue = null;
 			String defaultPropertyKey = null;
@@ -147,6 +149,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String defaultGroovyScript = null;
 			String defaultGroovyScriptFile = null;
 			String defaultBindings = null;
+			String defaultGroovyClasspath = null;
 
 			name = formData.getString("name");
 			description = formData.getString("description");
@@ -175,10 +178,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						else if(propertySourceJSON.getInt("value") == 2) {
 							groovyScript = propertySourceJSON.getString("groovyScript");
 							bindings = propertySourceJSON.getString("bindings");
+							groovyClasspath = propertySourceJSON.getString("groovyClasspath");
 						}
 						else if(propertySourceJSON.getInt("value") == 3) {
 							groovyScriptFile = propertySourceJSON.getString("groovyScriptFile");
 							bindings = propertySourceJSON.getString("bindings");
+							groovyClasspath = propertySourceJSON.getString("groovyClasspath");
 						}
 					}
 
@@ -194,10 +199,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						else if(defaultPropertySourceJSON.getInt("value") == 2) {
 							defaultGroovyScript = defaultPropertySourceJSON.getString("defaultGroovyScript");
 							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
+							defaultGroovyClasspath = defaultPropertySourceJSON.getString("defaultGroovyClasspath");
 						}
 						else if(defaultPropertySourceJSON.getInt("value") == 3) {
 							defaultGroovyScriptFile = defaultPropertySourceJSON.getString("defaultGroovyScriptFile");
 							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
+							defaultGroovyClasspath = defaultPropertySourceJSON.getString("defaultGroovyClasspath");
 						}
 					}
 				}
@@ -217,7 +224,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				defaultPropertyValue = formData.optString("defaultValue");
 			}
 
-			return new ExtendedChoiceParameterDefinition(name, type, propertyValue, propertyFile, groovyScript, groovyScriptFile, bindings, propertyKey, defaultPropertyValue, defaultPropertyFile, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultPropertyKey, quoteValue, visibleItemCount, description, multiSelectDelimiter);
+			return new ExtendedChoiceParameterDefinition(name, type, propertyValue, propertyFile, groovyScript, groovyScriptFile, bindings, groovyClasspath, propertyKey, defaultPropertyValue, defaultPropertyFile, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, defaultPropertyKey, quoteValue, visibleItemCount, description, multiSelectDelimiter);
 		}
 	}
 
@@ -237,6 +244,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String bindings;
 
+	private String groovyClasspath;
+
 	private String propertyKey;
 
 	private String defaultValue;
@@ -249,14 +258,16 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String defaultBindings;
 
+	private String defaultGroovyClasspath;
+
 	private String defaultPropertyKey;
 
 	private String multiSelectDelimiter;
 
 	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String groovyScript,
-			String groovyScriptFile, String bindings, String propertyKey, String defaultValue, String defaultPropertyFile,
-			String defaultGroovyScript, String defaultGroovyScriptFile, String defaultBindings, String defaultPropertyKey, boolean quoteValue,
-			int visibleItemCount, String description, String multiSelectDelimiter) {
+			String groovyScriptFile, String bindings, String groovyClasspath, String propertyKey, String defaultValue, String defaultPropertyFile,
+			String defaultGroovyScript, String defaultGroovyScriptFile, String defaultBindings, String defaultGroovyClasspath,
+			String defaultPropertyKey, boolean quoteValue, int visibleItemCount, String description, String multiSelectDelimiter) {
 		super(name, description);
 		this.type = type;
 
@@ -266,6 +277,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.groovyScript = groovyScript;
 		this.groovyScriptFile = groovyScriptFile;
 		this.bindings = bindings;
+		this.groovyClasspath = groovyClasspath;
 
 		this.defaultValue = defaultValue;
 		this.defaultPropertyFile = defaultPropertyFile;
@@ -273,6 +285,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultGroovyScript = defaultGroovyScript;
 		this.defaultGroovyScriptFile = defaultGroovyScriptFile;
 		this.defaultBindings = defaultBindings;
+		this.defaultGroovyClasspath = defaultGroovyClasspath;
 
 		this.quoteValue = quoteValue;
 		if(visibleItemCount == 0) {
@@ -389,7 +402,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
-			String bindings, boolean isDefault) {
+			String bindings, String groovyClasspath, boolean isDefault) {
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
 				File propertyFile = new File(propertyFilePath);
@@ -413,38 +426,52 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 			}
 			catch(Exception e) {
-
+				e.printStackTrace();
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
-			try {
-				GroovyShell groovyShell = new GroovyShell();
-				setBindings(groovyShell, bindings);
-				Object groovyValue = groovyShell.evaluate(groovyScript);
-				String processedGroovyValue = processGroovyValue(isDefault, groovyValue);
-				return processedGroovyValue;
-			}
-			catch(Exception e) {
-
-			}
+			return executeGroovyScript(groovyScript, bindings, groovyClasspath, isDefault);
 		}
 		else if(!StringUtils.isBlank(groovyScriptFile)) {
-			try {
-				GroovyShell groovyShell = new GroovyShell();
-				setBindings(groovyShell, bindings);
-				groovyScript = Util.loadFile(new File(groovyScriptFile));
-				Object groovyValue = groovyShell.evaluate(groovyScript);
-				String processedGroovyValue = processGroovyValue(isDefault, groovyValue);
-				return processedGroovyValue;
-			}
-			catch(Exception e) {
-
-			}
+			return executeGroovyScriptFile(groovyScriptFile, bindings, groovyClasspath, isDefault);
 		}
 		else if(!StringUtils.isBlank(value)) {
 			return value;
 		}
 		return null;
+	}
+
+	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isDefault) {
+		String result = null;
+		try {
+			String groovyScript = Util.loadFile(new File(groovyScriptFile));
+			result = executeGroovyScript(groovyScript, bindings, groovyClasspath, isDefault);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+
+	}
+
+	private String executeGroovyScript(String groovyScript, String bindings, String groovyClasspath, boolean isDefault) {
+		String result = null;
+		try {
+			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+			if(!StringUtils.isBlank(groovyClasspath)) {
+				compilerConfiguration.setClasspath(groovyClasspath);
+			}
+
+			GroovyShell groovyShell = new GroovyShell(compilerConfiguration);
+			setBindings(groovyShell, bindings);
+			Object groovyValue = groovyShell.evaluate(groovyScript);
+			result = processGroovyValue(isDefault, groovyValue);
+
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	private String processGroovyValue(boolean isDefault, Object groovyValue) {
@@ -484,7 +511,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getEffectiveDefaultValue() {
-		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, true);
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, true);
 	}
 
 	public String getDefaultValue() {
@@ -536,7 +563,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getEffectiveValue() {
-		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, false);
+		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, groovyClasspath, false);
 	}
 
 	private ArrayList<Integer> columnIndicesForDropDowns(String[] headerColumns) {
@@ -728,6 +755,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultBindings = defaultBindings;
 	}
 
+	public String getGroovyClasspath() {
+		return groovyClasspath;
+	}
+
+	public void setGroovyClasspath(String groovyClasspath) {
+		this.groovyClasspath = groovyClasspath;
+	}
+
+	public String getDefaultGroovyClasspath() {
+		return defaultGroovyClasspath;
+	}
+
+	public void setDefaultGroovyClasspath(String defaultGroovyClasspath) {
+		this.defaultGroovyClasspath = defaultGroovyClasspath;
+	}
+
 	public boolean isQuoteValue() {
 		return quoteValue;
 	}
@@ -758,5 +801,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public Map<String, Boolean> getDefaultValueMap() {
 		return computeDefaultValueMap();
+	}
+
+	public static void main(String[] args) {
+		File f1 = new File("C:/temp/GoogleTranslateToggler/../");
+
+		System.out.println(f1.list()[0]);
 	}
 }
