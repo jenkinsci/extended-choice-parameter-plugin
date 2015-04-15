@@ -151,6 +151,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String defaultBindings = null;
 			String defaultGroovyClasspath = null;
 
+			String descriptionPropertyValue = null;
+			String descriptionPropertyKey = null;
+			String descriptionPropertyFile = null;
+			String descriptionGroovyScript = null;
+			String descriptionGroovyScriptFile = null;
+			String descriptionBindings = null;
+			String descriptionGroovyClasspath = null;
+
 			name = formData.getString("name");
 			description = formData.getString("description");
 
@@ -207,6 +215,27 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 							defaultGroovyClasspath = defaultPropertySourceJSON.getString("defaultGroovyClasspath");
 						}
 					}
+
+					JSONObject descriptionPropertySourceJSON = (JSONObject)parameterGroup.get("descriptionPropertySource");
+					if(descriptionPropertySourceJSON != null) {
+						if(descriptionPropertySourceJSON.getInt("value") == 0) {
+							descriptionPropertyValue = descriptionPropertySourceJSON.getString("descriptionPropertyValue");
+						}
+						else if(descriptionPropertySourceJSON.getInt("value") == 1) {
+							descriptionPropertyFile = descriptionPropertySourceJSON.getString("descriptionPropertyFile");
+							descriptionPropertyKey = descriptionPropertySourceJSON.getString("descriptionPropertyKey");
+						}
+						else if(descriptionPropertySourceJSON.getInt("value") == 2) {
+							descriptionGroovyScript = descriptionPropertySourceJSON.getString("descriptionGroovyScript");
+							descriptionBindings = descriptionPropertySourceJSON.getString("descriptionBindings");
+							descriptionGroovyClasspath = descriptionPropertySourceJSON.getString("descriptionGroovyClasspath");
+						}
+						else if(descriptionPropertySourceJSON.getInt("value") == 3) {
+							descriptionGroovyScriptFile = descriptionPropertySourceJSON.getString("descriptionGroovyScriptFile");
+							descriptionBindings = descriptionPropertySourceJSON.getString("descriptionBindings");
+							descriptionGroovyClasspath = descriptionPropertySourceJSON.getString("descriptionGroovyClasspath");
+						}
+					}
 				}
 				else if(value == 1) {
 					type = parameterGroup.getString("type");
@@ -224,7 +253,35 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				defaultPropertyValue = formData.optString("defaultValue");
 			}
 
-			return new ExtendedChoiceParameterDefinition(name, type, propertyValue, propertyFile, groovyScript, groovyScriptFile, bindings, groovyClasspath, propertyKey, defaultPropertyValue, defaultPropertyFile, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, defaultPropertyKey, quoteValue, visibleItemCount, description, multiSelectDelimiter);
+			//@formatter:off
+			return new ExtendedChoiceParameterDefinition(name, 
+														type, 
+														propertyValue, 
+														propertyFile, 
+														groovyScript, 
+														groovyScriptFile, 
+														bindings, 
+														groovyClasspath, 
+														propertyKey, 
+														defaultPropertyValue, 
+														defaultPropertyFile, 
+														defaultGroovyScript, 
+														defaultGroovyScriptFile, 
+														defaultBindings, 
+														defaultGroovyClasspath, 
+														defaultPropertyKey, 
+														descriptionPropertyValue, 
+														descriptionPropertyFile, 
+														descriptionGroovyScript, 
+														descriptionGroovyScriptFile, 
+														descriptionBindings, 
+														descriptionGroovyClasspath, 
+														descriptionPropertyKey,
+														quoteValue, 
+														visibleItemCount, 
+														description, 
+														multiSelectDelimiter);
+			//@formatter:on			
 		}
 	}
 
@@ -264,10 +321,50 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String multiSelectDelimiter;
 
-	public ExtendedChoiceParameterDefinition(String name, String type, String value, String propertyFile, String groovyScript,
-			String groovyScriptFile, String bindings, String groovyClasspath, String propertyKey, String defaultValue, String defaultPropertyFile,
-			String defaultGroovyScript, String defaultGroovyScriptFile, String defaultBindings, String defaultGroovyClasspath,
-			String defaultPropertyKey, boolean quoteValue, int visibleItemCount, String description, String multiSelectDelimiter) {
+	private String descriptionPropertyValue;
+
+	private String descriptionPropertyFile;
+
+	private String descriptionGroovyScript;
+
+	private String descriptionGroovyScriptFile;
+
+	private String descriptionBindings;
+
+	private String descriptionGroovyClasspath;
+
+	private String descriptionPropertyKey;
+
+	//@formatter:off
+	public ExtendedChoiceParameterDefinition(String name, 
+			String type, 
+			String value, 
+			String propertyFile, 
+			String groovyScript,
+			String groovyScriptFile, 
+			String bindings, 
+			String groovyClasspath, 
+			String propertyKey, 
+			String defaultValue, 
+			String defaultPropertyFile,
+			String defaultGroovyScript, 
+			String defaultGroovyScriptFile, 
+			String defaultBindings, 
+			String defaultGroovyClasspath,
+			String defaultPropertyKey, 
+			String descriptionPropertyValue, 
+			String descriptionPropertyFile, 
+			String descriptionGroovyScript,
+			String descriptionGroovyScriptFile, 
+			String descriptionBindings, 
+			String descriptionGroovyClasspath, 
+			String descriptionPropertyKey,
+			boolean quoteValue, 
+			int visibleItemCount, 
+			String description, 
+			String multiSelectDelimiter) {
+	//@formatter:on
+
 		super(name, description);
 		this.type = type;
 
@@ -286,6 +383,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultGroovyScriptFile = defaultGroovyScriptFile;
 		this.defaultBindings = defaultBindings;
 		this.defaultGroovyClasspath = defaultGroovyClasspath;
+
+		this.descriptionPropertyValue = descriptionPropertyValue;
+		this.descriptionPropertyFile = descriptionPropertyFile;
+		this.descriptionPropertyKey = descriptionPropertyKey;
+		this.descriptionGroovyScript = descriptionGroovyScript;
+		this.descriptionGroovyScriptFile = descriptionGroovyScriptFile;
+		this.descriptionBindings = descriptionBindings;
+		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
 
 		this.quoteValue = quoteValue;
 		if(visibleItemCount == 0) {
@@ -310,6 +415,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		return defaultValueMap;
+	}
+
+	private Map<String, String> computeDescriptionPropertyValueMap() {
+		Map<String, String> descriptionPropertyValueMap = null;
+		String valueStr = getEffectiveValue();
+		if(valueStr != null) {
+			String[] values = valueStr.split(",");
+			String effectiveDescriptionPropertyValue = getEffectiveDescriptionPropertyValue();
+			if(!StringUtils.isBlank(effectiveDescriptionPropertyValue)) {
+				descriptionPropertyValueMap = new HashMap<String, String>();
+				String[] descriptionPropertyValues = StringUtils.split(effectiveDescriptionPropertyValue, ',');
+				for(int i = 0; i < values.length && i < descriptionPropertyValues.length; i++) {
+					descriptionPropertyValueMap.put(values[i], descriptionPropertyValues[i]);
+				}
+			}
+		}
+		return descriptionPropertyValueMap;
 	}
 
 	@Override
@@ -485,6 +607,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				value = groovyValues[0];
 			}
 		}
+		else if(groovyValue instanceof List<?>) {
+			List<?> groovyValues = (List<?>)groovyValue;
+			if(!isDefault) {
+				value = StringUtils.join(groovyValues, multiSelectDelimiter);
+			}
+			else if(!groovyValues.isEmpty()) {
+				value = (String)groovyValues.get(0);
+			}
+		}
 		else if(groovyValue instanceof String) {
 			value = (String)groovyValue;
 		}
@@ -512,6 +643,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public String getEffectiveDefaultValue() {
 		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, true);
+	}
+
+	public String getEffectiveDescriptionPropertyValue() {
+		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, true);
 	}
 
 	public String getDefaultValue() {
@@ -771,6 +906,62 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultGroovyClasspath = defaultGroovyClasspath;
 	}
 
+	public String getDescriptionPropertyValue() {
+		return descriptionPropertyValue;
+	}
+
+	public void setDescriptionPropertyValue(String descriptionPropertyValue) {
+		this.descriptionPropertyValue = descriptionPropertyValue;
+	}
+
+	public String getDescriptionPropertyFile() {
+		return descriptionPropertyFile;
+	}
+
+	public void setDescriptionPropertyFile(String descriptionPropertyFile) {
+		this.descriptionPropertyFile = descriptionPropertyFile;
+	}
+
+	public String getDescriptionGroovyScript() {
+		return descriptionGroovyScript;
+	}
+
+	public void setDescriptionGroovyScript(String descriptionGroovyScript) {
+		this.descriptionGroovyScript = descriptionGroovyScript;
+	}
+
+	public String getDescriptionGroovyScriptFile() {
+		return descriptionGroovyScriptFile;
+	}
+
+	public void setDescriptionGroovyScriptFile(String descriptionGroovyScriptFile) {
+		this.descriptionGroovyScriptFile = descriptionGroovyScriptFile;
+	}
+
+	public String getDescriptionBindings() {
+		return descriptionBindings;
+	}
+
+	public void setDescriptionBindings(String descriptionBindings) {
+		this.descriptionBindings = descriptionBindings;
+	}
+
+	public String getDescriptionGroovyClasspath() {
+		return descriptionGroovyClasspath;
+	}
+
+	public void setDescriptionGroovyClasspath(String descriptionGroovyClasspath) {
+		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
+	}
+
+	public String getDescriptionPropertyKey() {
+		return descriptionPropertyKey;
+	}
+
+	public void setDescriptionPropertyKey(String descriptionPropertyKey) {
+		this.descriptionPropertyKey = descriptionPropertyKey;
+	}
+
 	public boolean isQuoteValue() {
 		return quoteValue;
 	}
@@ -803,9 +994,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return computeDefaultValueMap();
 	}
 
-	public static void main(String[] args) {
-		File f1 = new File("C:/temp/GoogleTranslateToggler/../");
-
-		System.out.println(f1.list()[0]);
+	public Map<String, String> getDescriptionPropertyValueMap() {
+		return computeDescriptionPropertyValueMap();
 	}
 }

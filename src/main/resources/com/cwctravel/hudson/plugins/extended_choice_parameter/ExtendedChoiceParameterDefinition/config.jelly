@@ -153,12 +153,57 @@
 	              <f:entry field="defaultBindings" title="${%Variable bindings}">
 	                  <f:textarea value="${instance.defaultBindings}" />
 	              </f:entry>
-                  <f:entry field="defaultGroovyClasspath" title="${%Default Groovy Classpath}">
+                  <f:entry field="defaultGroovyClasspath" title="${%Groovy Classpath}">
                       <f:textarea value="${instance.defaultGroovyClasspath}" />
                   </f:entry>   	              
 	          </f:advanced>
 	      </f:radioBlock>
 	  </f:section>  
+	  
+      <f:section title="Choose Source for Value Description">
+          <f:radioBlock name="descriptionPropertySource" title="Description" value="0" checked="${not empty instance.descriptionPropertyValue}">
+            <f:entry field="descriptionPropertyValue">
+                <f:textbox value="${instance.descriptionPropertyValue}"/>
+            </f:entry>
+          </f:radioBlock>
+          
+          <f:radioBlock name="descriptionPropertySource" title="Description Property File" value="1" checked="${not empty instance.descriptionPropertyFile}">
+              <f:entry field="descriptionPropertyFile">
+                <f:textbox value="${instance.descriptionPropertyFile}"/>
+              </f:entry>
+              <f:entry title="Description Property Key" field="descriptionPropertyKey">
+                <f:textbox value="${instance.descriptionPropertyKey}"/>
+              </f:entry>
+          </f:radioBlock>   
+          
+          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script" value="2" checked="${not empty instance.descriptionGroovyScript}">
+              <f:entry field="descriptionGroovyScript">
+                <f:textarea value="${instance.descriptionGroovyScript}"/>
+              </f:entry>
+              <f:advanced>
+                  <f:entry field="descriptionBindings" title="${%Variable bindings}">
+                      <f:textarea value="${instance.descriptionBindings}" />
+                  </f:entry>
+                  <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
+                      <f:textarea value="${instance.descriptionGroovyClasspath}" />
+                  </f:entry>                      
+              </f:advanced>     
+          </f:radioBlock>
+          
+          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script File" value="3" checked="${not empty instance.descriptionGroovyScriptFile}">        
+              <f:entry field="descriptionGroovyScriptFile">
+                <f:textbox value="${instance.descriptionGroovyScriptFile}"/>
+              </f:entry>    
+              <f:advanced>
+                  <f:entry field="descriptionBindings" title="${%Variable bindings}">
+                      <f:textarea value="${instance.descriptionBindings}" />
+                  </f:entry>
+                  <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
+                      <f:textarea value="${instance.descriptionGroovyClasspath}" />
+                  </f:entry>                  
+              </f:advanced>
+          </f:radioBlock>
+      </f:section>   
   </f:radioBlock>
   <f:radioBlock name="parameterGroup" title="Complex Parameter Types" value="1" checked="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' or instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
         <f:entry name="type" title="Parameter Type" field="type">
