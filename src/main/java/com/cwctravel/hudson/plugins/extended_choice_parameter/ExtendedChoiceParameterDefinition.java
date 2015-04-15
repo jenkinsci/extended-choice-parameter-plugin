@@ -345,6 +345,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return null;
 	}
 
+	/**
+	 * Stores each multi-level dropdown's values
+	 * @param request, jO
+	 * @return new ExtendedChoiceParameterValue
+	 */
 	@Override
 	public ParameterValue createValue(StaplerRequest request, JSONObject jO) {
 		Object value = jO.get("value");
