@@ -8,6 +8,7 @@
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   <j:set var="defaultValueMap" value="${it.defaultValueMap}"/>
+  <j:set var="descriptionPropertyValueMap" value="${it.descriptionPropertyValueMap}"/>
   <j:set var="effectiveValue" value="${it.effectiveValue}"/>
   <div id="ecp_${it.name}" style="float:left; overflow-y:auto; padding-right:25px">
   	  <j:set var="index" value="0"/>
@@ -15,7 +16,9 @@
 		  <j:forEach var="value" items="${effectiveValue}">
 		    <tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>
-		    		<f:radio name="${it.name}.value" title="${value}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}">${value}</f:radio>
+		    	    <j:set var="descriptionPropertyValue" value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>     
+		    		<input type="radio" name="${it.name}.value"  value="${value}" checked="${defaultValueMap[value] eq true?'true':null}"/>
+                    <label class="attach-previous">${descriptionPropertyValue}</label>
 		    	</td>
 		    </tr>	
 		    <j:set var="index" value="${index + 1}"/>
