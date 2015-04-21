@@ -292,7 +292,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String type;
 
 	private String value;
+	
+	private transient int multiSelectTotal = 0;
 
+	private transient Map<Integer, String> allCols = new HashMap<Integer, String>();
+	
 	private String propertyFile;
 
 	private String groovyScript;
@@ -476,32 +480,64 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return null;
 	}
 
+	/**
+	 * Stores each multi-level dropdown's values
+	 * @param request, jO
+	 * @return new ExtendedChoiceParameterValue
+	 */
 	@Override
 	public ParameterValue createValue(StaplerRequest request, JSONObject jO) {
 		Object value = jO.get("value");
 		String strValue = "";
+		Map<Integer, String> allCols = new HashMap<Integer, String>();		
+		
 		if(value instanceof String) {
 			strValue = (String)value;
 		}
 		else if(value instanceof JSONArray) {
+			int multiLevelColumns = 0;
 			JSONArray jsonValues = (JSONArray)value;
 			if(type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT)) {
 				final int valuesBetweenLevels = this.value.split(",").length;
-
+				multiLevelColumns = valuesBetweenLevels;
+				
 				Iterator<?> it = jsonValues.iterator();
 				for(int i = 1; it.hasNext(); i++) {
 					String nextValue = it.next().toString();
+					this.multiSelectTotal = i;
+					
+					allCols.put(i, nextValue);
+					
 					if(i % valuesBetweenLevels == 0) {
 						if(strValue.length() > 0) {
 							strValue += getMultiSelectDelimiter();
 						}
 						strValue += nextValue;
 					}
+					this.allCols = allCols;
 				}
 			}
 			else {
 				strValue = StringUtils.join(jsonValues.iterator(), getMultiSelectDelimiter());
 			}
+			
+			// Concatenate all multi-select values into one string
+			strValue = "";
+			StringBuilder strCols = new StringBuilder();
+			for (int eachSelect = 1, col = 1, row = 1; eachSelect <= this.multiSelectTotal; eachSelect++, col++) {
+				if (col == 1) { // 1st column
+					strCols.append(row).append(":").append(this.allCols.get(eachSelect)).append(",");
+				}
+				else if ((eachSelect % multiLevelColumns) == 0) { // last column
+					strCols.append(this.allCols.get(eachSelect)).append(":");
+					col = 0;
+					row++;
+				} 
+				else { // columns in between
+					strCols.append(this.allCols.get(eachSelect)).append(",");
+				}
+			}
+			strValue = strCols.toString();
 		}
 
 		if(quoteValue) {
