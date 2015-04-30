@@ -49,8 +49,6 @@ import au.com.bytecode.opencsv.CSVReader;
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
 
-	private static GroovyShell groovyShell = new GroovyShell();
-
 	public static final String PARAMETER_TYPE_SINGLE_SELECT = "PT_SINGLE_SELECT";
 
 	public static final String PARAMETER_TYPE_MULTI_SELECT = "PT_MULTI_SELECT";
@@ -584,11 +582,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 			if(!StringUtils.isBlank(groovyClasspath)) {
 				compilerConfiguration.setClasspath(groovyClasspath);
-				for(String path: compilerConfiguration.getClasspath()) {
-					groovyShell.getClassLoader().addClasspath(path);
-				}
 			}
 
+			GroovyShell groovyShell = new GroovyShell(compilerConfiguration);
 			setBindings(groovyShell, bindings);
 			Object groovyValue = groovyShell.evaluate(groovyScript);
 			result = processGroovyValue(isDefault, groovyValue);
