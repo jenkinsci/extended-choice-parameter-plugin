@@ -6,11 +6,13 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
+import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
+import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 
@@ -584,7 +586,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				compilerConfiguration.setClasspath(groovyClasspath);
 			}
 
-			GroovyShell groovyShell = new GroovyShell(compilerConfiguration);
+			ClassLoader cl = Hudson.getInstance().getPluginManager().uberClassLoader;
+
+			if(cl == null) {
+				cl = Thread.currentThread().getContextClassLoader();
+			}
+			GroovyShell groovyShell = new GroovyShell(cl, new Binding(), compilerConfiguration);
 			setBindings(groovyShell, bindings);
 			Object groovyValue = groovyShell.evaluate(groovyScript);
 			result = processGroovyValue(isDefault, groovyValue);
