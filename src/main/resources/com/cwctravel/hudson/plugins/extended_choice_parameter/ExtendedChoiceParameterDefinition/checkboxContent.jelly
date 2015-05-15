@@ -7,9 +7,13 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  <j:set var="defaultValueMap" value="${it.defaultValueMap}"/>
-  <j:set var="descriptionPropertyValueMap" value="${it.descriptionPropertyValueMap}"/>
-  <j:set var="effectiveValue" value="${it.effectiveValue}"/>
+  
+  
+  <j:set var="parameterDefinitionInfo" value="${it.parameterDefinitionInfo}"/>
+  <j:set var="defaultValueMap" value="${parameterDefinitionInfo.defaultValueMap}"/>
+  <j:set var="descriptionPropertyValueMap" value="${parameterDefinitionInfo.descriptionPropertyValueMap}"/>
+  <j:set var="effectiveValue" value="${parameterDefinitionInfo.effectiveValue}"/>
+  
   <div id="ecp_${it.name}" style="float:left; overflow-y:auto; padding-right:25px">
   	  <j:set var="index" value="0"/>
   	  <table id="tbl_ecp_${it.name}">

@@ -44,12 +44,15 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
+
+	private static final String ATTR_REQUEST_GROOVY_BINDING = "com.cwctravel.hudson.plugins.extended_choice_parameter.groovyBinding";
 
 	public static final String PARAMETER_TYPE_SINGLE_SELECT = "PT_SINGLE_SELECT";
 
@@ -408,7 +411,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private Map<String, Boolean> computeDefaultValueMap() {
 		Map<String, Boolean> defaultValueMap = null;
-		String effectiveDefaultValue = getEffectiveDefaultValue();
+		String effectiveDefaultValue = computeEffectiveDefaultValue();
 		if(!StringUtils.isBlank(effectiveDefaultValue)) {
 			defaultValueMap = new HashMap<String, Boolean>();
 			String[] defaultValues = StringUtils.split(effectiveDefaultValue, ',');
@@ -419,12 +422,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return defaultValueMap;
 	}
 
-	private Map<String, String> computeDescriptionPropertyValueMap() {
+	private Map<String, String> computeDescriptionPropertyValueMap(String effectiveValue) {
 		Map<String, String> descriptionPropertyValueMap = null;
-		String valueStr = getEffectiveValue();
-		if(valueStr != null) {
-			String[] values = valueStr.split(",");
-			String effectiveDescriptionPropertyValue = getEffectiveDescriptionPropertyValue();
+		if(effectiveValue != null) {
+			String[] values = effectiveValue.split(",");
+			String effectiveDescriptionPropertyValue = computeEffectiveDescriptionPropertyValue();
 			if(!StringUtils.isBlank(effectiveDescriptionPropertyValue)) {
 				descriptionPropertyValueMap = new HashMap<String, String>();
 				String[] descriptionPropertyValues = StringUtils.split(effectiveDescriptionPropertyValue, ',');
@@ -456,7 +458,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			return new ExtendedChoiceParameterValue(getName(), requestValues[0]);
 		}
 		else {
-			String valueStr = getEffectiveValue();
+			String valueStr = computeEffectiveValue();
 			if(valueStr != null) {
 				List<String> result = new ArrayList<String>();
 
@@ -514,7 +516,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	@Override
 	public ParameterValue getDefaultParameterValue() {
-		String defaultValue = getEffectiveDefaultValue();
+		String defaultValue = computeEffectiveDefaultValue();
 		if(!StringUtils.isBlank(defaultValue)) {
 			if(quoteValue) {
 				defaultValue = "\"" + defaultValue + "\"";
@@ -591,7 +593,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			if(cl == null) {
 				cl = Thread.currentThread().getContextClassLoader();
 			}
-			GroovyShell groovyShell = new GroovyShell(cl, new Binding(), compilerConfiguration);
+
+			Binding groovyBinding = getGroovyBinding();
+
+			GroovyShell groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 			setBindings(groovyShell, bindings);
 			Object groovyValue = groovyShell.evaluate(groovyScript);
 			result = processGroovyValue(isDefault, groovyValue);
@@ -601,6 +606,16 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	private Binding getGroovyBinding() {
+		StaplerRequest currentRequest = Stapler.getCurrentRequest();
+		Binding groovyBinding = (Binding)currentRequest.getAttribute(ATTR_REQUEST_GROOVY_BINDING);
+		if(groovyBinding == null) {
+			groovyBinding = new Binding();
+			currentRequest.setAttribute(ATTR_REQUEST_GROOVY_BINDING, groovyBinding);
+		}
+		return groovyBinding;
 	}
 
 	private String processGroovyValue(boolean isDefault, Object groovyValue) {
@@ -639,6 +654,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 	}
 
+	private String computeEffectiveValue() {
+		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, groovyClasspath, false);
+	}
+
+	private String computeEffectiveDefaultValue() {
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, true);
+	}
+
+	private String computeEffectiveDescriptionPropertyValue() {
+		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, true);
+	}
+
 	@Override
 	public String getType() {
 		return type;
@@ -646,14 +673,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getEffectiveDefaultValue() {
-		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, true);
-	}
-
-	public String getEffectiveDescriptionPropertyValue() {
-		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, true);
 	}
 
 	public String getDefaultValue() {
@@ -702,10 +721,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setDefaultPropertyKey(String defaultPropertyKey) {
 		this.defaultPropertyKey = defaultPropertyKey;
-	}
-
-	public String getEffectiveValue() {
-		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, groovyClasspath, false);
 	}
 
 	private ArrayList<Integer> columnIndicesForDropDowns(String[] headerColumns) {
@@ -997,11 +1012,21 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultPropertyFile = defaultPropertyFile;
 	}
 
-	public Map<String, Boolean> getDefaultValueMap() {
-		return computeDefaultValueMap();
+	public ParameterDefinitionInfo getParameterDefinitionInfo() {
+		ParameterDefinitionInfo result = new ParameterDefinitionInfo();
+
+		String effectiveValue = computeEffectiveValue();
+		Map<String, Boolean> defaultValueMap = computeDefaultValueMap();
+		Map<String, String> descriptionPropertyValueMap = computeDescriptionPropertyValueMap(effectiveValue);
+
+		result.setEffectiveValue(effectiveValue);
+		result.setDefaultValueMap(defaultValueMap);
+		result.setDescriptionPropertyValueMap(descriptionPropertyValueMap);
+
+		return result;
 	}
 
-	public Map<String, String> getDescriptionPropertyValueMap() {
-		return computeDescriptionPropertyValueMap();
+	public String getEffectiveDefaultValue() {
+		return computeEffectiveDefaultValue();
 	}
 }
