@@ -7,6 +7,7 @@
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import hudson.Extension;
 import hudson.Util;
@@ -39,6 +40,7 @@ import javax.servlet.ServletException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
@@ -67,6 +69,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT = "PT_MULTI_LEVEL_SINGLE_SELECT";
 
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT = "PT_MULTI_LEVEL_MULTI_SELECT";
+
+	private GroovyShell groovyShell;
 
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
@@ -371,6 +375,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	//@formatter:on
 
 		super(name, description);
+
 		this.type = type;
 
 		this.value = value;
@@ -583,20 +588,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String executeGroovyScript(String groovyScript, String bindings, String groovyClasspath, boolean isDefault) {
 		String result = null;
 		try {
-			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-			if(!StringUtils.isBlank(groovyClasspath)) {
-				compilerConfiguration.setClasspath(groovyClasspath);
-			}
-
-			ClassLoader cl = Hudson.getInstance().getPluginManager().uberClassLoader;
-
-			if(cl == null) {
-				cl = Thread.currentThread().getContextClassLoader();
-			}
-
-			Binding groovyBinding = getGroovyBinding();
-
-			GroovyShell groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
+			GroovyShell groovyShell = getGroovyShell(groovyClasspath);
+			groovyShell.getClassLoader().parseClass(new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell"), true);
 			setBindings(groovyShell, bindings);
 			Object groovyValue = groovyShell.evaluate(groovyScript);
 			result = processGroovyValue(isDefault, groovyValue);
@@ -604,6 +597,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		catch(Exception e) {
 			e.printStackTrace();
+		}
+		return result;
+	}
+
+	private String computeMD5Hash(String str) {
+		String result = str;
+		if(str != null) {
+			result = DigestUtils.md5Hex(str);
 		}
 		return result;
 	}
@@ -616,6 +617,34 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			currentRequest.setAttribute(ATTR_REQUEST_GROOVY_BINDING, groovyBinding);
 		}
 		return groovyBinding;
+	}
+
+	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
+		if(groovyShell == null) {
+			ClassLoader cl = Hudson.getInstance().getPluginManager().uberClassLoader;
+
+			if(cl == null) {
+				cl = Thread.currentThread().getContextClassLoader();
+			}
+			Binding groovyBinding = getGroovyBinding();
+
+			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+			if(!StringUtils.isBlank(groovyClasspath)) {
+				compilerConfiguration.setClasspath(groovyClasspath);
+			}
+
+			groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
+		}
+		else {
+			if(!StringUtils.isBlank(groovyClasspath)) {
+				String[] groovyClasspathElements = groovyClasspath.split(";");
+				for(String groovyClasspathElement: groovyClasspathElements) {
+					groovyShell.getClassLoader().addClasspath(groovyClasspathElement);
+				}
+			}
+		}
+
+		return groovyShell;
 	}
 
 	private String processGroovyValue(boolean isDefault, Object groovyValue) {
@@ -663,7 +692,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String computeEffectiveDescriptionPropertyValue() {
-		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, true);
+		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, false);
 	}
 
 	@Override
