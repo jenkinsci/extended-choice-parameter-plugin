@@ -70,7 +70,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT = "PT_MULTI_LEVEL_MULTI_SELECT";
 
-	private GroovyShell groovyShell;
+	private transient GroovyShell groovyShell;
 
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
