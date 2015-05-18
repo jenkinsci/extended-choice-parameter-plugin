@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -53,6 +56,8 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
+
+	private static final Logger LOGGER = Logger.getLogger(ExtendedChoiceParameterDefinition.class.getName());
 
 	private static final String ATTR_REQUEST_GROOVY_BINDING = "com.cwctravel.hudson.plugins.extended_choice_parameter.groovyBinding";
 
@@ -557,7 +562,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
@@ -579,7 +584,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			result = executeGroovyScript(groovyScript, bindings, groovyClasspath, isDefault);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
 
@@ -596,7 +601,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
 	}
@@ -626,13 +631,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			if(cl == null) {
 				cl = Thread.currentThread().getContextClassLoader();
 			}
-			Binding groovyBinding = getGroovyBinding();
 
 			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 			if(!StringUtils.isBlank(groovyClasspath)) {
 				compilerConfiguration.setClasspath(groovyClasspath);
 			}
 
+			Binding groovyBinding = getGroovyBinding();
 			groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 		}
 		else {
@@ -642,6 +647,26 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					groovyShell.getClassLoader().addClasspath(groovyClasspathElement);
 				}
 			}
+
+			try {
+				Binding groovyBinding = getGroovyBinding();
+				Field contextField = groovyShell.getClass().getDeclaredField("context");
+				contextField.setAccessible(true);
+				contextField.set(groovyShell, groovyBinding);
+			}
+			catch(NoSuchFieldException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+			catch(SecurityException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+			catch(IllegalArgumentException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+			catch(IllegalAccessException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+
 		}
 
 		return groovyShell;
