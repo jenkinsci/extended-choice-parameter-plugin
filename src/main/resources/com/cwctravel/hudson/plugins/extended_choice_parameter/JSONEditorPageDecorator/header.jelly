@@ -1,0 +1,5 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/jsoneditor.min.js"></script>
+   <link rel='stylesheet' id='theme_stylesheet'></link>
+   <link rel='stylesheet' id='icon_stylesheet'></link>   
+</j:jelly>

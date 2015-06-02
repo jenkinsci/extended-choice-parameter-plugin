@@ -37,6 +37,9 @@
       <j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
           <st:include page="multiLevel.jelly"/>
       </j:if>     
+      <j:if test="${type eq 'PT_JSON_PARAMETER'}">
+          <st:include page="jsonParameterContent.jelly"/>
+      </j:if> 
     </div>
   </f:entry>
 </j:jelly>

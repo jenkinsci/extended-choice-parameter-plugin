@@ -75,6 +75,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT = "PT_MULTI_LEVEL_MULTI_SELECT";
 
+	public static final String PARAMETER_TYPE_JSON_PARAMETER = "PT_JSON_PARAMETER";
+
 	private transient GroovyShell groovyShell;
 
 	@Extension
@@ -255,6 +257,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					type = parameterGroup.getString("type");
 					propertyFile = parameterGroup.getString("propertyFile");
 					propertyValue = parameterGroup.optString("propertyValue");
+				}
+				else if(value == 2) {
+					type = PARAMETER_TYPE_JSON_PARAMETER;
+					JSONObject jsonParameterConfigSourceJSON = (JSONObject)parameterGroup.get("jsonParameterConfigSource");
+					if(jsonParameterConfigSourceJSON != null) {
+						if(jsonParameterConfigSourceJSON.getInt("value") == 0) {
+							groovyScript = jsonParameterConfigSourceJSON.getString("groovyScript");
+							bindings = jsonParameterConfigSourceJSON.getString("bindings");
+							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
+						}
+						else if(jsonParameterConfigSourceJSON.getInt("value") == 1) {
+							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScript");
+							defaultPropertyKey = jsonParameterConfigSourceJSON.getString("defaultPropertyKey");
+							bindings = jsonParameterConfigSourceJSON.getString("bindings");
+							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
+						}
+					}
 				}
 			}
 			else {
@@ -566,7 +585,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
-			return executeGroovyScript(groovyScript, bindings, groovyClasspath, isDefault);
+			return executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isDefault);
 		}
 		else if(!StringUtils.isBlank(groovyScriptFile)) {
 			return executeGroovyScriptFile(groovyScriptFile, bindings, groovyClasspath, isDefault);
@@ -581,7 +600,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		String result = null;
 		try {
 			String groovyScript = Util.loadFile(new File(groovyScriptFile));
-			result = executeGroovyScript(groovyScript, bindings, groovyClasspath, isDefault);
+			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isDefault);
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -590,13 +609,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	}
 
-	private String executeGroovyScript(String groovyScript, String bindings, String groovyClasspath, boolean isDefault) {
+	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, String groovyClasspath, boolean isDefault) {
 		String result = null;
 		try {
-			GroovyShell groovyShell = getGroovyShell(groovyClasspath);
-			groovyShell.getClassLoader().parseClass(new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell"), true);
-			setBindings(groovyShell, bindings);
-			Object groovyValue = groovyShell.evaluate(groovyScript);
+			Object groovyValue = executeGroovyScript(groovyScript, bindings, groovyClasspath);
 			result = processGroovyValue(isDefault, groovyValue);
 
 		}
@@ -604,6 +620,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
+	}
+
+	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws IOException {
+		GroovyShell groovyShell = getGroovyShell(groovyClasspath);
+		groovyShell.getClassLoader().parseClass(new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell"), true);
+		setBindings(groovyShell, bindings);
+		Object groovyValue = groovyShell.evaluate(groovyScript);
+		return groovyValue;
 	}
 
 	private String computeMD5Hash(String str) {
@@ -1083,4 +1107,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public String getEffectiveDefaultValue() {
 		return computeEffectiveDefaultValue();
 	}
+
+	public JSONObject getJSONEditorOptions() {
+		JSONObject result = null;
+		try {
+			if(StringUtils.isBlank(groovyScript)) {
+				groovyScript = Util.loadFile(new File(groovyScriptFile));
+			}
+
+			Object obj = executeGroovyScript(groovyScript, bindings, groovyClasspath);
+			result = (JSONObject)obj;
+		}
+		catch(IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return result;
+
+	}
+
 }
