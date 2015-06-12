@@ -6,43 +6,18 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
+import au.com.bytecode.opencsv.CSVReader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
-import hudson.model.ParameterValue;
-import hudson.model.Hudson;
-import hudson.model.ParameterDefinition;
+import hudson.model.*;
 import hudson.util.FormValidation;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
+import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
@@ -52,7 +27,13 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import au.com.bytecode.opencsv.CSVReader;
+import javax.servlet.ServletException;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
@@ -87,7 +68,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@QueryParameter final String type) throws IOException, ServletException {
+												  @QueryParameter final String type) throws IOException, ServletException {
 			if(StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
@@ -128,17 +109,17 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@QueryParameter final String type) throws IOException, ServletException {
+												 @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(propertyFile, propertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
+														 @QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
 		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
+														@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
@@ -287,33 +268,33 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 
 			//@formatter:off
-			return new ExtendedChoiceParameterDefinition(name, 
-														type, 
-														propertyValue, 
-														propertyFile, 
-														groovyScript, 
-														groovyScriptFile, 
-														bindings, 
-														groovyClasspath, 
-														propertyKey, 
-														defaultPropertyValue, 
-														defaultPropertyFile, 
-														defaultGroovyScript, 
-														defaultGroovyScriptFile, 
-														defaultBindings, 
-														defaultGroovyClasspath, 
-														defaultPropertyKey, 
-														descriptionPropertyValue, 
-														descriptionPropertyFile, 
-														descriptionGroovyScript, 
-														descriptionGroovyScriptFile, 
-														descriptionBindings, 
-														descriptionGroovyClasspath, 
-														descriptionPropertyKey,
-														quoteValue, 
-														visibleItemCount, 
-														description, 
-														multiSelectDelimiter);
+			return new ExtendedChoiceParameterDefinition(name,
+					type,
+					propertyValue,
+					propertyFile,
+					groovyScript,
+					groovyScriptFile,
+					bindings,
+					groovyClasspath,
+					propertyKey,
+					defaultPropertyValue,
+					defaultPropertyFile,
+					defaultGroovyScript,
+					defaultGroovyScriptFile,
+					defaultBindings,
+					defaultGroovyClasspath,
+					defaultPropertyKey,
+					descriptionPropertyValue,
+					descriptionPropertyFile,
+					descriptionGroovyScript,
+					descriptionGroovyScriptFile,
+					descriptionBindings,
+					descriptionGroovyClasspath,
+					descriptionPropertyKey,
+					quoteValue,
+					visibleItemCount,
+					description,
+					multiSelectDelimiter);
 			//@formatter:on			
 		}
 	}
@@ -369,34 +350,34 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String descriptionPropertyKey;
 
 	//@formatter:off
-	public ExtendedChoiceParameterDefinition(String name, 
-			String type, 
-			String value, 
-			String propertyFile, 
-			String groovyScript,
-			String groovyScriptFile, 
-			String bindings, 
-			String groovyClasspath, 
-			String propertyKey, 
-			String defaultValue, 
-			String defaultPropertyFile,
-			String defaultGroovyScript, 
-			String defaultGroovyScriptFile, 
-			String defaultBindings, 
-			String defaultGroovyClasspath,
-			String defaultPropertyKey, 
-			String descriptionPropertyValue, 
-			String descriptionPropertyFile, 
-			String descriptionGroovyScript,
-			String descriptionGroovyScriptFile, 
-			String descriptionBindings, 
-			String descriptionGroovyClasspath, 
-			String descriptionPropertyKey,
-			boolean quoteValue, 
-			int visibleItemCount, 
-			String description, 
-			String multiSelectDelimiter) {
-	//@formatter:on
+	public ExtendedChoiceParameterDefinition(String name,
+											 String type,
+											 String value,
+											 String propertyFile,
+											 String groovyScript,
+											 String groovyScriptFile,
+											 String bindings,
+											 String groovyClasspath,
+											 String propertyKey,
+											 String defaultValue,
+											 String defaultPropertyFile,
+											 String defaultGroovyScript,
+											 String defaultGroovyScriptFile,
+											 String defaultBindings,
+											 String defaultGroovyClasspath,
+											 String defaultPropertyKey,
+											 String descriptionPropertyValue,
+											 String descriptionPropertyFile,
+											 String descriptionGroovyScript,
+											 String descriptionGroovyScriptFile,
+											 String descriptionBindings,
+											 String descriptionGroovyClasspath,
+											 String descriptionPropertyKey,
+											 boolean quoteValue,
+											 int visibleItemCount,
+											 String description,
+											 String multiSelectDelimiter) {
+		//@formatter:on
 
 		super(name, description);
 
@@ -493,9 +474,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 				String[] values = valueStr.split(",");
 				Set<String> valueSet = new HashSet<String>();
-				for(String value: values) {
-					valueSet.add(value);
-				}
+				Collections.addAll(valueSet, values);
 
 				for(String requestValue: requestValues) {
 					if(valueSet.contains(requestValue)) {
@@ -557,7 +536,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
-			String bindings, String groovyClasspath, boolean isDefault) {
+								String bindings, String groovyClasspath, boolean isDefault) {
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
 				File propertyFile = new File(propertyFilePath);
@@ -626,8 +605,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		GroovyShell groovyShell = getGroovyShell(groovyClasspath);
 		groovyShell.getClassLoader().parseClass(new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell"), true);
 		setBindings(groovyShell, bindings);
-		Object groovyValue = groovyShell.evaluate(groovyScript);
-		return groovyValue;
+		return groovyShell.evaluate(groovyScript);
 	}
 
 	private String computeMD5Hash(String str) {
@@ -643,6 +621,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Binding groovyBinding = (Binding)currentRequest.getAttribute(ATTR_REQUEST_GROOVY_BINDING);
 		if(groovyBinding == null) {
 			groovyBinding = new Binding();
+
+			Jenkins jenkins = Jenkins.getInstance();
+			AbstractProject project = currentRequest.findAncestorObject(AbstractProject.class);
+			groovyBinding.setProperty("jenkins", jenkins);
+			groovyBinding.setProperty("abstractProject", project);
+
 			currentRequest.setAttribute(ATTR_REQUEST_GROOVY_BINDING, groovyBinding);
 		}
 		return groovyBinding;
@@ -650,7 +634,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
 		if(groovyShell == null) {
-			ClassLoader cl = Hudson.getInstance().getPluginManager().uberClassLoader;
+			ClassLoader cl = Jenkins.getInstance().getPluginManager().uberClassLoader;
 
 			if(cl == null) {
 				cl = Thread.currentThread().getContextClassLoader();
@@ -809,7 +793,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		for(String dropDownName: dropDownNames) {
 			for(int i = 0; i < headerColumns.length; ++i) {
 				if(headerColumns[i].equals(dropDownName)) {
-					columnIndicesForDropDowns.add(new Integer(i));
+					columnIndicesForDropDowns.add(i);
 				}
 			}
 		}
@@ -827,7 +811,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				fileLines = csvReader.readAll();
 			}
 			finally {
-				csvReader.close();
+				if (csvReader != null) {
+					csvReader.close();
+				}
 			}
 		}
 		else {
@@ -838,7 +824,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				fileLines = csvReader.readAll();
 			}
 			finally {
-				csvReader.close();
+				if (csvReader != null) {
+					csvReader.close();
+				}
 			}
 		}
 
@@ -886,7 +874,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getMultiLevelDropdownIds() throws Exception {
-		String dropdownIds = new String();
+		String dropdownIds = "";
 
 		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
@@ -919,7 +907,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
 
 		for(String dropdownId: choicesByDropdownId.keySet()) {
-			String choices = new String();
+			String choices = "";
 			for(String choice: choicesByDropdownId.get(dropdownId)) {
 				if(choices.length() > 0) {
 					choices += ",";
