@@ -268,8 +268,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 						}
 						else if(jsonParameterConfigSourceJSON.getInt("value") == 1) {
-							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScript");
-							defaultPropertyKey = jsonParameterConfigSourceJSON.getString("defaultPropertyKey");
+							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScriptFile");
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 						}

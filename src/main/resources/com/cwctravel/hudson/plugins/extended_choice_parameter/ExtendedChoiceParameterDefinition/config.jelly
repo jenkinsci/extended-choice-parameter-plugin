@@ -218,7 +218,7 @@
           </f:radioBlock>
       </f:section>   
   </f:radioBlock>
-  <f:radioBlock name="parameterGroup" title="Complex Parameter Types" value="1" checked="${parameterType eq 'complex'}">
+  <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1" checked="${parameterType eq 'complex'}">
         <f:entry name="type" title="Parameter Type" field="type">
             <select name="type">
                 <option value="PT_MULTI_LEVEL_SINGLE_SELECT" selected="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' ? 'true' : null}">Multi-Level Single Select</option>
