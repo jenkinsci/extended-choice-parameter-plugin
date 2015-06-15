@@ -264,10 +264,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					if(jsonParameterConfigSourceJSON != null) {
 						if(jsonParameterConfigSourceJSON.getInt("value") == 0) {
 							groovyScript = jsonParameterConfigSourceJSON.getString("groovyScript");
+							groovyScriptFile = null;
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 						}
 						else if(jsonParameterConfigSourceJSON.getInt("value") == 1) {
+							groovyScript = null;
 							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScriptFile");
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
@@ -1110,11 +1112,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public JSONObject getJSONEditorOptions() {
 		JSONObject result = null;
 		try {
-			if(StringUtils.isBlank(groovyScript)) {
-				groovyScript = Util.loadFile(new File(groovyScriptFile));
+			String script = null;
+			if(!StringUtils.isBlank(groovyScript)) {
+				script = groovyScript;
+			}
+			else {
+				script = Util.loadFile(new File(groovyScriptFile));
 			}
 
-			Object obj = executeGroovyScript(groovyScript, bindings, groovyClasspath);
+			Object obj = executeGroovyScript(script, bindings, groovyClasspath);
 			result = (JSONObject)obj;
 		}
 		catch(IOException e) {

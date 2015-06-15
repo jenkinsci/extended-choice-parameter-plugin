@@ -25,7 +25,7 @@
 	   (function() {
 	       var mapping = {
 	            html: '',
-	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/bootstrap-combined.min.css',
+	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/bootstrap.min.css',
 	            bootstrap3: '${rootURL}/plugin/extended-choice-parameter/bootstrap.min.css',
 	            foundation3: '${rootURL}/plugin/extended-choice-parameter/foundation3.css',
 	            foundation4: '${rootURL}/plugin/extended-choice-parameter/foundation4.css',
