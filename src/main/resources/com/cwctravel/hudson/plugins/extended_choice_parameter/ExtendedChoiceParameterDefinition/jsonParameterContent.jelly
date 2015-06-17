@@ -13,6 +13,7 @@
   <j:set var="jsonEditorOptions" value="${it.getJSONEditorOptions()}"/>
   <j:set var="theme" value="${jsonEditorOptions.optString('theme')}"/>
   <j:set var="iconlib" value="${jsonEditorOptions.optString('iconlib')}"/>
+  <j:set var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
   
   <script>        
       var editor_${it.name} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptions});
@@ -50,6 +51,14 @@
            document.getElementById('icon_stylesheet').href = mapping['${iconlib}'];
        })();
       </j:if>
+      
+      <j:if test="${not empty jsonEditorScript}">
+        (function(editor) {            
+            ${jsonEditorScript}
+        })(editor_${it.name});
+      </j:if>
+      
+      
   </script>
 
 </j:jelly>

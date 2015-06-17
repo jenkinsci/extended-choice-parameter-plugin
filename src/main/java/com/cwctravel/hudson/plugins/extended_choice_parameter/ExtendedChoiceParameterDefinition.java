@@ -158,6 +158,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String groovyScriptFile = null;
 			String bindings = null;
 			String groovyClasspath = null;
+			String javascriptFile = null;
+			String javascript = null;
 
 			String defaultPropertyValue = null;
 			String defaultPropertyKey = null;
@@ -275,6 +277,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 						}
 					}
+
+					JSONObject jsonParameterConfigJavascriptSourceJSON = (JSONObject)parameterGroup.get("jsonParameterConfigJavascriptSource");
+					if(jsonParameterConfigJavascriptSourceJSON != null) {
+						if(jsonParameterConfigJavascriptSourceJSON.getInt("value") == 0) {
+							javascript = jsonParameterConfigJavascriptSourceJSON.optString("javascript");
+							javascriptFile = null;
+						}
+						else if(jsonParameterConfigJavascriptSourceJSON.getInt("value") == 1) {
+							javascriptFile = jsonParameterConfigJavascriptSourceJSON.optString("javascriptFile");
+							javascript = null;
+						}
+					}
 				}
 			}
 			else {
@@ -311,6 +325,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 														descriptionBindings, 
 														descriptionGroovyClasspath, 
 														descriptionPropertyKey,
+														javascriptFile,
+														javascript,
 														quoteValue, 
 														visibleItemCount, 
 														description, 
@@ -369,6 +385,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String descriptionPropertyKey;
 
+	private String javascriptFile;
+
+	private String javascript;
+
 	//@formatter:off
 	public ExtendedChoiceParameterDefinition(String name, 
 			String type, 
@@ -393,6 +413,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String descriptionBindings, 
 			String descriptionGroovyClasspath, 
 			String descriptionPropertyKey,
+			String javascriptFile,
+			String javascript,
 			boolean quoteValue, 
 			int visibleItemCount, 
 			String description, 
@@ -426,6 +448,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.descriptionGroovyScriptFile = descriptionGroovyScriptFile;
 		this.descriptionBindings = descriptionBindings;
 		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
+		this.javascriptFile = javascriptFile;
+		this.javascript = javascript;
 
 		this.quoteValue = quoteValue;
 		if(visibleItemCount == 0) {
@@ -1063,6 +1087,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.descriptionPropertyKey = descriptionPropertyKey;
 	}
 
+	public String getJavascriptFile() {
+		return javascriptFile;
+	}
+
+	public void setJavascriptFile(String javascriptFile) {
+		this.javascriptFile = javascriptFile;
+	}
+
+	public String getJavascript() {
+		return javascript;
+	}
+
+	public void setJavascript(String javascript) {
+		this.javascript = javascript;
+	}
+
 	public boolean isQuoteValue() {
 		return quoteValue;
 	}
@@ -1107,6 +1147,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public String getEffectiveDefaultValue() {
 		return computeEffectiveDefaultValue();
+	}
+
+	public String getJSONEditorScript() {
+		String result = null;
+		try {
+			if(!StringUtils.isBlank(javascript)) {
+				result = javascript;
+			}
+			else if(!StringUtils.isBlank(javascriptFile)) {
+				result = Util.loadFile(new File(javascriptFile));
+			}
+		}
+		catch(IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return result;
 	}
 
 	public JSONObject getJSONEditorOptions() {
