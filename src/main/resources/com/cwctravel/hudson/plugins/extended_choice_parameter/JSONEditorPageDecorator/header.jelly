@@ -1,5 +1,15 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/jsoneditor.min.js"></script>
+   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jquery.min.js"></script>
+   <script>
+     jQuery.noConflict();
+   </script>     
+   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/selectize.min.js"></script>
+   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jsoneditor.min.js"></script>   
+   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jquery.jsonview.min.js"></script>
+  
+   <link rel="stylesheet" href="${rootURL}/plugin/extended-choice-parameter/css/jquery.jsonview.css" />
+   <link rel='stylesheet' id='icon_stylesheet' href="${rootURL}/plugin/extended-choice-parameter/css/selectize.css"></link>   
+   <link rel='stylesheet' id='icon_stylesheet' href="${rootURL}/plugin/extended-choice-parameter/css/selectize.bootstrap2.css"></link>   
    <link rel='stylesheet' id='theme_stylesheet'></link>
    <link rel='stylesheet' id='icon_stylesheet'></link>   
 </j:jelly>

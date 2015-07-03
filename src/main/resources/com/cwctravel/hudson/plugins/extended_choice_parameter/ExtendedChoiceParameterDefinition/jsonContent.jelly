@@ -26,12 +26,12 @@
 	   (function() {
 	       var mapping = {
 	            html: '',
-	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/bootstrap.min.css',
-	            bootstrap3: '${rootURL}/plugin/extended-choice-parameter/bootstrap.min.css',
-	            foundation3: '${rootURL}/plugin/extended-choice-parameter/foundation3.css',
-	            foundation4: '${rootURL}/plugin/extended-choice-parameter/foundation4.css',
-	            foundation5: '${rootURL}/plugin/extended-choice-parameter/foundation5.css',
-	            jqueryui: '${rootURL}/plugin/extended-choice-parameter/jquery-ui.css'
+	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
+	            bootstrap3: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
+	            foundation3: '${rootURL}/plugin/extended-choice-parameter/css/foundation3.css',
+	            foundation4: '${rootURL}/plugin/extended-choice-parameter/css/foundation4.css',
+	            foundation5: '${rootURL}/plugin/extended-choice-parameter/css/foundation5.css',
+	            jqueryui: '${rootURL}/plugin/extended-choice-parameter/css/jquery-ui.css'
            };
 	       
 	       document.getElementById('theme_stylesheet').href = mapping['${theme}'];
@@ -42,10 +42,10 @@
 	  <j:if test="${not empty iconlib}">
        (function() {
            var mapping = {
-                foundation2:  '${rootURL}/plugin/extended-choice-parameter/general_foundicons.css',
-                foundation3:  '${rootURL}/plugin/extended-choice-parameter/foundation-icons.css',
-                fontawesome3: '${rootURL}/plugin/extended-choice-parameter/font-awesome3.css',
-                fontawesome4: '${rootURL}/plugin/extended-choice-parameter/font-awesome4.css'
+                foundation2:  '${rootURL}/plugin/extended-choice-parameter/css/general_foundicons.css',
+                foundation3:  '${rootURL}/plugin/extended-choice-parameter/css/foundation-icons.css',
+                fontawesome3: '${rootURL}/plugin/extended-choice-parameter/css/font-awesome3.css',
+                fontawesome4: '${rootURL}/plugin/extended-choice-parameter/css/font-awesome4.css'
            };
            
            document.getElementById('icon_stylesheet').href = mapping['${iconlib}'];

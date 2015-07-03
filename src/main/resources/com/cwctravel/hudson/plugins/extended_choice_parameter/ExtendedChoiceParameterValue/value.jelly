@@ -7,7 +7,30 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+	<j:invokeStatic var="currentThread" className="java.lang.Thread" method="currentThread" />
+    <j:invoke var="projectClass" on="${currentThread.contextClassLoader}" method="loadClass">
+      <j:arg value="hudson.model.Job"/>
+    </j:invoke>
+    
+    <j:invoke var="parameterDefinitionPropertyClass" on="${currentThread.contextClassLoader}" method="loadClass">
+      <j:arg value="hudson.model.ParametersDefinitionProperty"/>
+    </j:invoke>
+    
+    <j:set var="project" value="${request.findAncestorObject(projectClass)}" />
+	<j:set var="parameterDefinitionProperty" value="${project.getProperty(parameterDefinitionPropertyClass)}"/>
+	<j:set var="parameterDefinition" value="${parameterDefinitionProperty.getParameterDefinition(it.name)}"/>
+	
 	<f:entry name="value" title="${it.name}" description="${it.description}">
-        ${it.value}
+	    <j:choose>
+	          <j:when test="${parameterDefinition.type eq 'PT_JSON'}">
+	               <div id="jsonParameter${it.name}"><!-- empty div--></div>
+	               <script>
+	                   jQuery("#jsonParameter${it.name}").JSONView(${it.value});
+	               </script>
+	          </j:when>
+	          <j:otherwise>
+	               ${it.value}      
+	          </j:otherwise> 
+	    </j:choose>           
 	</f:entry>
 </j:jelly>

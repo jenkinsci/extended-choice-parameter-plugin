@@ -15,17 +15,17 @@
 
   <j:choose>
     <j:when test="${instance.type eq 'PT_SINGLE_SELECT' or instance.type eq 'PT_MULTI_SELECT' or instance.type eq 'PT_RADIO' or instance.type eq 'PT_CHECKBOX' or instance.type eq 'PT_TEXTBOX'}">
-        <j:set var="parameterType" value="simple"/>
+        <j:set var="parameterType" value="basic"/>
     </j:when>
     <j:when test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' or instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
-        <j:set var="parameterType" value="complex"/>
+        <j:set var="parameterType" value="multilevel"/>
     </j:when>
-    <j:when test="${instance.type eq 'PT_JSON_PARAMETER'}">
+    <j:when test="${instance.type eq 'PT_JSON'}">
         <j:set var="parameterType" value="json"/>
     </j:when>    
   </j:choose>
       
-  <f:radioBlock name="parameterGroup" title="Simple Parameter Types" value="0" checked="${parameterType eq 'simple'}">
+  <f:radioBlock name="parameterGroup" title="Basic Parameter Types" value="0" checked="${parameterType eq 'basic'}">
         <f:entry name="type" title="Parameter Type" field="type">
             <select name="type">
                 <j:choose>
@@ -84,13 +84,13 @@
 	      </f:entry>
           
       <f:section title="Choose Source for Value">
-          <f:radioBlock name="propertySource" title="Value" value="0" checked="${parameterType eq 'simple' and empty instance.propertyFile and not empty instance.value}">
+          <f:radioBlock name="propertySource" title="Value" value="0" checked="${parameterType eq 'basic' and empty instance.propertyFile and not empty instance.value}">
               <f:entry title="Value" field="propertyValue">
                 <f:textbox value="${instance.value}"/>
               </f:entry>
           </f:radioBlock>
           
-          <f:radioBlock name="propertySource" title="Property File" value="1" checked="${parameterType eq 'simple' and not empty instance.propertyFile}">
+          <f:radioBlock name="propertySource" title="Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.propertyFile}">
               <f:entry field="propertyFile">
                 <f:textbox value="${instance.propertyFile}"/>
               </f:entry>
@@ -99,7 +99,7 @@
               </f:entry>    
           </f:radioBlock> 
           
-          <f:radioBlock name="propertySource" title="Groovy Script" value="2" checked="${parameterType eq 'simple' and not empty instance.groovyScript}">
+          <f:radioBlock name="propertySource" title="Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.groovyScript}">
               <f:entry field="groovyScript">
                 <f:textarea value="${instance.groovyScript}"/>
               </f:entry>
@@ -113,7 +113,7 @@
               </f:advanced>     
           </f:radioBlock>
           
-          <f:radioBlock name="propertySource" title="Groovy Script File" value="3" checked="${parameterType eq 'simple' and not empty instance.groovyScriptFile}">      
+          <f:radioBlock name="propertySource" title="Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.groovyScriptFile}">      
               <f:entry field="groovyScriptFile">
                 <f:textbox value="${instance.groovyScriptFile}"/>
               </f:entry>    
@@ -129,13 +129,13 @@
       </f:section>
               
 	  <f:section title="Choose Source for Default Value">
-	      <f:radioBlock name="defaultPropertySource" title="Default Value" value="0" checked="${parameterType eq 'simple' and not empty instance.defaultValue}">
+	      <f:radioBlock name="defaultPropertySource" title="Default Value" value="0" checked="${parameterType eq 'basic' and not empty instance.defaultValue}">
 	        <f:entry field="defaultPropertyValue">
 	            <f:textbox value="${instance.defaultValue}"/>
 	        </f:entry>
 	      </f:radioBlock>
 	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Property File" value="1" checked="${parameterType eq 'simple' and not empty instance.defaultPropertyFile}">
+	      <f:radioBlock name="defaultPropertySource" title="Default Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.defaultPropertyFile}">
 	          <f:entry field="defaultPropertyFile">
 	            <f:textbox value="${instance.defaultPropertyFile}"/>
 	          </f:entry>
@@ -144,7 +144,7 @@
 	          </f:entry>
 	      </f:radioBlock>   
 	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script" value="2" checked="${parameterType eq 'simple' and not empty instance.defaultGroovyScript}">
+	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScript}">
 	          <f:entry field="defaultGroovyScript">
 	            <f:textarea value="${instance.defaultGroovyScript}"/>
 	          </f:entry>
@@ -158,7 +158,7 @@
 	          </f:advanced>     
 	      </f:radioBlock>
 	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script File" value="3" checked="${parameterType eq 'simple' and not empty instance.defaultGroovyScriptFile}">        
+	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScriptFile}">        
 	          <f:entry field="defaultGroovyScriptFile">
 	            <f:textbox value="${instance.defaultGroovyScriptFile}"/>
 	          </f:entry>    
@@ -174,13 +174,13 @@
 	  </f:section>  
 	  
       <f:section title="Choose Source for Value Description">
-          <f:radioBlock name="descriptionPropertySource" title="Description" value="0" checked="${parameterType eq 'simple' and not empty instance.descriptionPropertyValue}">
+          <f:radioBlock name="descriptionPropertySource" title="Description" value="0" checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyValue}">
             <f:entry field="descriptionPropertyValue">
                 <f:textbox value="${instance.descriptionPropertyValue}"/>
             </f:entry>
           </f:radioBlock>
           
-          <f:radioBlock name="descriptionPropertySource" title="Description Property File" value="1" checked="${parameterType eq 'simple' and not empty instance.descriptionPropertyFile}">
+          <f:radioBlock name="descriptionPropertySource" title="Description Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyFile}">
               <f:entry field="descriptionPropertyFile">
                 <f:textbox value="${instance.descriptionPropertyFile}"/>
               </f:entry>
@@ -189,7 +189,7 @@
               </f:entry>
           </f:radioBlock>   
           
-          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script" value="2" checked="${parameterType eq 'simple' and not empty instance.descriptionGroovyScript}">
+          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScript}">
               <f:entry field="descriptionGroovyScript">
                 <f:textarea value="${instance.descriptionGroovyScript}"/>
               </f:entry>
@@ -203,7 +203,7 @@
               </f:advanced>     
           </f:radioBlock>
           
-          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script File" value="3" checked="${parameterType eq 'simple' and not empty instance.descriptionGroovyScriptFile}">        
+          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScriptFile}">        
               <f:entry field="descriptionGroovyScriptFile">
                 <f:textbox value="${instance.descriptionGroovyScriptFile}"/>
               </f:entry>    
@@ -218,7 +218,7 @@
           </f:radioBlock>
       </f:section>   
   </f:radioBlock>
-  <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1" checked="${parameterType eq 'complex'}">
+  <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1" checked="${parameterType eq 'multilevel'}">
         <f:entry name="type" title="Parameter Type" field="type">
             <select name="type">
                 <option value="PT_MULTI_LEVEL_SINGLE_SELECT" selected="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' ? 'true' : null}">Multi-Level Single Select</option>
@@ -271,6 +271,8 @@
                    <f:textbox value="${instance.javascriptFile}"/>
             </f:entry>
          </f:radioBlock>
-         
+         <f:entry field="saveJSONParameterToFile" title="${%Save Parameter to File}">
+            <f:checkbox value="${instance.saveJSONParameterToFile}"/>
+        </f:entry>         
    </f:radioBlock>	  
 </j:jelly>

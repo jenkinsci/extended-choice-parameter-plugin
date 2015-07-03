@@ -6,15 +6,16 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
+import groovy.json.StringEscapeUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
-import hudson.model.ParameterValue;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
 
 import java.io.File;
@@ -42,6 +43,7 @@ import javax.servlet.ServletException;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,7 +77,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT = "PT_MULTI_LEVEL_MULTI_SELECT";
 
-	public static final String PARAMETER_TYPE_JSON_PARAMETER = "PT_JSON_PARAMETER";
+	public static final String PARAMETER_TYPE_JSON = "PT_JSON";
 
 	private transient GroovyShell groovyShell;
 
@@ -149,6 +151,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String description = null;
 			String multiSelectDelimiter = null;
 			boolean quoteValue = false;
+			boolean saveJSONParameterToFile = false;
 			int visibleItemCount = 5;
 
 			String propertyValue = null;
@@ -261,7 +264,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					propertyValue = parameterGroup.optString("propertyValue");
 				}
 				else if(value == 2) {
-					type = PARAMETER_TYPE_JSON_PARAMETER;
+					type = PARAMETER_TYPE_JSON;
 					JSONObject jsonParameterConfigSourceJSON = (JSONObject)parameterGroup.get("jsonParameterConfigSource");
 					if(jsonParameterConfigSourceJSON != null) {
 						if(jsonParameterConfigSourceJSON.getInt("value") == 0) {
@@ -289,6 +292,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 							javascript = null;
 						}
 					}
+
+					saveJSONParameterToFile = parameterGroup.optBoolean("saveJSONParameterToFile");
 				}
 			}
 			else {
@@ -327,6 +332,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 														descriptionPropertyKey,
 														javascriptFile,
 														javascript,
+														saveJSONParameterToFile,
 														quoteValue, 
 														visibleItemCount, 
 														description, 
@@ -336,6 +342,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private boolean quoteValue;
+
+	private boolean saveJSONParameterToFile;
 
 	private int visibleItemCount;
 
@@ -415,6 +423,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String descriptionPropertyKey,
 			String javascriptFile,
 			String javascript,
+			boolean saveJSONParameterToFile,
 			boolean quoteValue, 
 			int visibleItemCount, 
 			String description, 
@@ -450,6 +459,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
 		this.javascriptFile = javascriptFile;
 		this.javascript = javascript;
+		this.saveJSONParameterToFile = saveJSONParameterToFile;
 
 		this.quoteValue = quoteValue;
 		if(visibleItemCount == 0) {
@@ -543,7 +553,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if(value instanceof JSONArray) {
 			JSONArray jsonValues = (JSONArray)value;
-			if(type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT)) {
+			if(isMultiLevelParameterType()) {
 				final int valuesBetweenLevels = this.value.split(",").length;
 
 				Iterator<?> it = jsonValues.iterator();
@@ -565,17 +575,32 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(quoteValue) {
 			strValue = "\"" + strValue + "\"";
 		}
+
+		if(type.equals(PARAMETER_TYPE_JSON)) {
+			strValue = StringEscapeUtils.unescapeJavaScript(JSONUtils.stripQuotes(strValue));
+		}
+
 		return new ExtendedChoiceParameterValue(getName(), strValue);
+	}
+
+	private boolean isMultiLevelParameterType() {
+		return type.equals(PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_LEVEL_MULTI_SELECT);
+	}
+
+	private boolean isBasicParameterType() {
+		return type.equals(PARAMETER_TYPE_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_SELECT) || type.equals(PARAMETER_TYPE_CHECK_BOX) || type.equals(PARAMETER_TYPE_RADIO) || type.equals(PARAMETER_TYPE_TEXT_BOX);
 	}
 
 	@Override
 	public ParameterValue getDefaultParameterValue() {
-		String defaultValue = computeEffectiveDefaultValue();
-		if(!StringUtils.isBlank(defaultValue)) {
-			if(quoteValue) {
-				defaultValue = "\"" + defaultValue + "\"";
+		if(isBasicParameterType()) {
+			String defaultValue = computeEffectiveDefaultValue();
+			if(!StringUtils.isBlank(defaultValue)) {
+				if(quoteValue) {
+					defaultValue = "\"" + defaultValue + "\"";
+				}
+				return new ExtendedChoiceParameterValue(getName(), defaultValue);
 			}
-			return new ExtendedChoiceParameterValue(getName(), defaultValue);
 		}
 		return super.getDefaultParameterValue();
 	}
@@ -1101,6 +1126,14 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setJavascript(String javascript) {
 		this.javascript = javascript;
+	}
+
+	public boolean isSaveJSONParameterToFile() {
+		return saveJSONParameterToFile;
+	}
+
+	public void setSaveJSONParameterToFile(boolean saveJSONParameterToFile) {
+		this.saveJSONParameterToFile = saveJSONParameterToFile;
 	}
 
 	public boolean isQuoteValue() {
