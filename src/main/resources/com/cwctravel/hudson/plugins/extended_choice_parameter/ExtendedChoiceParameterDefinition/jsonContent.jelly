@@ -7,6 +7,8 @@
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   
+  <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
+  
   <div id="editor_${it.name}_holder"> &amp;nbsp;</div>  
   <input id="editor_${it.name}_value" type="hidden" name="value" />
   
@@ -14,12 +16,12 @@
   <j:set var="theme" value="${jsonEditorOptions.optString('theme')}"/>
   <j:set var="iconlib" value="${jsonEditorOptions.optString('iconlib')}"/>
   <j:set var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
-  
+    
   <script>        
-      var editor_${it.name} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptions});
+      var editor_${normalizedParameterName} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptions});
   
-      editor_${it.name}.on('change',function() {
-		  document.getElementById("editor_${it.name}_value").value = JSON.stringify(editor_${it.name}.getValue());
+      editor_${normalizedParameterName}.on('change',function() {
+		  document.getElementById("editor_${it.name}_value").value = JSON.stringify(editor_${normalizedParameterName}.getValue());
 	  });
 	  
 	  <j:if test="${not empty theme}">
@@ -55,7 +57,7 @@
       <j:if test="${not empty jsonEditorScript}">
         (function(editor) {            
             ${jsonEditorScript}
-        })(editor_${it.name});
+        })(editor_${normalizedParameterName});
       </j:if>
       
       

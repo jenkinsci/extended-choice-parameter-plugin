@@ -23,9 +23,10 @@
 	<f:entry name="value" title="${it.name}" description="${it.description}">
 	    <j:choose>
 	          <j:when test="${parameterDefinition.type eq 'PT_JSON'}">
-	               <div id="jsonParameter${it.name}"><!-- empty div--></div>
+	               <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
+	               <div id="jsonParameter${normalizedParameterName}"><!-- empty div--></div>
 	               <script>
-	                   jQuery("#jsonParameter${it.name}").JSONView(${it.value});
+	                   jQuery("#jsonParameter${normalizedParameterName}").JSONView(${it.value});
 	               </script>
 	          </j:when>
 	          <j:otherwise>
