@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.564</version>
+		<version>1.466</version>
 		<!-- which version of Hudson is this plugin built against? -->
 		<relativePath />
 	</parent>
