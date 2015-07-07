@@ -45,9 +45,13 @@
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-		<id>maven.jenkins-ci.org</id>
-		<url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
-	</repository>
+			<id>maven.jenkins-ci.org</id>
+			<url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
+	   </repository>
+	    <snapshotRepository>
+	      <id>maven.jenkins-ci.org</id>
+	      <url>http://repo.jenkins-ci.org/snapshots/</url>
+	    </snapshotRepository>	   
 	</distributionManagement>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
