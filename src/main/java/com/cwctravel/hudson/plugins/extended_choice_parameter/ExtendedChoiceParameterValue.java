@@ -36,29 +36,28 @@ public class ExtendedChoiceParameterValue extends StringParameterValue {
 				String result = null;
 				if(ExtendedChoiceParameterValue.this.getName().equals(name)) {
 					result = value;
-
-					ParametersDefinitionProperty parametersDefinitionProperty = build.getProject().getProperty(ParametersDefinitionProperty.class);
-					if(parametersDefinitionProperty != null) {
-						ParameterDefinition parameterDefinition = parametersDefinitionProperty.getParameterDefinition(name);
-						if(parameterDefinition != null && parameterDefinition instanceof ExtendedChoiceParameterDefinition) {
-							ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = (ExtendedChoiceParameterDefinition)parameterDefinition;
-							if(ExtendedChoiceParameterDefinition.PARAMETER_TYPE_JSON.equals(extendedChoiceParameterDefinition.getType()) && extendedChoiceParameterDefinition.isSaveJSONParameterToFile()) {
-								File jsonParametersDir = new File(build.getRootDir(), "parameters");
-								jsonParametersDir.mkdirs();
-								try {
-									File jsonParameterFile = new File(jsonParametersDir, getName() + ".json");
-									FileUtils.writeStringToFile(jsonParameterFile, value);
-									result = jsonParameterFile.getAbsolutePath();
-								}
-								catch(IOException e) {
-									LOGGER.log(Level.SEVERE, e.getMessage(), e);
+					if(build != null) {
+						ParametersDefinitionProperty parametersDefinitionProperty = build.getProject().getProperty(ParametersDefinitionProperty.class);
+						if(parametersDefinitionProperty != null) {
+							ParameterDefinition parameterDefinition = parametersDefinitionProperty.getParameterDefinition(name);
+							if(parameterDefinition != null && parameterDefinition instanceof ExtendedChoiceParameterDefinition) {
+								ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = (ExtendedChoiceParameterDefinition)parameterDefinition;
+								if(ExtendedChoiceParameterDefinition.PARAMETER_TYPE_JSON.equals(extendedChoiceParameterDefinition.getType()) && extendedChoiceParameterDefinition.isSaveJSONParameterToFile()) {
+									File jsonParametersDir = new File(build.getRootDir(), "parameters");
+									jsonParametersDir.mkdirs();
+									try {
+										File jsonParameterFile = new File(jsonParametersDir, getName() + ".json");
+										FileUtils.writeStringToFile(jsonParameterFile, value);
+										result = jsonParameterFile.getAbsolutePath();
+									}
+									catch(IOException e) {
+										LOGGER.log(Level.SEVERE, e.getMessage(), e);
+									}
 								}
 							}
 						}
 					}
-
 				}
-
 				return result;
 			}
 		};
