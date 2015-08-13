@@ -499,6 +499,16 @@ JSONEditor.prototype = {
     this.editors[editor.path] = null;
     return this;
   },
+  
+  listEditors: function(pathRegExp, callback) {
+	  var self = this;
+	  if(!this.editors) return;
+	  $each(this.editors, function(path, e) {
+		 if(pathRegExp.test(path)) {
+			callback(path, e);
+		 }
+	  });
+  },
   getEditor: function(path) {
     if(!this.editors) return;
     return this.editors[path];
@@ -1430,7 +1440,7 @@ JSONEditor.AbstractEditor = Class.extend({
     this.schema = this.jsoneditor.expandSchema(this.original_schema);
     
     this.options = $extend({}, (this.options || {}), (options.schema.options || {}), options);
-    
+	    
     if(!options.path && !this.schema.id) this.schema.id = 'root';
     this.path = options.path || 'root';
     this.formname = options.formname || this.path.replace(/\.([^.]+)/g,'[$1]');
@@ -1450,7 +1460,7 @@ JSONEditor.AbstractEditor = Class.extend({
   },
   
   preBuild: function() {
-
+	
   },
   build: function() {
     
@@ -1462,6 +1472,10 @@ JSONEditor.AbstractEditor = Class.extend({
     this.updateHeaderText();
     this.register();
     this.onWatchedFieldChange();
+	
+	if(this.options && this.options.hidden) {
+		this.container.style.display = "none";
+	}
   },
   
   setupWatchListeners: function() {
@@ -1748,7 +1762,7 @@ JSONEditor.AbstractEditor = Class.extend({
     return null;
   },
   getTitle: function() {
-    return this.schema.title || this.key;
+    return this.schema.title === "" ? "" : (this.schema.title || this.key);
   },
   enable: function() {
     this.disabled = false;
@@ -2288,6 +2302,11 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     else {
       this.theme.removeInputError(this.input);
     }
+  },
+  onfocus: function(handler, options) {
+	this.input.addEventListener("focus", function(e) {
+		handler(e, options);
+	});  
   }
 });
 
@@ -2707,6 +2726,11 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       this.title.appendChild(this.title_controls);
       this.title.appendChild(this.editjson_controls);
       this.title.appendChild(this.addproperty_controls);
+	  
+	  if(this.options.hiddenTitle) {
+		  this.title.style.display = "none";
+		  this.editor_holder.style.paddingTop = 0;
+	  }
 
       // Show/Hide button
       this.collapsed = false;
@@ -3282,6 +3306,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         this.row_holder = this.theme.getTabContentHolder(this.tabs_holder);
 
         this.active_tab = null;
+		this.active_index = -1;
       }
 	  else if(this.schema.format === 'dropdown') {
 		this.controls = this.theme.getHeaderButtonHolder();
@@ -3291,13 +3316,13 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         this.row_holder = this.theme.getDropDownContentHolder(this.dropdown_holder);
 		
 		this.dropdown_holder.dropdown.addEventListener('change', function(e) {
-			self.active_dropdown_option = e.target.options[e.target.selectedIndex];
-			self.refreshNavigator();
+			self.activateTab(e.target.selectedIndex)
 			e.preventDefault();
-			e.stopPropagation();
+			e.stopPropagation();			
 		});
 		
 		this.active_dropdown_option = null;
+		this.active_index = -1;
 	  }
       else {
         this.panel = this.theme.getIndentedPanel();
@@ -3320,6 +3345,25 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     // Add controls
     this.addControls();
   },
+  activateTab: function(index) {
+	if(this.schema.format == "tabs") {
+		if(index >=0 && index < this.rows.length) {
+			this.active_tab = this.rows[index].tab;
+			this.active_index = index;
+			this.refreshNavigator();
+		}
+	}else if(this.schema.format == "dropdown") {
+		if(index >=0 && index < this.dropdown_holder.dropdown.options.length) {
+			this.dropdown_holder.dropdown.selectedIndex = index;
+			this.active_dropdown_option = this.dropdown_holder.dropdown.options[index];
+			this.active_index = index;
+			this.refreshNavigator();
+		}
+	}
+  },
+  getActiveIndex: function() {
+	  return this.active_index;
+  },  
   onChildEditorChange: function(editor) {
     this.refreshValue();
     this.refreshNavigator(true);
@@ -3446,16 +3490,10 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   },
   destroyRow: function(row,hard) {
     var holder = row.container;
-    if(hard) {
-      row.destroy();
+    row.destroy();
       if(holder.parentNode) holder.parentNode.removeChild(holder);
       if(row.tab && row.tab.parentNode) row.tab.parentNode.removeChild(row.tab);
-    }
-    else {
-      if(row.tab) row.tab.style.display = 'none';
-      holder.style.display = 'none';
-      row.unregister();
-    }
+	  if(row.dropdown_option && row.dropdown_option.parentNode) row.dropdown_option.parentNode.removeChild(row.dropdown_option);
   },
   getMax: function() {
     if((Array.isArray(this.schema.items)) && this.schema.additionalItems === false) {
@@ -3475,7 +3513,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 		  else {
 			if(row.tab === self.active_tab) {
 			  self.theme.markTabActive(row.tab);
-			  row.container.style.display = '';
+			  if(!row.schema.options || !row.schema.options.hidden) {
+				row.container.style.display = '';
+			  }
 			}
 			else {
 			  self.theme.markTabInactive(row.tab);
@@ -3491,7 +3531,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 		  else {
 			if(row.dropdown_option === self.active_dropdown_option) {
 			  self.theme.markDropDownOptionActive(row.dropdown_option);
-			  row.container.style.display = '';
+			  if(!row.schema.options || !row.schema.options.hidden) {
+				row.container.style.display = '';
+			  }
 			}
 			else {
 			  self.theme.markDropDownOptionInactive(row.dropdown_option);
@@ -3526,49 +3568,48 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       if(self.rows[i]) {
         // TODO: don't set the row's value if it hasn't changed
         self.rows[i].setValue(val,initial);
-      }
-      else if(self.row_cache[i]) {
-        self.rows[i] = self.row_cache[i];
-        self.rows[i].setValue(val,initial);
-        self.rows[i].container.style.display = '';
-        if(self.rows[i].tab) self.rows[i].tab.style.display = '';
-        self.rows[i].register();
-      }
+      }      
       else {
         self.addRow(val,initial);
       }
     });
 
     for(var j=value.length; j<self.rows.length; j++) {
-      self.destroyRow(self.rows[j]);
+      self.destroyRow(self.rows[j], true);
       self.rows[j] = null;
     }
     self.rows = self.rows.slice(0,value.length);
+	
 
     // Set the active tab
+	var new_active_index = -1;
     var new_active_tab = null;
     $each(self.rows, function(i,row) {
       if(row.tab === self.active_tab) {
         new_active_tab = row.tab;
+		new_active_index = i;
         return false;
       }
     });
     if(!new_active_tab && self.rows.length) new_active_tab = self.rows[0].tab;
 
-    self.active_tab = new_active_tab;
+   
 	
 	//Set the active dropdown_option
 	var new_active_dropdown_option = null;
     $each(self.rows, function(i,row) {
       if(row.dropdown_option === self.active_dropdown_option) {
         new_active_dropdown_option = row.dropdown_option;
+		new_active_index = i;
         return false;
       }
     });
     if(!new_active_dropdown_option && self.rows.length) new_active_dropdown_option = self.rows[0].dropdown_option;
 
+	self.active_index = new_active_index;
+	self.active_tab = new_active_tab;
     self.active_dropdown_option = new_active_dropdown_option;
-	
+		
     self.refreshValue(initial);
     self.refreshNavigator(true);
     self.refreshNavigator();
@@ -3676,8 +3717,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       self.rows[i].tab_text.textContent = self.rows[i].getHeaderText();
       self.rows[i].tab = self.theme.getTab(self.rows[i].tab_text);
       self.rows[i].tab.addEventListener('click', function(e) {
-        self.active_tab = self.rows[i].tab;
-        self.refreshNavigator();
+        self.activateTab(i);
         e.preventDefault();
         e.stopPropagation();
       });
@@ -4017,6 +4057,7 @@ JSONEditor.defaults.editors.objectarray = JSONEditor.AbstractEditor.extend({
 		});
 		
         this.active_tab = null;
+		this.active_index = -1;
       }
 	  else if(this.schema.format === 'dropdown') {
 		this.controls = this.theme.getHeaderButtonHolder();
@@ -4026,8 +4067,7 @@ JSONEditor.defaults.editors.objectarray = JSONEditor.AbstractEditor.extend({
         this.row_holder = this.theme.getDropDownContentHolder(this.dropdown_holder);
 		
 		this.dropdown_holder.dropdown.addEventListener('change', function(e) {
-			self.active_dropdown_option = e.target.options[e.target.selectedIndex];
-			self.refreshNavigator();
+			self.activateTab(e.target.selectedIndex);
 			e.preventDefault();
 			e.stopPropagation();
 		});
@@ -4064,6 +4104,22 @@ JSONEditor.defaults.editors.objectarray = JSONEditor.AbstractEditor.extend({
 
     // Add controls
     this.addControls();
+  },
+  activateTab: function(index) {
+	  if(this.schema.format === 'tabs') {
+		  
+	  }
+	  if(this.schema.format === 'dropdown') {
+		if(index >=0 && index < this.dropdown_holder.dropdown.options.length) {
+			this.dropdown_holder.dropdown.selectedIndex = index;
+			this.active_dropdown_option = this.dropdown_holder.dropdown.options[index];
+			this.active_index = index;
+			this.refreshNavigator();
+		}
+	  }
+  },
+  getActiveIndex() {
+	return this.active_index;
   },
   onChildEditorChange: function(editor) {
     this.refreshValue();
@@ -4251,29 +4307,34 @@ JSONEditor.defaults.editors.objectarray = JSONEditor.AbstractEditor.extend({
     });
 
     // Set the active tab
+	var new_active_index = -1;
     var new_active_tab = null;
     $each(self.rows, function(i,row) {
       if(row.tab === self.active_tab) {
         new_active_tab = row.tab;
+		new_active_index = i;
         return false;
       }
     });
 	var keys = Object.keys(self.rows).sort();
     if(!new_active_tab && keys.length) new_active_tab = self.rows[keys[0]].tab;
 
-    self.active_tab = new_active_tab;
+    
 	
 	//Set the active dropdown_option
 	var new_active_dropdown_option = null;
     $each(self.rows, function(key, row) {
       if(row.dropdown_option === self.active_dropdown_option) {
         new_active_dropdown_option = row.dropdown_option;
+		new_active_index = i;
         return false;
       }
     });
     
 	if(!new_active_dropdown_option && keys.length) new_active_dropdown_option = self.rows[keys[0]].dropdown_option;
 
+	self.active_index = new_active_index;
+	self.active_tab = new_active_tab;
     self.active_dropdown_option = new_active_dropdown_option;
 	
     self.refreshValue(initial);
@@ -5734,7 +5795,6 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
     this.container.appendChild(this.control);
-
     this.value = this.enum_values[0];
   },
   onInputChange: function() {
@@ -6449,14 +6509,14 @@ JSONEditor.AbstractTheme = Class.extend({
     return el;
   },
   getHeader: function(text) {
-    var el = document.createElement('h3');
-    if(typeof text === "string") {
-      el.textContent = text;
-    }
-    else {
-      el.appendChild(text);
-    }
-    
+	var el = document.createElement('h3');
+	if(typeof text === "string") {
+	  el.textContent = text;
+	}
+	else {
+	  el.appendChild(text);
+	}	
+	
     return el;
   },
   getCheckbox: function() {
@@ -6851,7 +6911,7 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
   getTable: function() {
     var el = document.createElement('table');
     el.className = 'table table-bordered';
-    el.style.width = 'auto';
+    el.style.width = '100%';
     el.style.maxWidth = 'none';
     return el;
   },
@@ -7018,7 +7078,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
   getTable: function() {
     var el = document.createElement('table');
     el.className = 'table table-bordered';
-    el.style.width = 'auto';
+    el.style.width = '100%';
     el.style.maxWidth = 'none';
     return el;
   },
