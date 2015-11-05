@@ -4118,7 +4118,7 @@ JSONEditor.defaults.editors.objectarray = JSONEditor.AbstractEditor.extend({
 		}
 	  }
   },
-  getActiveIndex() {
+  getActiveIndex: function(){
 	return this.active_index;
   },
   onChildEditorChange: function(editor) {
@@ -5975,7 +5975,14 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
   },
   build: function() {
     var self = this, i;
-    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    if(!this.options.compact) {
+		if(this.schema.titleAsHeader) {
+			this.header = this.label = this.theme.getHeader(this.getTitle());	
+		}else {
+			this.header = this.label = this.theme.getFormInputLabel(this.getTitle());	
+		}	
+		this.container.appendChild(this.label);
+	}
     if(this.schema.description) this.description = this.theme.getFormInputDescription(this.schema.description);
 
     if((!this.schema.format && this.option_keys.length < 8) || this.schema.format === "checkbox") {
@@ -5990,7 +5997,7 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
         this.controls[this.option_keys[i]] = this.theme.getFormControl(label, this.inputs[this.option_keys[i]]);
       }
 
-      this.control = this.theme.getMultiCheckboxHolder(this.controls,this.label,this.description);
+      this.control = this.theme.getMultiCheckboxHolder(this.controls, null, this.description, this.schema.titleAsHeader);
     }
     else {
       this.input_type = 'select';
@@ -6007,7 +6014,7 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
         this.input.disabled = true;
       }
 
-      this.control = this.theme.getFormControl(this.label, this.input, this.description);
+      this.control = this.theme.getFormControl(this.label, this.input, this.description, this.schema.titleAsHeader);
     }
 
     this.container.appendChild(this.control);
@@ -6525,8 +6532,8 @@ JSONEditor.AbstractTheme = Class.extend({
     el.style.width = 'auto';
     return el;
   },
-  getMultiCheckboxHolder: function(controls,label,description) {
-    var el = document.createElement('div');
+  getMultiCheckboxHolder: function(controls,label,description, createIndentedPanel) {
+    var el = createIndentedPanel ? this.getIndentedPanel(): document.createElement('div');
 
     if(label) {
       label.style.display = 'block';

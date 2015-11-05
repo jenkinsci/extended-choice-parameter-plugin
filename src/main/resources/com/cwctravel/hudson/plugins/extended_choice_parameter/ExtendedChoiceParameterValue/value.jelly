@@ -26,7 +26,7 @@
 	               <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
 	               <div id="jsonParameter${normalizedParameterName}"><!-- empty div--></div>
 	               <script>
-	                   jQuery("#jsonParameter${normalizedParameterName}").JSONView(${it.value});
+	                   jQuery("#jsonParameter${normalizedParameterName}").JSONView(${it.value}, { collapsed: true });	                   
 	               </script>
 	          </j:when>
 	          <j:otherwise>
