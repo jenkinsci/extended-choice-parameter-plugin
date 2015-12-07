@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">    
-=======
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jquery.min.js"></script>
    <script>
-     jQuery.noConflict();
       if(window.Prototype &amp;&amp; JSON) {
         var _json_stringify = JSON.stringify;
         JSON.stringify = function(value) {
@@ -16,7 +11,6 @@
         };
      }  
    </script>     
->>>>>>> 9852ab5a3b7dc33899dcc0055d1a604dd985e1c0
    <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/selectize.min.js"></script>
    <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jsoneditor.min.js"></script>   
    <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jquery.jsonview.min.js"></script>
