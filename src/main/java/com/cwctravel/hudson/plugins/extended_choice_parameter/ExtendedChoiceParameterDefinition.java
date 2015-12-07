@@ -6,16 +6,15 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
-import groovy.json.StringEscapeUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
+import hudson.model.ParameterValue;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
-import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
 
 import java.io.File;
@@ -43,12 +42,12 @@ import javax.servlet.ServletException;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
+import org.boon.Boon;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
@@ -576,10 +575,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			strValue = "\"" + strValue + "\"";
 		}
 
-		if(type.equals(PARAMETER_TYPE_JSON)) {
-			strValue = StringEscapeUtils.unescapeJavaScript(JSONUtils.stripQuotes(strValue));
-		}
-
 		return new ExtendedChoiceParameterValue(getName(), strValue);
 	}
 
@@ -674,9 +669,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws IOException {
 		GroovyShell groovyShell = getGroovyShell(groovyClasspath);
-		groovyShell.getClassLoader().parseClass(new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell"), true);
+		GroovyCodeSource codeSource = new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell");
+		groovyShell.getClassLoader().parseClass(codeSource, true);
 		setBindings(groovyShell, bindings);
-		Object groovyValue = groovyShell.evaluate(groovyScript);
+		Object groovyValue = groovyShell.evaluate(codeSource);
 		return groovyValue;
 	}
 
@@ -685,6 +681,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(str != null) {
 			result = DigestUtils.md5Hex(str);
 		}
+		result = "_" + result;
 		return result;
 	}
 
@@ -1198,8 +1195,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	public JSONObject getJSONEditorOptions() {
-		JSONObject result = null;
+	public Object getJSONEditorOptions() {
+		Object result = null;
 		try {
 			String script = null;
 			if(!StringUtils.isBlank(groovyScript)) {
@@ -1209,8 +1206,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				script = Util.loadFile(new File(groovyScriptFile));
 			}
 
-			Object obj = executeGroovyScript(script, bindings, groovyClasspath);
-			result = (JSONObject)obj;
+			result = executeGroovyScript(script, bindings, groovyClasspath);
 		}
 		catch(IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);

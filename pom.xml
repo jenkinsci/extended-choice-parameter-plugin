@@ -10,7 +10,7 @@
 
 	<artifactId>extended-choice-parameter</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.53-SNAPSHOT</version>
+	<version>0.56-SNAPSHOT</version>
 	<name>Extended Choice Parameter Plug-In</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
@@ -32,6 +32,11 @@
           <artifactId>jquery</artifactId>
           <version>1.11.2-0</version>
         </dependency>
+		<dependency>
+			<groupId>io.fastjson</groupId>
+			<artifactId>boon</artifactId>
+			<version>0.33</version>
+		</dependency>
 	</dependencies>
 
 	<!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
