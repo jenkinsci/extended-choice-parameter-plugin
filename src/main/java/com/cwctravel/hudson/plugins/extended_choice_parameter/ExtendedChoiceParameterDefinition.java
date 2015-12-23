@@ -49,6 +49,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.boon.Boon;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -397,7 +398,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String javascript;
 
 	//@formatter:off
-	public ExtendedChoiceParameterDefinition(String name, 
+	@DataBoundConstructor
+	public ExtendedChoiceParameterDefinition(String name,
 			String type, 
 			String value, 
 			String propertyFile, 
