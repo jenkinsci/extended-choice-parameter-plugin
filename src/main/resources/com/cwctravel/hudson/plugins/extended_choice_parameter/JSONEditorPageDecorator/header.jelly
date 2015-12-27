@@ -1,7 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-   <script type="text/javascript" src="${rootURL}/plugin/extended-choice-parameter/js/jquery.min.js"></script>
    <script>
-     jQuery.noConflict();
       if(window.Prototype &amp;&amp; JSON) {
         var _json_stringify = JSON.stringify;
         JSON.stringify = function(value) {
