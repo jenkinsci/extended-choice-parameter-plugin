@@ -47,7 +47,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
-import org.boon.Boon;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
@@ -686,11 +685,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private Binding getGroovyBinding() {
+		Binding groovyBinding = null;
+
 		StaplerRequest currentRequest = Stapler.getCurrentRequest();
-		Binding groovyBinding = (Binding)currentRequest.getAttribute(ATTR_REQUEST_GROOVY_BINDING);
-		if(groovyBinding == null) {
+		if(currentRequest != null) {
+			groovyBinding = (Binding)currentRequest.getAttribute(ATTR_REQUEST_GROOVY_BINDING);
+			if(groovyBinding == null) {
+				groovyBinding = new Binding();
+				currentRequest.setAttribute(ATTR_REQUEST_GROOVY_BINDING, groovyBinding);
+			}
+		}
+		else {
 			groovyBinding = new Binding();
-			currentRequest.setAttribute(ATTR_REQUEST_GROOVY_BINDING, groovyBinding);
 		}
 		return groovyBinding;
 	}
