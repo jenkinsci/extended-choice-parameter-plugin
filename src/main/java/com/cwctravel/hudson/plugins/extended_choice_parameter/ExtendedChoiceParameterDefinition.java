@@ -14,6 +14,8 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
+import hudson.model.User;
+import hudson.model.UserProperty;
 import hudson.model.AbstractProject;
 import hudson.model.Environment;
 import hudson.model.Hudson;
@@ -1261,6 +1263,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			EnvVars envVars;
 			try {
 				envVars = project.getEnvironment(null, null);
+				String userId = User.current().getId();
+				envVars.put("USER_ID",  userId);
 				result = Util.replaceMacro(input, envVars);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
