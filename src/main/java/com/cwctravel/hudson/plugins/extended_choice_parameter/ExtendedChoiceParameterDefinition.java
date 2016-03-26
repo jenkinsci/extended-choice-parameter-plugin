@@ -50,7 +50,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.BuildException;
@@ -59,7 +58,6 @@ import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
-import org.jenkinsci.plugins.scriptsecurity.scripts.Language;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.QueryParameter;
@@ -914,7 +912,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return columnIndicesForDropDowns;
 	}
 
-	LinkedHashMap<String, LinkedHashSet<String>> calculateChoicesByDropdownId() throws Exception {
+	Map<String, Set<String>> calculateChoicesByDropdownId() throws Exception {
 		String resolvedPropertyFile = expandVariables(propertyFile);
 		File file = new File(resolvedPropertyFile);
 		List<String[]> fileLines = Collections.emptyList();
@@ -948,7 +946,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		List<String[]> dataLines = fileLines.subList(1, fileLines.size());
 
-		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = new LinkedHashMap<String, LinkedHashSet<String>>();
+		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<String, Set<String>>();
 
 		String prefix = getName() + " dropdown MultiLevelMultiSelect 0";
 		choicesByDropdownId.put(prefix, new LinkedHashSet<String>());
@@ -976,7 +974,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				if(i != columnIndicesForDropDowns.size() - 1) {
 					choicesByDropdownId.put(currentLevelDropdownIdBuilder.toString(), new LinkedHashSet<String>());
 				}
-				LinkedHashSet<String> choicesForPriorDropdown = choicesByDropdownId.get(priorLevelDropdownIdBuilder.toString());
+				Set<String> choicesForPriorDropdown = choicesByDropdownId.get(priorLevelDropdownIdBuilder.toString());
 				choicesForPriorDropdown.add("Select a " + prettyCurrentColumnName + "...");
 				choicesForPriorDropdown.add(dataLine[column]);
 			}
@@ -988,7 +986,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public String getMultiLevelDropdownIds() throws Exception {
 		StringBuilder dropdownIdsBuilder = new StringBuilder();
 
-		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = calculateChoicesByDropdownId();
+		Map<String, Set<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
 		for(String id: choicesByDropdownId.keySet()) {
 			if(dropdownIdsBuilder.length() > 0) {
@@ -1014,20 +1012,20 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public Map<String, String> getChoicesByDropdownId() throws Exception {
-		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = calculateChoicesByDropdownId();
+		Map<String, Set<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
 		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
 
-		for(String dropdownId: choicesByDropdownId.keySet()) {
+		for(Map.Entry<String,Set<String>> dropdownIdEntry: choicesByDropdownId.entrySet()) {
 			StringBuilder choicesBuilder = new StringBuilder();
-			for(String choice: choicesByDropdownId.get(dropdownId)) {
+			for(String choice: dropdownIdEntry.getValue()) {
 				if(choicesBuilder.length() > 0) {
 					choicesBuilder.append(",");
 				}
 				choicesBuilder.append(choice);
 			}
 
-			collapsedMap.put(dropdownId, choicesBuilder.toString());
+			collapsedMap.put(dropdownIdEntry.getKey(), choicesBuilder.toString());
 		}
 
 		/* collapsedMap is of a form like this:
@@ -1278,7 +1276,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
 				 User user = User.current();
 				 if(user != null) {
-					String userId = User.current().getId();
+					String userId = user.getId();
 					envVars.put("USER_ID",  userId);
 				 }
 				result = Util.replaceMacro(input, envVars);
