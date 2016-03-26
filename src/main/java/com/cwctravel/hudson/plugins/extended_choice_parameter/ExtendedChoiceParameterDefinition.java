@@ -9,13 +9,17 @@ package com.cwctravel.hudson.plugins.extended_choice_parameter;
 import groovy.lang.Binding;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
+import hudson.model.AbstractProject;
+import hudson.model.Environment;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 
 import java.io.File;
 import java.io.FileReader;
@@ -48,6 +52,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
+import org.jenkinsci.plugins.scriptsecurity.scripts.Language;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -303,7 +312,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				defaultPropertyKey = formData.optString("defaultPropertyKey");
 				defaultPropertyValue = formData.optString("defaultValue");
 			}
-
+			
 			//@formatter:off
 			return new ExtendedChoiceParameterDefinition(name, 
 														type, 
@@ -601,10 +610,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
-			String bindings, String groovyClasspath, boolean isDefault) {
+			String bindings, String groovyClasspath, boolean isSingleValued) {
+		
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
-				File propertyFile = new File(propertyFilePath);
+				String resolvedPropertyFilePath = expandVariables(propertyFilePath);
+				File propertyFile = new File(resolvedPropertyFilePath);
 				if(propertyFile.exists()) {
 					Project project = new Project();
 					Property property = new Property();
@@ -617,7 +628,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					Project project = new Project();
 					Property property = new Property();
 					property.setProject(project);
-					URL propertyFileUrl = new URL(propertyFilePath);
+					URL propertyFileUrl = new URL(resolvedPropertyFilePath);
 					property.setUrl(propertyFileUrl);
 					property.execute();
 					return project.getProperty(propertyKey);
@@ -629,22 +640,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
-			return executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isDefault);
+			return executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isSingleValued);
 		}
 		else if(!StringUtils.isBlank(groovyScriptFile)) {
-			return executeGroovyScriptFile(groovyScriptFile, bindings, groovyClasspath, isDefault);
+			return executeGroovyScriptFile(groovyScriptFile, bindings, groovyClasspath, isSingleValued);
 		}
 		else if(!StringUtils.isBlank(value)) {
 			return value;
 		}
 		return null;
 	}
-
-	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isDefault) {
+	
+	
+	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isSingleValued) {
 		String result = null;
 		try {
-			String groovyScript = Util.loadFile(new File(groovyScriptFile));
-			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isDefault);
+			String groovyScript = loadGroovyScriptFile(groovyScriptFile);
+			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isSingleValued);
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -653,11 +665,17 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	}
 
-	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, String groovyClasspath, boolean isDefault) {
+	private String loadGroovyScriptFile(String groovyScriptFile) throws IOException {
+		String resolvedGroovyScriptFile = expandVariables(groovyScriptFile);		
+		String groovyScript = Util.loadFile(new File(resolvedGroovyScriptFile));
+		return groovyScript;
+	}
+
+	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, String groovyClasspath, boolean isSingleValued) {
 		String result = null;
 		try {
 			Object groovyValue = executeGroovyScript(groovyScript, bindings, groovyClasspath);
-			result = processGroovyValue(isDefault, groovyValue);
+			result = processGroovyValue(isSingleValued, groovyValue);
 
 		}
 		catch(Exception e) {
@@ -667,6 +685,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws IOException {
+		ScriptApproval.get().configuring(groovyScript,  GroovyLanguage.get(), ApprovalContext.create());
+		ScriptApproval.get().using(groovyScript,  GroovyLanguage.get());
+		ScriptApproval.get().using(new ClasspathEntry(groovyClasspath));
+		
 		GroovyShell groovyShell = getGroovyShell(groovyClasspath);
 		GroovyCodeSource codeSource = new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell");
 		groovyShell.getClassLoader().parseClass(codeSource, true);
@@ -749,11 +771,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return groovyShell;
 	}
 
-	private String processGroovyValue(boolean isDefault, Object groovyValue) {
+	private String processGroovyValue(boolean isSingleValued, Object groovyValue) {
 		String value = null;
 		if(groovyValue instanceof String[]) {
 			String[] groovyValues = (String[])groovyValue;
-			if(!isDefault) {
+			if(!isSingleValued) {
 				value = StringUtils.join((String[])groovyValue, multiSelectDelimiter);
 			}
 			else if(groovyValues.length > 0) {
@@ -762,7 +784,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if(groovyValue instanceof List<?>) {
 			List<?> groovyValues = (List<?>)groovyValue;
-			if(!isDefault) {
+			if(!isSingleValued ) {
 				value = StringUtils.join(groovyValues, multiSelectDelimiter);
 			}
 			else if(!groovyValues.isEmpty()) {
@@ -783,6 +805,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				shell.setVariable((String)entry.getKey(), entry.getValue());
 			}
 		}
+		
+		Jenkins jenkins = Jenkins.getInstance();
+		AbstractProject<?, ?> project =  Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
+		shell.setProperty("jenkins", jenkins);
+		shell.setProperty("currentProject", project);
 	}
 
 	private String computeEffectiveValue() {
@@ -790,7 +817,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String computeEffectiveDefaultValue() {
-		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, true);
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, isSingleValuedParameterType(type));
+	}
+
+	private boolean isSingleValuedParameterType(String type) {
+		return PARAMETER_TYPE_RADIO.equals(type) || PARAMETER_TYPE_SINGLE_SELECT.equals(type);
 	}
 
 	private String computeEffectiveDescriptionPropertyValue() {
@@ -871,7 +902,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	LinkedHashMap<String, LinkedHashSet<String>> calculateChoicesByDropdownId() throws Exception {
-		File file = new File(propertyFile);
+		String resolvedPropertyFile = expandVariables(propertyFile);
+		File file = new File(resolvedPropertyFile);
 		List<String[]> fileLines = Collections.emptyList();
 		if(file.isFile()) {
 			CSVReader csvReader = null;
@@ -884,7 +916,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		else {
-			URL propertyFileUrl = new URL(propertyFile);
+			URL propertyFileUrl = new URL(resolvedPropertyFile);
 			CSVReader csvReader = null;
 			try {
 				csvReader = new CSVReader(new InputStreamReader(propertyFileUrl.openStream()), '\t');
@@ -1192,7 +1224,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = javascript;
 			}
 			else if(!StringUtils.isBlank(javascriptFile)) {
-				result = Util.loadFile(new File(javascriptFile));
+				result = Util.loadFile(new File( expandVariables(javascriptFile)));
 			}
 		}
 		catch(IOException e) {
@@ -1209,7 +1241,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				script = groovyScript;
 			}
 			else {
-				script = Util.loadFile(new File(groovyScriptFile));
+				script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
 			}
 
 			result = executeGroovyScript(script, bindings, groovyClasspath);
@@ -1218,7 +1250,25 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
-
+	}
+	
+	
+	
+	private String expandVariables(String input) {
+		String result = input;
+		AbstractProject<?, ?> project =  Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
+		if(input != null) {
+			EnvVars envVars;
+			try {
+				envVars = project.getEnvironment(null, null);
+				result = Util.replaceMacro(input, envVars);
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			} catch (InterruptedException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			}
+		}
+		return result;
 	}
 
 }
