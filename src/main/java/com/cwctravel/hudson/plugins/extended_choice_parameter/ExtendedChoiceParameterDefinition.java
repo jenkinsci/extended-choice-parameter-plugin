@@ -15,9 +15,7 @@ import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
 import hudson.model.User;
-import hudson.model.UserProperty;
 import hudson.model.AbstractProject;
-import hudson.model.Environment;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
@@ -26,11 +24,11 @@ import jenkins.model.Jenkins;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +50,10 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -120,7 +121,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				}
 				property.execute();
 			}
-			catch(Exception e) {
+			catch(MalformedURLException e) {
+				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
+			}
+			catch(BuildException e) {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 
@@ -563,6 +567,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			strValue = (String)value;
 		}
 		else if(value instanceof JSONArray) {
+			StringBuilder sB = new StringBuilder();
 			JSONArray jsonValues = (JSONArray)value;
 			if(isMultiLevelParameterType()) {
 				final int valuesBetweenLevels = this.value.split(",").length;
@@ -572,11 +577,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					String nextValue = it.next().toString();
 					if(i % valuesBetweenLevels == 0) {
 						if(strValue.length() > 0) {
-							strValue += getMultiSelectDelimiter();
+							sB.append(getMultiSelectDelimiter());
 						}
-						strValue += nextValue;
+						sB.append(nextValue);
 					}
 				}
+				strValue = sB.toString();
 			}
 			else {
 				strValue = StringUtils.join(jsonValues.iterator(), getMultiSelectDelimiter());
@@ -729,19 +735,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
 		if(groovyShell == null) {
-			ClassLoader cl = Hudson.getInstance().getPluginManager().uberClassLoader;
-
-			if(cl == null) {
-				cl = Thread.currentThread().getContextClassLoader();
+			Jenkins jenkins = Jenkins.getInstance();
+			if(jenkins !=null) {
+				ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
+	
+				if(cl == null) {
+					cl = Thread.currentThread().getContextClassLoader();
+				}
+	
+				CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+				if(!StringUtils.isBlank(groovyClasspath)) {
+					compilerConfiguration.setClasspath(groovyClasspath);
+				}
+	
+				Binding groovyBinding = getGroovyBinding();
+				groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 			}
-
-			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-			if(!StringUtils.isBlank(groovyClasspath)) {
-				compilerConfiguration.setClasspath(groovyClasspath);
-			}
-
-			Binding groovyBinding = getGroovyBinding();
-			groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 		}
 		else {
 			if(!StringUtils.isBlank(groovyClasspath)) {
@@ -916,7 +925,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				fileLines = csvReader.readAll();
 			}
 			finally {
-				csvReader.close();
+				IOUtils.closeQuietly(csvReader);
 			}
 		}
 		else {
@@ -927,7 +936,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				fileLines = csvReader.readAll();
 			}
 			finally {
-				csvReader.close();
+				IOUtils.closeQuietly(csvReader);
 			}
 		}
 
@@ -950,22 +959,24 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			prettyCurrentColumnName = prettyCurrentColumnName.replace("_", " ");
 
 			for(String[] dataLine: dataLines) {
-				String priorLevelDropdownId = prefix;
-				String currentLevelDropdownId = prefix;
+				StringBuilder priorLevelDropdownIdBuilder = new StringBuilder(prefix);
+				StringBuilder currentLevelDropdownIdBuilder = new StringBuilder(prefix);
 
 				int column = 0;
 				for(int j = 0; j <= i; ++j) {
 					column = columnIndicesForDropDowns.get(j);
 
 					if(j < i) {
-						priorLevelDropdownId += " " + dataLine[column];
+						priorLevelDropdownIdBuilder.append(" ");
+						priorLevelDropdownIdBuilder.append(dataLine[column]);
 					}
-					currentLevelDropdownId += " " + dataLine[column];
+					currentLevelDropdownIdBuilder.append(" ");
+					currentLevelDropdownIdBuilder.append(dataLine[column]);
 				}
 				if(i != columnIndicesForDropDowns.size() - 1) {
-					choicesByDropdownId.put(currentLevelDropdownId, new LinkedHashSet<String>());
+					choicesByDropdownId.put(currentLevelDropdownIdBuilder.toString(), new LinkedHashSet<String>());
 				}
-				LinkedHashSet<String> choicesForPriorDropdown = choicesByDropdownId.get(priorLevelDropdownId);
+				LinkedHashSet<String> choicesForPriorDropdown = choicesByDropdownId.get(priorLevelDropdownIdBuilder.toString());
 				choicesForPriorDropdown.add("Select a " + prettyCurrentColumnName + "...");
 				choicesForPriorDropdown.add(dataLine[column]);
 			}
@@ -975,18 +986,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getMultiLevelDropdownIds() throws Exception {
-		String dropdownIds = "";
+		StringBuilder dropdownIdsBuilder = new StringBuilder();
 
 		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
 		for(String id: choicesByDropdownId.keySet()) {
-			if(dropdownIds.length() > 0) {
-				dropdownIds += ",";
+			if(dropdownIdsBuilder.length() > 0) {
+				dropdownIdsBuilder.append(",");
 			}
-			dropdownIds += id;
+			dropdownIdsBuilder.append(id);
 		}
 
-		return dropdownIds;
+		return dropdownIdsBuilder.toString();
 
 		/* dropdownIds is of a form like this:
 		return name + " dropdown MultiLevelMultiSelect 0," 
@@ -1008,15 +1019,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
 
 		for(String dropdownId: choicesByDropdownId.keySet()) {
-			String choices = "";
+			StringBuilder choicesBuilder = new StringBuilder();
 			for(String choice: choicesByDropdownId.get(dropdownId)) {
-				if(choices.length() > 0) {
-					choices += ",";
+				if(choicesBuilder.length() > 0) {
+					choicesBuilder.append(",");
 				}
-				choices += choice;
+				choicesBuilder.append(choice);
 			}
 
-			collapsedMap.put(dropdownId, choices);
+			collapsedMap.put(dropdownId, choicesBuilder.toString());
 		}
 
 		/* collapsedMap is of a form like this:
@@ -1265,8 +1276,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			EnvVars envVars;
 			try {
 				envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
-				String userId = User.current().getId();
-				envVars.put("USER_ID",  userId);
+				 User user = User.current();
+				 if(user != null) {
+					String userId = User.current().getId();
+					envVars.put("USER_ID",  userId);
+				 }
 				result = Util.replaceMacro(input, envVars);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
