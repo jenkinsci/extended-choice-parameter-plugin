@@ -44,7 +44,9 @@ public class ExtendedChoiceParameterValue extends StringParameterValue {
 								ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = (ExtendedChoiceParameterDefinition)parameterDefinition;
 								if(ExtendedChoiceParameterDefinition.PARAMETER_TYPE_JSON.equals(extendedChoiceParameterDefinition.getType()) && extendedChoiceParameterDefinition.isSaveJSONParameterToFile()) {
 									File jsonParametersDir = new File(build.getRootDir(), "parameters");
-									jsonParametersDir.mkdirs();
+									if(!jsonParametersDir.mkdirs()) {
+										LOGGER.log(Level.INFO, "mkdirs failed");
+									}
 									try {
 										File jsonParameterFile = new File(jsonParametersDir, getName() + ".json");
 										FileUtils.writeStringToFile(jsonParameterFile, value);

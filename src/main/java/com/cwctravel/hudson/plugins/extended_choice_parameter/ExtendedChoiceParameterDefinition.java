@@ -21,9 +21,11 @@ import hudson.model.Environment;
 import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
+import hudson.util.LogTaskListener;
 import jenkins.model.Jenkins;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -895,7 +897,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		for(String dropDownName: dropDownNames) {
 			for(int i = 0; i < headerColumns.length; ++i) {
 				if(headerColumns[i].equals(dropDownName)) {
-					columnIndicesForDropDowns.add(new Integer(i));
+					columnIndicesForDropDowns.add(i);
 				}
 			}
 		}
@@ -910,7 +912,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(file.isFile()) {
 			CSVReader csvReader = null;
 			try {
-				csvReader = new CSVReader(new FileReader(file), '\t');
+				csvReader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), '\t');
 				fileLines = csvReader.readAll();
 			}
 			finally {
@@ -921,7 +923,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			URL propertyFileUrl = new URL(resolvedPropertyFile);
 			CSVReader csvReader = null;
 			try {
-				csvReader = new CSVReader(new InputStreamReader(propertyFileUrl.openStream()), '\t');
+				csvReader = new CSVReader(new InputStreamReader(propertyFileUrl.openStream(), "UTF-8"), '\t');
 				fileLines = csvReader.readAll();
 			}
 			finally {
@@ -973,7 +975,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public String getMultiLevelDropdownIds() throws Exception {
-		String dropdownIds = new String();
+		String dropdownIds = "";
 
 		LinkedHashMap<String, LinkedHashSet<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
@@ -1006,7 +1008,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
 
 		for(String dropdownId: choicesByDropdownId.keySet()) {
-			String choices = new String();
+			String choices = "";
 			for(String choice: choicesByDropdownId.get(dropdownId)) {
 				if(choices.length() > 0) {
 					choices += ",";
@@ -1262,7 +1264,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(input != null) {
 			EnvVars envVars;
 			try {
-				envVars = project.getEnvironment(null, null);
+				envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
 				String userId = User.current().getId();
 				envVars.put("USER_ID",  userId);
 				result = Util.replaceMacro(input, envVars);
