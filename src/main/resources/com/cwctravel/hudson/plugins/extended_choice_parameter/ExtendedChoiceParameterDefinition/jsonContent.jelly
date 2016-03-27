@@ -2,7 +2,7 @@
  Copyright (c) 2013 Costco, Vimil Saju
  See the file license.txt for copying permission. 
 -->
-<?jelly escape-by-default='true'?>
+<?jelly escape-by-default='fala'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
@@ -20,7 +20,7 @@
     <j:arg value="${jsonEditorOptions}" type="java.lang.Object" />
   </j:invokeStatic>
   
-  <j:set var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
+  <j:set  var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
     
   <script>       
       var editor_${normalizedParameterName} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptionsJSON});
@@ -61,7 +61,7 @@
       
       <j:if test="${not empty jsonEditorScript}">
         (function(editor, valueInput) {            
-            ${jsonEditorScript}
+        	<j:out value="${jsonEditorScript}"/>
         })(editor_${normalizedParameterName}, document.getElementById("editor_${it.name}_value"));
       </j:if>
   </script>
