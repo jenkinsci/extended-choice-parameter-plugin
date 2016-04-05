@@ -72,6 +72,6 @@
 		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
-	  <tag>extended-choice-parameter-0.57</tag>
+	  <tag>extended-choice-parameter-0.62</tag>
   </scm>
 </project>

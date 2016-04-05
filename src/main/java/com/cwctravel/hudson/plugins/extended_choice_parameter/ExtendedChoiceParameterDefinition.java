@@ -824,11 +824,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		
-		Jenkins jenkins = Jenkins.getInstance();
-		shell.setProperty("jenkins", jenkins);
+		Jenkins instance = Jenkins.getInstance();
+		shell.setProperty("jenkins", instance);
 		
-		if(projectName != null) {
-			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) Jenkins.getInstance().getItem(projectName);
+		if(projectName != null && instance!= null) {
+			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) instance.getItem(projectName);
 			shell.setProperty("currentProject", project);
 		}
 	}
@@ -1290,7 +1290,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String expandVariables(String input) {
 		String result = input;
 		if(input != null) {
-			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) (projectName !=null ? Jenkins.getInstance().getItem(projectName) : null);
+			Jenkins instance = Jenkins.getInstance();
+			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) (projectName !=null && instance !=null ? instance.getItem(projectName) : null);
 			if(project != null) {
 				EnvVars envVars;
 				try {
