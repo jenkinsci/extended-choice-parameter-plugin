@@ -16,7 +16,6 @@ import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
 import hudson.model.User;
 import hudson.model.AbstractProject;
-import hudson.model.Hudson;
 import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 import hudson.util.LogTaskListener;
@@ -192,10 +191,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String descriptionGroovyScriptFile = null;
 			String descriptionBindings = null;
 			String descriptionGroovyClasspath = null;
-
+			String projectName = null;
 			name = formData.getString("name");
 			description = formData.getString("description");
-
+			
+			AbstractProject<?,?> project = Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
+			if(project !=null) {
+				projectName = project.getName();
+			}
+			
 			JSONObject parameterGroup = formData.getJSONObject("parameterGroup");
 			if(parameterGroup != null) {
 				int value = parameterGroup.getInt("value");
@@ -321,8 +325,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			
 			//@formatter:off
 			return new ExtendedChoiceParameterDefinition(name, 
-														type, 
+														type, 														
 														propertyValue, 
+														projectName,
 														propertyFile, 
 														groovyScript, 
 														groovyScriptFile, 
@@ -410,10 +415,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String javascript;
 
+	private String projectName;
+	
 	//@formatter:off
 	public ExtendedChoiceParameterDefinition(String name, 
 			String type, 
 			String value, 
+			String projectName,
 			String propertyFile, 
 			String groovyScript,
 			String groovyScriptFile, 
@@ -446,8 +454,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		super(name, description);
 
 		this.type = type;
-
 		this.value = value;
+		this.projectName = projectName;
 		this.propertyFile = propertyFile;
 		this.propertyKey = propertyKey;
 		this.groovyScript = groovyScript;
@@ -641,7 +649,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					property.execute();
 					return project.getProperty(propertyKey);
 				}
-
 			}
 			catch(Exception e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -818,9 +825,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		
 		Jenkins jenkins = Jenkins.getInstance();
-		AbstractProject<?, ?> project =  Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
 		shell.setProperty("jenkins", jenkins);
-		shell.setProperty("currentProject", project);
+		
+		if(projectName != null) {
+			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) Jenkins.getInstance().getItem(projectName);
+			shell.setProperty("currentProject", project);
+		}
 	}
 
 	private String computeEffectiveValue() {
@@ -1211,6 +1221,16 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public void setDefaultPropertyFile(String defaultPropertyFile) {
 		this.defaultPropertyFile = defaultPropertyFile;
 	}
+	
+	
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
 
 	public ParameterDefinitionInfo getParameterDefinitionInfo() {
 		ParameterDefinitionInfo result = new ParameterDefinitionInfo();
@@ -1269,21 +1289,23 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	
 	private String expandVariables(String input) {
 		String result = input;
-		AbstractProject<?, ?> project =  Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
 		if(input != null) {
-			EnvVars envVars;
-			try {
-				envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
-				 User user = User.current();
-				 if(user != null) {
-					String userId = user.getId();
-					envVars.put("USER_ID",  userId);
-				 }
-				result = Util.replaceMacro(input, envVars);
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			} catch (InterruptedException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) (projectName !=null ? Jenkins.getInstance().getItem(projectName) : null);
+			if(project != null) {
+				EnvVars envVars;
+				try {
+					envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
+					 User user = User.current();
+					 if(user != null) {
+						String userId = user.getId();
+						envVars.put("USER_ID",  userId);
+					 }
+					result = Util.replaceMacro(input, envVars);
+				} catch (IOException e) {
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				} catch (InterruptedException e) {
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				}
 			}
 		}
 		return result;
