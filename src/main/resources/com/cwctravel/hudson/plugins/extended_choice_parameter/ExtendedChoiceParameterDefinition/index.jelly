@@ -6,38 +6,49 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  <f:entry title="${it.name}" description="${it.description}">
-    <div name="parameter" description="${it.description}">
-      <j:set var="type" value="${it.type}"/>
-      <input type="hidden" name="name" value="${it.name}" />
-      <j:if test="${type eq 'PT_SINGLE_SELECT'}"> 
-        <select name="value">
-          <st:include page="selectContent.jelly"/>
-        </select>
-      </j:if>
-      <j:if test="${type eq 'PT_MULTI_SELECT'}">
-        <select name="value" multiple="multiple" size="${it.visibleItemCount}">
-          <st:include page="selectContent.jelly"/>
-        </select>
-      </j:if>
-      <j:if test="${type eq 'PT_RADIO'}">
-          <st:include page="radioContent.jelly"/>
-      </j:if>  
-      <j:if test="${type eq 'PT_CHECKBOX'}">
-          <st:include page="checkboxContent.jelly"/>
-      </j:if> 
-      <j:if test="${type eq 'PT_TEXTBOX'}">
-          <st:include page="textboxContent.jelly"/>
-      </j:if>
-      <j:if test="${type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">
-          <st:include page="multiLevel.jelly"/>
-      </j:if>
-      <j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
-          <st:include page="multiLevel.jelly"/>
-      </j:if>     
-      <j:if test="${type eq 'PT_JSON'}">
-          <st:include page="jsonContent.jelly"/>
-      </j:if> 
-    </div>
-  </f:entry>
+  
+  <j:choose>
+	  <j:when test="${it.hasUnapprovedScripts()}">
+	  	<div class="warning">
+	  		You have unapproved groovy scripts that need approval before they can be executed.
+	  		Go to <a href="${rootURL}/scriptApproval">In-Process Script Approval</a> page to approve your scripts.
+	  	</div>
+	  </j:when>
+	  <j:otherwise>
+		  <f:entry title="${it.name}" description="${it.description}">
+		    <div name="parameter" description="${it.description}">
+		      <j:set var="type" value="${it.type}"/>
+		      <input type="hidden" name="name" value="${it.name}" />
+		      <j:if test="${type eq 'PT_SINGLE_SELECT'}"> 
+		        <select name="value">
+		          <st:include page="selectContent.jelly"/>
+		        </select>
+		      </j:if>
+		      <j:if test="${type eq 'PT_MULTI_SELECT'}">
+		        <select name="value" multiple="multiple" size="${it.visibleItemCount}">
+		          <st:include page="selectContent.jelly"/>
+		        </select>
+		      </j:if>
+		      <j:if test="${type eq 'PT_RADIO'}">
+		          <st:include page="radioContent.jelly"/>
+		      </j:if>  
+		      <j:if test="${type eq 'PT_CHECKBOX'}">
+		          <st:include page="checkboxContent.jelly"/>
+		      </j:if> 
+		      <j:if test="${type eq 'PT_TEXTBOX'}">
+		          <st:include page="textboxContent.jelly"/>
+		      </j:if>
+		      <j:if test="${type eq 'PT_MULTI_LEVEL_SINGLE_SELECT'}">
+		          <st:include page="multiLevel.jelly"/>
+		      </j:if>
+		      <j:if test="${type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
+		          <st:include page="multiLevel.jelly"/>
+		      </j:if>     
+		      <j:if test="${type eq 'PT_JSON'}">
+		          <st:include page="jsonContent.jelly"/>
+		      </j:if> 
+		    </div>
+		  </f:entry>
+		</j:otherwise>
+	</j:choose>
 </j:jelly>

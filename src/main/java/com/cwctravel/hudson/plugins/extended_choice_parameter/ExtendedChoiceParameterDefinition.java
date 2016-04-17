@@ -48,6 +48,8 @@ import javax.servlet.ServletException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,6 +60,8 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
@@ -96,6 +100,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		public String getDisplayName() {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
+		
+
 
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
 				@QueryParameter final String type) throws IOException, ServletException {
@@ -701,6 +707,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws IOException {
 		ScriptApproval.get().configuring(groovyScript,  GroovyLanguage.get(), ApprovalContext.create());
+		
 		ScriptApproval.get().using(groovyScript,  GroovyLanguage.get());
 		ScriptApproval.get().using(new ClasspathEntry(groovyClasspath));
 		
@@ -1230,6 +1237,106 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+	
+	public boolean hasUnapprovedScripts() {
+		boolean result = false;
+		Authentication authentication = Jenkins.getAuthentication();
+		try {
+			ScriptApproval scriptApproval = ScriptApproval.get();
+			if(!StringUtils.isBlank(groovyScript)) {
+				try {
+					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					scriptApproval.configuring(groovyScript,  GroovyLanguage.get(), ApprovalContext.create());
+					scriptApproval.using(groovyScript,  GroovyLanguage.get());
+					scriptApproval.using(new ClasspathEntry(groovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}			
+			else if(!StringUtils.isBlank(groovyScriptFile)) {
+				try {
+					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
+					scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
+					scriptApproval.using(script,  GroovyLanguage.get());
+					scriptApproval.using(new ClasspathEntry(groovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+			
+			if(!StringUtils.isBlank(defaultGroovyScript)) {
+				try {
+					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					scriptApproval.configuring(defaultGroovyScript,  GroovyLanguage.get(), ApprovalContext.create());
+					scriptApproval.using(defaultGroovyScript,  GroovyLanguage.get());
+					scriptApproval.using(new ClasspathEntry(defaultGroovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+			else if(!StringUtils.isBlank(defaultGroovyScriptFile)) {
+				try {
+					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+					scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
+					scriptApproval.using(script,  GroovyLanguage.get());
+					scriptApproval.using(new ClasspathEntry(defaultGroovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+			
+			if(!StringUtils.isBlank(descriptionGroovyScript)) {
+				try {
+					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					scriptApproval.configuring(descriptionGroovyScript,  GroovyLanguage.get(), ApprovalContext.create());
+					scriptApproval.using(descriptionGroovyScript,  GroovyLanguage.get());
+					scriptApproval.using(new ClasspathEntry(descriptionGroovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+			else if(!StringUtils.isBlank(descriptionGroovyScriptFile)) {
+				try {
+					 SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+					 String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+					 scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
+					 scriptApproval.using(script,  GroovyLanguage.get());
+					 scriptApproval.using(new ClasspathEntry(descriptionGroovyClasspath));
+				}catch(UnapprovedUsageException uUE) {
+					result = true;
+				}catch(UnapprovedClasspathException uCE) {
+					result = true;
+				}finally {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+		}catch(IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return result;
 	}
 
 	public ParameterDefinitionInfo getParameterDefinitionInfo() {
