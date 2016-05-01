@@ -5,6 +5,7 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParametersDefinitionProperty;
@@ -48,11 +49,17 @@ public class ExtendedChoiceParameterValue extends StringParameterValue {
 										LOGGER.log(Level.INFO, "mkdirs failed");
 									}
 									try {
-										File jsonParameterFile = new File(jsonParametersDir, getName() + ".json");
+										String jsonFileName = getName() + ".json";
+										File jsonParameterFile = new File(jsonParametersDir, jsonFileName);
 										FileUtils.writeStringToFile(jsonParameterFile, value);
-										result = jsonParameterFile.getAbsolutePath();
+										
+										FilePath parametersWorkspaceDir = build.getWorkspace().child("parameters");
+										FilePath parameterWorkspaceFile = parametersWorkspaceDir.child(jsonFileName);
+										parameterWorkspaceFile.write(value, "UTF-8");
+										
+										result = parameterWorkspaceFile.getRemote();
 									}
-									catch(IOException e) {
+									catch(IOException | InterruptedException e) {
 										LOGGER.log(Level.SEVERE, e.getMessage(), e);
 									}
 								}
