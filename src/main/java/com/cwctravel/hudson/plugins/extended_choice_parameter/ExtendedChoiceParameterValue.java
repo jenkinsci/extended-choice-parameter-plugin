@@ -53,11 +53,16 @@ public class ExtendedChoiceParameterValue extends StringParameterValue {
 										File jsonParameterFile = new File(jsonParametersDir, jsonFileName);
 										FileUtils.writeStringToFile(jsonParameterFile, value);
 										
-										FilePath parametersWorkspaceDir = build.getWorkspace().child("parameters");
-										FilePath parameterWorkspaceFile = parametersWorkspaceDir.child(jsonFileName);
-										parameterWorkspaceFile.write(value, "UTF-8");
-										
-										result = parameterWorkspaceFile.getRemote();
+										FilePath workspace = build.getWorkspace();
+										if(workspace != null) {
+											FilePath parametersWorkspaceDir = workspace.child("parameters");
+											FilePath parameterWorkspaceFile = parametersWorkspaceDir.child(jsonFileName);
+											parameterWorkspaceFile.write(value, "UTF-8");
+											
+											result = parameterWorkspaceFile.getRemote();
+										}else {
+											result = jsonParameterFile.getAbsolutePath();
+										}
 									}
 									catch(IOException | InterruptedException e) {
 										LOGGER.log(Level.SEVERE, e.getMessage(), e);
