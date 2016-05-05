@@ -25,7 +25,6 @@ import hudson.util.LogTaskListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1388,7 +1387,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		String classpathEntryStr = classpathEntryURI.toString();
 		String digestFileName = getName() + computeMD5Hash(classpathEntryStr) + ".dig";
 		File digestFile = new File(project.getRootDir(), digestFileName);
-		PrintWriter pW = new PrintWriter(new FileWriter(digestFile));
+		PrintWriter pW = new PrintWriter(digestFile, "UTF-8");
 		try {
 			pW.println(classpathEntryStr);
 			for(Object[] fileInfo: fileInfos) {
