@@ -14,23 +14,34 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.cli.CLICommand;
 import hudson.model.ParameterValue;
-import hudson.model.User;
 import hudson.model.AbstractProject;
 import hudson.model.ParameterDefinition;
+import hudson.model.User;
+import hudson.util.DirScanner;
+import hudson.util.FileVisitor;
 import hudson.util.FormValidation;
 import hudson.util.LogTaskListener;
-import jenkins.model.Jenkins;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,6 +56,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -57,11 +69,11 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
@@ -100,8 +112,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		public String getDisplayName() {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
-		
-
 
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
 				@QueryParameter final String type) throws IOException, ServletException {
@@ -200,12 +210,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String projectName = null;
 			name = formData.getString("name");
 			description = formData.getString("description");
-			
-			AbstractProject<?,?> project = Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
-			if(project !=null) {
+
+			AbstractProject<?, ?> project = Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
+			if(project != null) {
 				projectName = project.getName();
 			}
-			
+
 			JSONObject parameterGroup = formData.getJSONObject("parameterGroup");
 			if(parameterGroup != null) {
 				int value = parameterGroup.getInt("value");
@@ -328,7 +338,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				defaultPropertyKey = formData.optString("defaultPropertyKey");
 				defaultPropertyValue = formData.optString("defaultValue");
 			}
-			
+
 			//@formatter:off
 			return new ExtendedChoiceParameterDefinition(name, 
 														type, 														
@@ -422,7 +432,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String javascript;
 
 	private String projectName;
-	
+
 	//@formatter:off
 	public ExtendedChoiceParameterDefinition(String name, 
 			String type, 
@@ -633,7 +643,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
 			String bindings, String groovyClasspath, boolean isSingleValued) {
-		
+
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
 				String resolvedPropertyFilePath = expandVariables(propertyFilePath);
@@ -671,8 +681,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		return null;
 	}
-	
-	
+
 	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isSingleValued) {
 		String result = null;
 		try {
@@ -687,7 +696,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String loadGroovyScriptFile(String groovyScriptFile) throws IOException {
-		String resolvedGroovyScriptFile = expandVariables(groovyScriptFile);		
+		String resolvedGroovyScriptFile = expandVariables(groovyScriptFile);
 		String groovyScript = Util.loadFile(new File(resolvedGroovyScriptFile));
 		return groovyScript;
 	}
@@ -705,17 +714,17 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws IOException {
-		ScriptApproval.get().configuring(groovyScript,  GroovyLanguage.get(), ApprovalContext.create());
-		
-		ScriptApproval.get().using(groovyScript,  GroovyLanguage.get());
-		ScriptApproval.get().using(new ClasspathEntry(groovyClasspath));
-		
-		GroovyShell groovyShell = getGroovyShell(groovyClasspath);
-		GroovyCodeSource codeSource = new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell");
-		groovyShell.getClassLoader().parseClass(codeSource, true);
-		setBindings(groovyShell, bindings);
-		Object groovyValue = groovyShell.evaluate(codeSource);
+	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws URISyntaxException, IOException {
+		Object groovyValue = null;
+
+		if(checkScriptApproval(groovyScript, groovyClasspath, false)) {
+			GroovyShell groovyShell = getGroovyShell(groovyClasspath);
+			GroovyCodeSource codeSource = new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell");
+			groovyShell.getClassLoader().parseClass(codeSource, true);
+			setBindings(groovyShell, bindings);
+			groovyValue = groovyShell.evaluate(codeSource);
+		}
+
 		return groovyValue;
 	}
 
@@ -748,18 +757,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
 		if(groovyShell == null) {
 			Jenkins jenkins = Jenkins.getInstance();
-			if(jenkins !=null) {
+			if(jenkins != null) {
 				ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
-	
+
 				if(cl == null) {
 					cl = Thread.currentThread().getContextClassLoader();
 				}
-	
+
 				CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 				if(!StringUtils.isBlank(groovyClasspath)) {
 					compilerConfiguration.setClasspath(groovyClasspath);
 				}
-	
+
 				Binding groovyBinding = getGroovyBinding();
 				groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 			}
@@ -809,7 +818,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		else if(groovyValue instanceof List<?>) {
 			List<?> groovyValues = (List<?>)groovyValue;
-			if(!isSingleValued ) {
+			if(!isSingleValued) {
 				value = StringUtils.join(groovyValues, multiSelectDelimiter);
 			}
 			else if(!groovyValues.isEmpty()) {
@@ -830,12 +839,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				shell.setVariable((String)entry.getKey(), entry.getValue());
 			}
 		}
-		
+
 		Jenkins instance = Jenkins.getInstance();
 		shell.setProperty("jenkins", instance);
-		
-		if(projectName != null && instance!= null) {
-			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) instance.getItem(projectName);
+
+		if(projectName != null && instance != null) {
+			AbstractProject<?, ?> project = (AbstractProject<?, ?>)instance.getItem(projectName);
 			shell.setProperty("currentProject", project);
 		}
 	}
@@ -1033,7 +1042,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
 
-		for(Map.Entry<String,Set<String>> dropdownIdEntry: choicesByDropdownId.entrySet()) {
+		for(Map.Entry<String, Set<String>> dropdownIdEntry: choicesByDropdownId.entrySet()) {
 			StringBuilder choicesBuilder = new StringBuilder();
 			for(String choice: dropdownIdEntry.getValue()) {
 				if(choicesBuilder.length() > 0) {
@@ -1228,8 +1237,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public void setDefaultPropertyFile(String defaultPropertyFile) {
 		this.defaultPropertyFile = defaultPropertyFile;
 	}
-	
-	
 
 	public String getProjectName() {
 		return projectName;
@@ -1238,103 +1245,198 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
-	
+
 	public boolean hasUnapprovedScripts() {
 		boolean result = false;
+		try {
+			if(!StringUtils.isBlank(groovyScript)) {
+				result = !checkScriptApproval(groovyScript, groovyClasspath, true);
+			}
+			else if(!StringUtils.isBlank(groovyScriptFile)) {
+				String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
+				result = !checkScriptApproval(script, groovyClasspath, true);
+			}
+
+			if(!StringUtils.isBlank(defaultGroovyScript)) {
+				result = !checkScriptApproval(defaultGroovyScript, defaultGroovyClasspath, true);
+			}
+			else if(!StringUtils.isBlank(defaultGroovyScriptFile)) {
+				String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+				result = !checkScriptApproval(script, defaultGroovyClasspath, true);
+			}
+
+			if(!StringUtils.isBlank(descriptionGroovyScript)) {
+				result = !checkScriptApproval(descriptionGroovyScript, descriptionGroovyClasspath, true);
+			}
+			else if(!StringUtils.isBlank(descriptionGroovyScriptFile)) {
+				String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+				result = !checkScriptApproval(script, descriptionGroovyClasspath, true);
+			}
+		}
+		catch(IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		catch(URISyntaxException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return result;
+	}
+
+	private boolean checkScriptApproval(String groovyScript, String groovyClasspath, boolean impersonateAnonymousUser) throws IOException, URISyntaxException, MalformedURLException {
+		boolean result = true;
 		Authentication authentication = Jenkins.getAuthentication();
 		try {
 			ScriptApproval scriptApproval = ScriptApproval.get();
-			if(!StringUtils.isBlank(groovyScript)) {
-				try {
-					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					scriptApproval.configuring(groovyScript,  GroovyLanguage.get(), ApprovalContext.create());
-					scriptApproval.using(groovyScript,  GroovyLanguage.get());
-					scriptApproval.using(new ClasspathEntry(groovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
+
+			Jenkins instance = Jenkins.getInstance();
+			AbstractProject<?, ?> project = (AbstractProject<?, ?>)(projectName != null && instance != null ? instance.getItem(projectName) : null);
+
+			if(impersonateAnonymousUser) {
+				SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
+			}
+
+			try {
+				scriptApproval.configuring(groovyScript, GroovyLanguage.get(), ApprovalContext.create());
+				scriptApproval.using(groovyScript, GroovyLanguage.get());
+			}
+			catch(UnapprovedUsageException uUE) {
+				result = false;
+			}
+			catch(UnapprovedClasspathException uCE) {
+				result = false;
+			}
+
+			List<ClasspathEntry> classpathEntries = parseClasspath(groovyClasspath);
+			for(ClasspathEntry classpathEntry: classpathEntries) {
+				if(classpathEntry.isClassDirectory()) {
+					ClasspathEntry classpathDirDigestEntry = createClasspathDirDigest(project, classpathEntry);
+					if(classpathDirDigestEntry != null) {
+						try {
+							scriptApproval.using(classpathDirDigestEntry);
+						}
+						catch(UnapprovedUsageException uUE) {
+							result = false;
+						}
+						catch(UnapprovedClasspathException uCE) {
+							result = false;
+						}
+					}
+					else {
+						result = false;
+					}
 				}
-			}			
-			else if(!StringUtils.isBlank(groovyScriptFile)) {
-				try {
-					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
-					scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
-					scriptApproval.using(script,  GroovyLanguage.get());
-					scriptApproval.using(new ClasspathEntry(groovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
+				else {
+					try {
+						scriptApproval.using(classpathEntry);
+					}
+					catch(UnapprovedUsageException uUE) {
+						result = false;
+					}
+					catch(UnapprovedClasspathException uCE) {
+						result = false;
+					}
 				}
 			}
-			
-			if(!StringUtils.isBlank(defaultGroovyScript)) {
-				try {
-					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					scriptApproval.configuring(defaultGroovyScript,  GroovyLanguage.get(), ApprovalContext.create());
-					scriptApproval.using(defaultGroovyScript,  GroovyLanguage.get());
-					scriptApproval.using(new ClasspathEntry(defaultGroovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
+		}
+		finally {
+			if(impersonateAnonymousUser) {
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}
+		return result;
+	}
+
+	private ClasspathEntry createClasspathDirDigest(AbstractProject<?, ?> project, ClasspathEntry classpathEntry) throws URISyntaxException, IOException {
+		ClasspathEntry result = null;
+
+		if(project != null) {
+			URI classpathEntryURI = classpathEntry.getURL().toURI();
+			File dirFile = new File(classpathEntryURI);
+			final int[] fileCountHolder = new int[1];
+			final List<Object[]> files = new ArrayList<Object[]>();
+			new DirScanner.Full().scan(dirFile, new FileVisitor() {
+				@Override
+				public void visit(File file, String relativePath) throws IOException {
+					if(file.isFile()) {
+						fileCountHolder[0]++;
+						if(fileCountHolder[0] <= 500) {
+							files.add(new Object[] {file, relativePath});
+						}
+						else {
+							throw new IOException("too many files in directory");
+						}
+					}
+				}
+			});
+
+			Collections.sort(files, new Comparator<Object[]>() {
+				@Override
+				public int compare(Object[] o1, Object[] o2) {
+					String relativePath1 = (String)o1[1];
+					String relativePath2 = (String)o2[1];
+					return relativePath1.compareTo(relativePath2);
+				}
+			});
+
+			File digestFile = createDigest(project, classpathEntryURI, files);
+			result = new ClasspathEntry(digestFile.toURI().toString());
+		}
+		return result;
+	}
+
+	private File createDigest(AbstractProject<?, ?> project, URI classpathEntryURI, List<Object[]> fileInfos) throws IOException {
+		String classpathEntryStr = classpathEntryURI.toString();
+		String digestFileName = getName() + computeMD5Hash(classpathEntryStr) + ".dig";
+		File digestFile = new File(project.getRootDir(), digestFileName);
+		PrintWriter pW = new PrintWriter(new FileWriter(digestFile));
+		try {
+			pW.println(classpathEntryStr);
+			for(Object[] fileInfo: fileInfos) {
+				File file = (File)fileInfo[0];
+				String relativePath = (String)fileInfo[1];
+				String fileHash = hashFile(file);
+				pW.println(relativePath + "::" + fileHash);
+			}
+		}
+		finally {
+			pW.close();
+		}
+		return digestFile;
+	}
+
+	private String hashFile(File file) throws IOException {
+		InputStream is = new FileInputStream(file);
+		try {
+			DigestInputStream input = null;
+			try {
+				MessageDigest digest = MessageDigest.getInstance("SHA-1");
+				input = new DigestInputStream(new BufferedInputStream(is), digest);
+				byte[] buffer = new byte[1024];
+				while(input.read(buffer) != -1);
+				return Util.toHexString(digest.digest());
+			}
+			catch(NoSuchAlgorithmException x) {
+				throw new AssertionError(x);
+			}
+			finally {
+				if(input != null) {
+					input.close();
 				}
 			}
-			else if(!StringUtils.isBlank(defaultGroovyScriptFile)) {
-				try {
-					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
-					scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
-					scriptApproval.using(script,  GroovyLanguage.get());
-					scriptApproval.using(new ClasspathEntry(defaultGroovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
+		}
+		finally {
+			is.close();
+		}
+	}
+
+	private List<ClasspathEntry> parseClasspath(String groovyClasspath) throws MalformedURLException {
+		List<ClasspathEntry> result = new ArrayList<ClasspathEntry>();
+		if(!StringUtils.isEmpty(groovyClasspath)) {
+			String[] classpathUrls = groovyClasspath.split(";");
+			for(String classpathUrl: classpathUrls) {
+				ClasspathEntry classpathEntry = new ClasspathEntry(classpathUrl);
+				result.add(classpathEntry);
 			}
-			
-			if(!StringUtils.isBlank(descriptionGroovyScript)) {
-				try {
-					SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					scriptApproval.configuring(descriptionGroovyScript,  GroovyLanguage.get(), ApprovalContext.create());
-					scriptApproval.using(descriptionGroovyScript,  GroovyLanguage.get());
-					scriptApproval.using(new ClasspathEntry(descriptionGroovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
-			}
-			else if(!StringUtils.isBlank(descriptionGroovyScriptFile)) {
-				try {
-					 SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-					 String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
-					 scriptApproval.configuring(script,  GroovyLanguage.get(), ApprovalContext.create());
-					 scriptApproval.using(script,  GroovyLanguage.get());
-					 scriptApproval.using(new ClasspathEntry(descriptionGroovyClasspath));
-				}catch(UnapprovedUsageException uUE) {
-					result = true;
-				}catch(UnapprovedClasspathException uCE) {
-					result = true;
-				}finally {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
-			}
-		}catch(IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
 	}
@@ -1364,7 +1466,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = javascript;
 			}
 			else if(!StringUtils.isBlank(javascriptFile)) {
-				result = Util.loadFile(new File( expandVariables(javascriptFile)));
+				result = Util.loadFile(new File(expandVariables(javascriptFile)));
 			}
 		}
 		catch(IOException e) {
@@ -1389,29 +1491,32 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		catch(IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
+		catch(URISyntaxException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
 		return result;
 	}
-	
-	
-	
+
 	private String expandVariables(String input) {
 		String result = input;
 		if(input != null) {
 			Jenkins instance = Jenkins.getInstance();
-			AbstractProject<?, ?> project =  (AbstractProject<?, ?>) (projectName !=null && instance !=null ? instance.getItem(projectName) : null);
+			AbstractProject<?, ?> project = (AbstractProject<?, ?>)(projectName != null && instance != null ? instance.getItem(projectName) : null);
 			if(project != null) {
 				EnvVars envVars;
 				try {
 					envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
-					 User user = User.current();
-					 if(user != null) {
+					User user = User.current();
+					if(user != null) {
 						String userId = user.getId();
-						envVars.put("USER_ID",  userId);
-					 }
+						envVars.put("USER_ID", userId);
+					}
 					result = Util.replaceMacro(input, envVars);
-				} catch (IOException e) {
+				}
+				catch(IOException e) {
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				} catch (InterruptedException e) {
+				}
+				catch(InterruptedException e) {
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				}
 			}
