@@ -20,7 +20,7 @@
 		    	<td>
 		    	    <j:set var="descriptionPropertyValue" value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>     
 		    		<input type="radio" name="${it.name}.value"  value="${value}" checked="${defaultValueMap[value] eq true?'true':null}"/>
-                    <label class="attach-previous">${descriptionPropertyValue}</label>
+                    <label class="attach-previous"><j:out value="${descriptionPropertyValue}"/></label>
 		    	</td>
 		    </tr>	
 		    <j:set var="index" value="${index + 1}"/>

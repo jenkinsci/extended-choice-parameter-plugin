@@ -20,7 +20,8 @@
 		  	<tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>		    	
 		    	    <j:set var="descriptionPropertyValue" value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>     
-		    		<f:checkbox name="value" title="${descriptionPropertyValue}" checked="${defaultValueMap[value] eq true}" value="${value}" json="${value}"/>
+		    		<input type="checkbox" name="value" value="${value}" checked="${defaultValueMap[value] ? 'true' : null}"/>
+                    <label class="attach-previous" title="${attrs.tooltip}"><j:out value="${descriptionPropertyValue}"/></label>
 		    	</td>
 		    </tr>	
 		    <j:set var="index" value="${index + 1}"/>
