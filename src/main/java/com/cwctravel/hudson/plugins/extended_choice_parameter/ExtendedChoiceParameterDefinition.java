@@ -1268,7 +1268,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = !checkScriptApproval(descriptionGroovyScript, descriptionGroovyClasspath, true);
 			}
 			else if(!StringUtils.isBlank(descriptionGroovyScriptFile)) {
-				String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+				String script = Util.loadFile(new File(expandVariables(descriptionGroovyScriptFile)));
 				result = !checkScriptApproval(script, descriptionGroovyClasspath, true);
 			}
 		}
