@@ -20,7 +20,7 @@
 		  	<tr id="ecp_${it.name}_${index}" style="white-space:nowrap">
 		    	<td>		    	
 		    	    <j:set var="descriptionPropertyValue" value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>     
-		    		<input type="checkbox" name="${it.name}.value" value="${value}" checked="${defaultValueMap[value] ? 'true' : null}"/>
+		    		<input type="checkbox" name="${it.name}.value" value="${value}" json="${value}" checked="${defaultValueMap[value] ? 'true' : null}"/>
                     <label class="attach-previous" title="${attrs.tooltip}"><j:out value="${descriptionPropertyValue}"/></label>
 		    	</td>
 		    </tr>	
