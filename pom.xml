@@ -10,7 +10,7 @@
 
 	<artifactId>extended-choice-parameter</artifactId>
 	<packaging>hpi</packaging>
-	<version>0.71</version>
+	<version>0.72-SNAPSHOT</version>
 	<name>Extended Choice Parameter Plug-In</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
@@ -72,6 +72,6 @@
 		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
-	  <tag>extended-choice-parameter-0.71</tag>
+	  <tag>extended-choice-parameter-0.66</tag>
   </scm>
 </project>
