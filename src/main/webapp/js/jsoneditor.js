@@ -131,53 +131,38 @@ var Class;
 	  };
 	}
 }());
+
 /**
- * Taken from jQuery 1
+ * Taken from jQuery 3
  *
  * @param obj
  * @returns {*}
  */
 var $isplainobject = function( obj ) {
-  var key;
+	var proto, Ctor;
+	var class2type = {};
+	var toString = class2type.toString;
+	var hasOwn = class2type.hasOwnProperty;
+	var fnToString = hasOwn.toString;
+	var ObjectFunctionString = fnToString.call( Object );
+	var getProto = Object.getPrototypeOf;
+	
+	// Detect obvious negatives
+	// Use toString instead of jQuery.type to catch host objects
+	if ( !obj || toString.call( obj ) !== "[object Object]" ) {
+		return false;
+	}
 
-  // Must be an Object.
-  // Because of IE, we also have to check the presence of the constructor property.
-  // Make sure that DOM nodes and window objects don't pass through, as well
-  if ( !obj || typeof obj !== "object" || obj.nodeType || obj === window ) {
-    return false;
-  }
+	proto = getProto( obj );
 
-  // Not own constructor property must be Object
-  if (obj.constructor &&
-    !obj.hasOwnProperty('constructor') &&
-    !obj.constructor.prototype.hasOwnProperty('isPrototypeOf')) {
-    return false;
-  }
+	// Objects with no prototype (e.g., `Object.create( null )`) are plain
+	if ( !proto ) {
+		return true;
+	}
 
-  try {
-    // Not own constructor property must be Object
-    if ( obj.constructor &&
-        !obj.hasOwnProperty("constructor") &&
-        !obj.constructor.prototype.hasOwnProperty('isPrototypeOf') ) {
-      return false;
-    }
-  } catch ( e ) {
-    // IE8,9 Will throw exceptions on certain host objects #9897
-    return false;
-  }
-
-  // Support: IE<9
-  // Handle iteration over inherited properties before own properties.
-  if ( /msie 8\.0/i.test( window.navigator.userAgent ) ) {
-    for ( key in obj ) {
-      return obj.hasOwnProperty(key);
-    }
-  }
-
-  // Own properties are enumerated firstly, so to speed up,
-  // if last one is own, then all properties are own.
-  for ( key in obj ) {}
-  return key === undefined || obj.hasOwnProperty(key);
+	// Objects with prototype are plain iff they were constructed by a global Object function
+	Ctor = hasOwn.call( proto, "constructor" ) && proto.constructor;
+	return typeof Ctor === "function" && fnToString.call( Ctor ) === ObjectFunctionString;
 };
 
 var $extend = function(destination) {
