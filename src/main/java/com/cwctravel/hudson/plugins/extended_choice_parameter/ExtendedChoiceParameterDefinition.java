@@ -597,7 +597,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				for(int i = 1; it.hasNext(); i++) {
 					String nextValue = it.next().toString();
 					if(i % valuesBetweenLevels == 0) {
-						if(strValue.length() > 0) {
+						if(sB.length() > 0) {
 							sB.append(getMultiSelectDelimiter());
 						}
 						sB.append(nextValue);
