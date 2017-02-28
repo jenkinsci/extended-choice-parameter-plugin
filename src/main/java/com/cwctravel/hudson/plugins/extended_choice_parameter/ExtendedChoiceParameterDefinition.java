@@ -6,22 +6,6 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyCodeSource;
-import groovy.lang.GroovyShell;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.Util;
-import hudson.cli.CLICommand;
-import hudson.model.ParameterValue;
-import hudson.model.AbstractProject;
-import hudson.model.ParameterDefinition;
-import hudson.model.User;
-import hudson.util.DirScanner;
-import hudson.util.FileVisitor;
-import hudson.util.FormValidation;
-import hudson.util.LogTaskListener;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,10 +39,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
-import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -68,17 +48,35 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.codehaus.groovy.control.CompilerConfiguration;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
+import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import au.com.bytecode.opencsv.CSVReader;
+import groovy.lang.Binding;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyShell;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.Util;
+import hudson.cli.CLICommand;
+import hudson.model.AbstractProject;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
+import hudson.model.User;
+import hudson.util.DirScanner;
+import hudson.util.FileVisitor;
+import hudson.util.FormValidation;
+import hudson.util.LogTaskListener;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
@@ -96,6 +94,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public static final String PARAMETER_TYPE_RADIO = "PT_RADIO";
 
 	public static final String PARAMETER_TYPE_TEXT_BOX = "PT_TEXTBOX";
+
+	public static final String PARAMETER_TYPE_HIDDEN = "PT_HIDDEN";
 
 	public static final String PARAMETER_TYPE_MULTI_LEVEL_SINGLE_SELECT = "PT_MULTI_LEVEL_SINGLE_SELECT";
 
@@ -554,7 +554,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if(requestValues == null || requestValues.length == 0) {
 			return getDefaultParameterValue();
 		}
-		if(PARAMETER_TYPE_TEXT_BOX.equals(type)) {
+		if(PARAMETER_TYPE_TEXT_BOX.equals(type) || PARAMETER_TYPE_HIDDEN.equals(type)) {
 			return new ExtendedChoiceParameterValue(getName(), requestValues[0]);
 		}
 		else {
@@ -622,7 +622,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private boolean isBasicParameterType() {
-		return type.equals(PARAMETER_TYPE_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_SELECT) || type.equals(PARAMETER_TYPE_CHECK_BOX) || type.equals(PARAMETER_TYPE_RADIO) || type.equals(PARAMETER_TYPE_TEXT_BOX);
+		return type.equals(PARAMETER_TYPE_SINGLE_SELECT) || type.equals(PARAMETER_TYPE_MULTI_SELECT) || type.equals(PARAMETER_TYPE_CHECK_BOX) || type.equals(PARAMETER_TYPE_RADIO) || type.equals(PARAMETER_TYPE_TEXT_BOX) || type.equals(PARAMETER_TYPE_HIDDEN);
 	}
 
 	@Override
@@ -1281,7 +1281,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	private boolean checkScriptApproval(String groovyScript, String groovyClasspath, boolean impersonateAnonymousUser) throws IOException, URISyntaxException, MalformedURLException {
+	private boolean checkScriptApproval(String groovyScript, String groovyClasspath,
+			boolean impersonateAnonymousUser) throws IOException, URISyntaxException, MalformedURLException {
 		boolean result = true;
 		Authentication authentication = Jenkins.getAuthentication();
 		try {
@@ -1345,7 +1346,8 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	private ClasspathEntry createClasspathDirDigest(AbstractProject<?, ?> project, ClasspathEntry classpathEntry) throws URISyntaxException, IOException {
+	private ClasspathEntry createClasspathDirDigest(AbstractProject<?, ?> project,
+			ClasspathEntry classpathEntry) throws URISyntaxException, IOException {
 		ClasspathEntry result = null;
 
 		if(project != null) {

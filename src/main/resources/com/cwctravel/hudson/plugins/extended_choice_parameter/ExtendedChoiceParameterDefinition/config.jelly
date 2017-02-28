@@ -12,7 +12,7 @@
   </f:entry>
 
   <j:choose>
-    <j:when test="${instance.type eq 'PT_SINGLE_SELECT' or instance.type eq 'PT_MULTI_SELECT' or instance.type eq 'PT_RADIO' or instance.type eq 'PT_CHECKBOX' or instance.type eq 'PT_TEXTBOX'}">
+    <j:when test="${instance.type eq 'PT_SINGLE_SELECT' or instance.type eq 'PT_MULTI_SELECT' or instance.type eq 'PT_RADIO' or instance.type eq 'PT_CHECKBOX' or instance.type eq 'PT_TEXTBOX' or instance.type eq 'PT_HIDDEN'}">
         <j:set var="parameterType" value="basic"/>
     </j:when>
     <j:when test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' or instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
@@ -65,7 +65,15 @@
                    <j:otherwise>
                        <option value="PT_TEXTBOX">Text Box</option>
                    </j:otherwise>
-                </j:choose>                       
+                </j:choose>      
+                <j:choose>
+                   <j:when test="${instance.type eq 'PT_HIDDEN'}">       
+                       <option value="PT_HIDDEN" selected="selected">Hidden</option>
+                   </j:when>
+                   <j:otherwise>
+                       <option value="PT_HIDDEN">Hidden</option>
+                   </j:otherwise>
+                </j:choose>                                         
             </select>
           </f:entry>
       
