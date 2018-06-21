@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>2.3</version>
+		<version>3.15</version>
 		<!-- which version of Hudson is this plugin built against? -->
 		<relativePath />
 	</parent>
@@ -13,6 +13,13 @@
 	<version>0.77-SNAPSHOT</version>
 	<name>Extended Choice Parameter Plug-In</name>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
+
+	<properties>
+		<!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
+		<jenkins-war.version>2.127-20180610.103343-1</jenkins-war.version-->
+		<jenkins.version>2.60.3</jenkins.version>
+		<java.level>8</java.level>
+	</properties>
 
 	<developers>
 		<developer>

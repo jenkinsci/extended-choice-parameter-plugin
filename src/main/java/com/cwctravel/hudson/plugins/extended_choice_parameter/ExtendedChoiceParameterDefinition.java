@@ -54,6 +54,7 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -433,6 +434,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String projectName;
 
 	//@formatter:off
+	@DataBoundConstructor
 	public ExtendedChoiceParameterDefinition(String name, 
 			String type, 
 			String value, 
