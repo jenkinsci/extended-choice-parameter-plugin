@@ -41,7 +41,7 @@ public class ExtendedChoiceParameterValue extends StringParameterValue {
 						ParametersDefinitionProperty parametersDefinitionProperty = build.getProject().getProperty(ParametersDefinitionProperty.class);
 						if(parametersDefinitionProperty != null) {
 							ParameterDefinition parameterDefinition = parametersDefinitionProperty.getParameterDefinition(name);
-							if(parameterDefinition != null && parameterDefinition instanceof ExtendedChoiceParameterDefinition) {
+							if(parameterDefinition instanceof ExtendedChoiceParameterDefinition) {
 								ExtendedChoiceParameterDefinition extendedChoiceParameterDefinition = (ExtendedChoiceParameterDefinition)parameterDefinition;
 								if(ExtendedChoiceParameterDefinition.PARAMETER_TYPE_JSON.equals(extendedChoiceParameterDefinition.getType()) && extendedChoiceParameterDefinition.isSaveJSONParameterToFile()) {
 									File jsonParametersDir = new File(build.getRootDir(), "parameters");
