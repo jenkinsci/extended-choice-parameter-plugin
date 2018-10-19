@@ -1018,12 +1018,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		/* dropdownIds is of a form like this:
 		return name + " dropdown MultiLevelMultiSelect 0," 
-				   // next select the source of the genome -- each genome gets a seperate dropdown id:"
+				   // next select the source of the genome -- each genome gets a separate dropdown id:"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18,dropdown MultiLevelMultiSelect 0 ZZ23,"
-				 // next select the cell type of the source -- each source gets a seperate dropdown id
+				 // next select the cell type of the source -- each source gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma, dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma,"
-				 // next select the name from the cell type -- each cell type gets a seperate dropdown id
+				 // next select the name from the cell type -- each cell type gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma LY1,"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma MM1S,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma BE2C,"
