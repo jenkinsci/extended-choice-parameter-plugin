@@ -1,0 +1,132 @@
+################ Code for calling it in the groovy console (only Boon needs to be approved):
+"""
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.*;
+
+String script = """
+import org.boon.Boon;
+          
+          def jsonEditorOptions = Boon.fromJson(/{
+            "disable_edit_json": true,
+            "disable_properties": true,
+            "no_additional_properties": true,
+            "disable_collapse": true,
+            "disable_array_add": true,
+            "disable_array_delete": true,
+            "disable_array_reorder": true,
+            "keep_oneof_values": true,
+            "remove_empty_properties": false,
+            "theme": "bootstrap2",
+            "iconlib": "fontawesome4",
+            "schema": {
+              "title": "x86_64",
+              "type": "object",
+              "id": "x86_64",
+              "class": "",
+              "required": [
+                "debug",
+                "release"
+              ],
+              "oneOf": [
+                {
+                  "title": "Yes",
+                  "type": "object",
+                  "properties": {
+                    
+          "debug": {
+            "title": "debug",
+            "required": [
+              "test"
+              , "memory_check"
+            ],
+            "oneOf": [
+              {
+                "title": "Yes",
+                "type": "object",
+                "properties": {
+                  
+          "test": {
+            "title": "Run tests",
+            "type": "checkbox"
+          }
+        
+                  , 
+          "memory_check": {
+            "title": "Run memory check",
+            "type": "checkbox"
+          }
+        
+                }
+              },
+              {
+                "title": "No",
+                "type": "null"
+              }
+            ]
+          }
+        ,
+                    
+          "release": {
+            "title": "release",
+            "required": [
+              "test"
+              , "memory_check"
+            ],
+            "oneOf": [
+              {
+                "title": "Yes",
+                "type": "object",
+                "properties": {
+                  
+          "test": {
+            "title": "Run tests",
+            "type": "checkbox"
+          }
+        
+                  , 
+          "memory_check": {
+            "title": "Run memory check",
+            "type": "checkbox"
+          }
+        
+                }
+              },
+              {
+                "title": "No",
+                "type": "null"
+              }
+            ]
+          }
+        
+                  }
+                },
+                {
+                  "title": "No",
+                  "type": "null"
+                }
+              ]
+            },
+            "startval": {
+              {
+          "debug": {
+            "test": true,
+            "memory_check": true
+          },
+          "release": null
+        }
+            }
+          }/);
+          return jsonEditorOptions;
+"""
+
+println(this.getBinding())
+
+Jenkins jenkins = Jenkins.get()
+ClassLoader cl = jenkins.getPluginManager().uberClassLoader
+SecureGroovyScript sgs = new SecureGroovyScript(script, true, null)
+
+sgs.configuringWithNonKeyItem()
+
+def result = sgs.evaluate(cl, this.getBinding())
+
+println(result)
+"""
