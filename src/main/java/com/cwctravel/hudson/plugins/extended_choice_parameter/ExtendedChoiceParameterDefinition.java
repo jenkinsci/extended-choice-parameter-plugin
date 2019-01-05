@@ -1252,7 +1252,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public boolean hasUnapprovedScripts() {
-		if (groovyScriptResultStatus == null || groovyScriptResultStatus == ScriptResult.NotRun) {
+		if (groovyScriptResultStatus != ScriptResult.OK) {
 			try {
 				if (!StringUtils.isBlank(groovyScript)) {
 					executeGroovyScript(groovyScript, bindings, "");
