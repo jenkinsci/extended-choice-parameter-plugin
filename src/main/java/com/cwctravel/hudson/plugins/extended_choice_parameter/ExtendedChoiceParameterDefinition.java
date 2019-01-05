@@ -166,7 +166,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String groovyScriptFile = null;
 			boolean useGroovySandbox = false;
 			String bindings = null;
-			String groovyClasspath = null;
 			String javascriptFile = null;
 			String javascript = null;
 
@@ -176,7 +175,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String defaultGroovyScript = null;
 			String defaultGroovyScriptFile = null;
 			String defaultBindings = null;
-			String defaultGroovyClasspath = null;
 
 			String descriptionPropertyValue = null;
 			String descriptionPropertyKey = null;
@@ -184,7 +182,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String descriptionGroovyScript = null;
 			String descriptionGroovyScriptFile = null;
 			String descriptionBindings = null;
-			String descriptionGroovyClasspath = null;
 			String projectName = null;
 			name = formData.getString("name");
 			description = formData.getString("description");
@@ -218,13 +215,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						else if(propertySourceJSON.getInt("value") == 2) {
 							groovyScript = propertySourceJSON.getString("groovyScript");
 							bindings = propertySourceJSON.getString("bindings");
-							groovyClasspath = propertySourceJSON.getString("groovyClasspath");
 							useGroovySandbox = propertySourceJSON.getBoolean("useGroovySandbox");
 						}
 						else if(propertySourceJSON.getInt("value") == 3) {
 							groovyScriptFile = propertySourceJSON.getString("groovyScriptFile");
 							bindings = propertySourceJSON.getString("bindings");
-							groovyClasspath = propertySourceJSON.getString("groovyClasspath");
 							useGroovySandbox = propertySourceJSON.getBoolean("useGroovySandbox");
 						}
 					}
@@ -241,12 +236,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						else if(defaultPropertySourceJSON.getInt("value") == 2) {
 							defaultGroovyScript = defaultPropertySourceJSON.getString("defaultGroovyScript");
 							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
-							defaultGroovyClasspath = defaultPropertySourceJSON.getString("defaultGroovyClasspath");
 						}
 						else if(defaultPropertySourceJSON.getInt("value") == 3) {
 							defaultGroovyScriptFile = defaultPropertySourceJSON.getString("defaultGroovyScriptFile");
 							defaultBindings = defaultPropertySourceJSON.getString("defaultBindings");
-							defaultGroovyClasspath = defaultPropertySourceJSON.getString("defaultGroovyClasspath");
 						}
 					}
 
@@ -262,12 +255,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						else if(descriptionPropertySourceJSON.getInt("value") == 2) {
 							descriptionGroovyScript = descriptionPropertySourceJSON.getString("descriptionGroovyScript");
 							descriptionBindings = descriptionPropertySourceJSON.getString("descriptionBindings");
-							descriptionGroovyClasspath = descriptionPropertySourceJSON.getString("descriptionGroovyClasspath");
 						}
 						else if(descriptionPropertySourceJSON.getInt("value") == 3) {
 							descriptionGroovyScriptFile = descriptionPropertySourceJSON.getString("descriptionGroovyScriptFile");
 							descriptionBindings = descriptionPropertySourceJSON.getString("descriptionBindings");
-							descriptionGroovyClasspath = descriptionPropertySourceJSON.getString("descriptionGroovyClasspath");
 						}
 					}
 				}
@@ -284,14 +275,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 							groovyScript = jsonParameterConfigSourceJSON.getString("groovyScript");
 							groovyScriptFile = null;
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
-							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 							useGroovySandbox = jsonParameterConfigSourceJSON.getBoolean("useGroovySandbox");
 						}
 						else if(jsonParameterConfigSourceJSON.getInt("value") == 1) {
 							groovyScript = null;
 							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScriptFile");
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
-							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 							useGroovySandbox = jsonParameterConfigSourceJSON.getBoolean("useGroovySandbox");
 
 						}
@@ -332,21 +321,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 														groovyScriptFile,
 														useGroovySandbox,
 														bindings, 
-														groovyClasspath, 
-														propertyKey, 
+														propertyKey,
 														defaultPropertyValue, 
 														defaultPropertyFile, 
 														defaultGroovyScript, 
 														defaultGroovyScriptFile, 
 														defaultBindings, 
-														defaultGroovyClasspath, 
-														defaultPropertyKey, 
+														defaultPropertyKey,
 														descriptionPropertyValue, 
 														descriptionPropertyFile, 
 														descriptionGroovyScript, 
 														descriptionGroovyScriptFile, 
 														descriptionBindings, 
-														descriptionGroovyClasspath, 
 														descriptionPropertyKey,
 														javascriptFile,
 														javascript,
@@ -377,8 +363,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String bindings;
 
-	private String groovyClasspath;
-
 	private String propertyKey;
 
 	private String defaultValue;
@@ -392,8 +376,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private boolean useGroovySandbox;
 
 	private String defaultBindings;
-
-	private String defaultGroovyClasspath;
 
 	private String defaultPropertyKey;
 
@@ -409,8 +391,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private String descriptionBindings;
 
-	private String descriptionGroovyClasspath;
-
 	private String descriptionPropertyKey;
 
 	private String javascriptFile;
@@ -420,6 +400,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String projectName;
 
 	//@formatter:off
+	@Deprecated
 	public ExtendedChoiceParameterDefinition(String name,
 	                                         String type,
 	                                         String value,
@@ -460,21 +441,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				groovyScriptFile,
 				true,
 				bindings,
-				groovyClasspath,
 				propertyKey,
 				defaultValue,
 				defaultPropertyFile,
 				defaultGroovyScript,
 				defaultGroovyScriptFile,
 				defaultBindings,
-				defaultGroovyClasspath,
 				defaultPropertyKey,
 				descriptionPropertyValue,
 				descriptionPropertyFile,
 				descriptionGroovyScript,
 				descriptionGroovyScriptFile,
 				descriptionBindings,
-				descriptionGroovyClasspath,
 				descriptionPropertyKey,
 				javascriptFile,
 				javascript,
@@ -496,21 +474,18 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String groovyScriptFile,
             boolean useGroovySandbox,
 			String bindings, 
-			String groovyClasspath, 
-			String propertyKey, 
+			String propertyKey,
 			String defaultValue, 
 			String defaultPropertyFile,
 			String defaultGroovyScript  ,
 			String defaultGroovyScriptFile,
 			String defaultBindings, 
-			String defaultGroovyClasspath,
-			String defaultPropertyKey, 
+			String defaultPropertyKey,
 			String descriptionPropertyValue, 
 			String descriptionPropertyFile, 
 			String descriptionGroovyScript,
 			String descriptionGroovyScriptFile, 
 			String descriptionBindings, 
-			String descriptionGroovyClasspath, 
 			String descriptionPropertyKey,
 			String javascriptFile,
 			String javascript,
@@ -532,7 +507,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.groovyScriptFile = groovyScriptFile;
 		this.useGroovySandbox = useGroovySandbox;
 		this.bindings = bindings;
-		this.groovyClasspath = groovyClasspath;
 
 		this.defaultValue = defaultValue;
 		this.defaultPropertyFile = defaultPropertyFile;
@@ -540,7 +514,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultGroovyScript = defaultGroovyScript;
 		this.defaultGroovyScriptFile = defaultGroovyScriptFile;
 		this.defaultBindings = defaultBindings;
-		this.defaultGroovyClasspath = defaultGroovyClasspath;
 
 		this.descriptionPropertyValue = descriptionPropertyValue;
 		this.descriptionPropertyFile = descriptionPropertyFile;
@@ -548,7 +521,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.descriptionGroovyScript = descriptionGroovyScript;
 		this.descriptionGroovyScriptFile = descriptionGroovyScriptFile;
 		this.descriptionBindings = descriptionBindings;
-		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
 		this.javascriptFile = javascriptFile;
 		this.javascript = javascript;
 		this.saveJSONParameterToFile = saveJSONParameterToFile;
@@ -697,7 +669,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	// note that computeValue is not called by multiLevel.jelly
 	private String computeValue(String value, String propertyFilePath, String propertyKey, String groovyScript, String groovyScriptFile,
-			String bindings, String groovyClasspath, boolean isSingleValued) {
+			String bindings, boolean isSingleValued) {
 
 		if(!StringUtils.isBlank(propertyFilePath) && !StringUtils.isBlank(propertyKey)) {
 			try {
@@ -726,10 +698,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		else if(!StringUtils.isBlank(groovyScript)) {
-			return executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isSingleValued);
+			return executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, isSingleValued);
 		}
 		else if(!StringUtils.isBlank(groovyScriptFile)) {
-			return executeGroovyScriptFile(groovyScriptFile, bindings, groovyClasspath, isSingleValued);
+			return executeGroovyScriptFile(groovyScriptFile, bindings, isSingleValued);
 		}
 		else if(!StringUtils.isBlank(value)) {
 			return value;
@@ -737,11 +709,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return null;
 	}
 
-	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isSingleValued) {
+	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, boolean isSingleValued) {
 		String result = null;
 		try {
 			String groovyScript = loadGroovyScriptFile(groovyScriptFile);
-			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isSingleValued);
+			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, isSingleValued);
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -756,10 +728,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return groovyScript;
 	}
 
-	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, String groovyClasspath, boolean isSingleValued) {
+	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, boolean isSingleValued) {
 		String result = null;
 		try {
-			Object groovyValue = executeGroovyScript(groovyScript, bindings, groovyClasspath);
+			Object groovyValue = executeGroovyScript(groovyScript, bindings);
 			result = processGroovyValue(isSingleValued, groovyValue);
 
 		}
@@ -769,7 +741,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws URISyntaxException, IOException {
+	private Object executeGroovyScript(String groovyScript, String bindings) throws URISyntaxException, IOException {
 		if (groovyScriptResultStatus == null || groovyScriptResultStatus != ScriptResult.OK || groovyScriptResult == null) {
 			try {
 				Jenkins jenkins = Jenkins.get();
@@ -780,7 +752,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				groovyScriptResult = secureGroovyScript.evaluate(classLoader, binding);
 				groovyScriptResultStatus = ScriptResult.OK;
 			} catch (RejectedAccessException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				groovyScriptResultStatus = ScriptResult.Unapproved;
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -847,11 +818,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String computeEffectiveValue() {
-		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, groovyClasspath, false);
+		return computeValue(value, propertyFile, propertyKey, groovyScript, groovyScriptFile, bindings, false);
 	}
 
 	private String computeEffectiveDefaultValue() {
-		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, defaultGroovyClasspath, isSingleValuedParameterType(type));
+		return computeValue(defaultValue, defaultPropertyFile, defaultPropertyKey, defaultGroovyScript, defaultGroovyScriptFile, defaultBindings, isSingleValuedParameterType(type));
 	}
 
 	private boolean isSingleValuedParameterType(String type) {
@@ -859,7 +830,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private String computeEffectiveDescriptionPropertyValue() {
-		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, descriptionGroovyClasspath, false);
+		return computeValue(descriptionPropertyValue, descriptionPropertyFile, descriptionPropertyKey, descriptionGroovyScript, descriptionGroovyScriptFile, descriptionBindings, false);
 	}
 
 	@Override
@@ -1119,21 +1090,21 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.defaultBindings = defaultBindings;
 	}
 
+	@Deprecated
 	public String getGroovyClasspath() {
-		return groovyClasspath;
+		return null;
 	}
 
-	public void setGroovyClasspath(String groovyClasspath) {
-		this.groovyClasspath = groovyClasspath;
-	}
+	@Deprecated
+	public void setGroovyClasspath(String groovyClasspath) { }
 
+	@Deprecated
 	public String getDefaultGroovyClasspath() {
-		return defaultGroovyClasspath;
+		return null;
 	}
 
-	public void setDefaultGroovyClasspath(String defaultGroovyClasspath) {
-		this.defaultGroovyClasspath = defaultGroovyClasspath;
-	}
+	@Deprecated
+	public void setDefaultGroovyClasspath(String defaultGroovyClasspath) { }
 
 	public String getDescriptionPropertyValue() {
 		return descriptionPropertyValue;
@@ -1175,13 +1146,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		this.descriptionBindings = descriptionBindings;
 	}
 
+	@Deprecated
 	public String getDescriptionGroovyClasspath() {
-		return descriptionGroovyClasspath;
+		return null;
 	}
 
-	public void setDescriptionGroovyClasspath(String descriptionGroovyClasspath) {
-		this.descriptionGroovyClasspath = descriptionGroovyClasspath;
-	}
+	@Deprecated
+	public void setDescriptionGroovyClasspath(String descriptionGroovyClasspath) { }
 
 	public String getDescriptionPropertyKey() {
 		return descriptionPropertyKey;
@@ -1255,10 +1226,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		if (groovyScriptResultStatus != ScriptResult.OK) {
 			try {
 				if (!StringUtils.isBlank(groovyScript)) {
-					executeGroovyScript(groovyScript, bindings, "");
+					executeGroovyScript(groovyScript, bindings);
 				} else if (!StringUtils.isBlank(groovyScriptFile)) {
 					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
-					executeGroovyScript(script, bindings, "");
+					executeGroovyScript(script, bindings);
 				}
 			} catch(IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -1315,7 +1286,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
 			}
 
-			result = executeGroovyScript(script, bindings, groovyClasspath);
+			result = executeGroovyScript(script, bindings);
 		}
 		catch(IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
