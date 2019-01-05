@@ -6,64 +6,8 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Property;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException;
-import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
-import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
-import org.jenkinsci.plugins.scriptsecurity.scripts.ClasspathEntry;
-import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedClasspathException;
-import org.jenkinsci.plugins.scriptsecurity.scripts.UnapprovedUsageException;
-import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-
 import au.com.bytecode.opencsv.CSVReader;
 import groovy.lang.Binding;
-import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -73,13 +17,33 @@ import hudson.model.AbstractProject;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.model.User;
-import hudson.util.DirScanner;
-import hudson.util.FileVisitor;
 import hudson.util.FormValidation;
 import hudson.util.LogTaskListener;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Property;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+
+import javax.servlet.ServletException;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private static final long serialVersionUID = -2946187268529865645L;
@@ -826,15 +790,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return groovyScriptResult;
 	}
 
-	private String computeMD5Hash(String str) {
-		String result = str;
-		if(str != null) {
-			result = DigestUtils.md5Hex(str);
-		}
-		result = "_" + result;
-		return result;
-	}
-
 	private Binding getGroovyBinding() {
 		Binding groovyBinding = null;
 
@@ -1381,167 +1336,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		return groovyScriptResultStatus == ScriptResult.Unapproved;
-	}
-
-	private boolean checkScriptApproval(String groovyScript, String groovyClasspath,
-			boolean impersonateAnonymousUser) throws IOException, URISyntaxException, MalformedURLException {
-		boolean result = true;
-		Authentication authentication = Jenkins.getAuthentication();
-		try {
-			ScriptApproval scriptApproval = ScriptApproval.get();
-
-			Jenkins instance = Jenkins.getInstance();
-			AbstractProject<?, ?> project = (AbstractProject<?, ?>)(projectName != null && instance != null ? instance.getItem(projectName) : null);
-
-			if(impersonateAnonymousUser) {
-				SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
-			}
-
-			try {
-				scriptApproval.configuring(groovyScript, GroovyLanguage.get(), ApprovalContext.create());
-				scriptApproval.using(groovyScript, GroovyLanguage.get());
-			}
-			catch(UnapprovedUsageException uUE) {
-				result = false;
-			}
-			catch(UnapprovedClasspathException uCE) {
-				result = false;
-			}
-
-			List<ClasspathEntry> classpathEntries = parseClasspath(groovyClasspath);
-			for(ClasspathEntry classpathEntry: classpathEntries) {
-				if(classpathEntry.isClassDirectory()) {
-					ClasspathEntry classpathDirDigestEntry = createClasspathDirDigest(project, classpathEntry);
-					if(classpathDirDigestEntry != null) {
-						try {
-							scriptApproval.using(classpathDirDigestEntry);
-						}
-						catch(UnapprovedUsageException uUE) {
-							result = false;
-						}
-						catch(UnapprovedClasspathException uCE) {
-							result = false;
-						}
-					}
-					else {
-						result = false;
-					}
-				}
-				else {
-					try {
-						scriptApproval.using(classpathEntry);
-					}
-					catch(UnapprovedUsageException uUE) {
-						result = false;
-					}
-					catch(UnapprovedClasspathException uCE) {
-						result = false;
-					}
-				}
-			}
-		}
-		finally {
-			if(impersonateAnonymousUser) {
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
-		}
-		return result;
-	}
-
-	private ClasspathEntry createClasspathDirDigest(AbstractProject<?, ?> project,
-			ClasspathEntry classpathEntry) throws URISyntaxException, IOException {
-		ClasspathEntry result = null;
-
-		if(project != null) {
-			URI classpathEntryURI = classpathEntry.getURL().toURI();
-			File dirFile = new File(classpathEntryURI);
-			final int[] fileCountHolder = new int[1];
-			final List<Object[]> files = new ArrayList<Object[]>();
-			new DirScanner.Full().scan(dirFile, new FileVisitor() {
-				@Override
-				public void visit(File file, String relativePath) throws IOException {
-					if(file.isFile()) {
-						fileCountHolder[0]++;
-						if(fileCountHolder[0] <= 500) {
-							files.add(new Object[] {file, relativePath});
-						}
-						else {
-							throw new IOException("too many files in directory");
-						}
-					}
-				}
-			});
-
-			Collections.sort(files, new Comparator<Object[]>() {
-				@Override
-				public int compare(Object[] o1, Object[] o2) {
-					String relativePath1 = (String)o1[1];
-					String relativePath2 = (String)o2[1];
-					return relativePath1.compareTo(relativePath2);
-				}
-			});
-
-			File digestFile = createDigest(project, classpathEntryURI, files);
-			result = new ClasspathEntry(digestFile.toURI().toString());
-		}
-		return result;
-	}
-
-	private File createDigest(AbstractProject<?, ?> project, URI classpathEntryURI, List<Object[]> fileInfos) throws IOException {
-		String classpathEntryStr = classpathEntryURI.toString();
-		String digestFileName = getName() + computeMD5Hash(classpathEntryStr) + ".dig";
-		File digestFile = new File(project.getRootDir(), digestFileName);
-		PrintWriter pW = new PrintWriter(digestFile, "UTF-8");
-		try {
-			pW.println(classpathEntryStr);
-			for(Object[] fileInfo: fileInfos) {
-				File file = (File)fileInfo[0];
-				String relativePath = (String)fileInfo[1];
-				String fileHash = hashFile(file);
-				pW.println(relativePath + "::" + fileHash);
-			}
-		}
-		finally {
-			pW.close();
-		}
-		return digestFile;
-	}
-
-	private String hashFile(File file) throws IOException {
-		InputStream is = new FileInputStream(file);
-		try {
-			DigestInputStream input = null;
-			try {
-				MessageDigest digest = MessageDigest.getInstance("SHA-1");
-				input = new DigestInputStream(new BufferedInputStream(is), digest);
-				byte[] buffer = new byte[1024];
-				while(input.read(buffer) != -1);
-				return Util.toHexString(digest.digest());
-			}
-			catch(NoSuchAlgorithmException x) {
-				throw new AssertionError(x);
-			}
-			finally {
-				if(input != null) {
-					input.close();
-				}
-			}
-		}
-		finally {
-			is.close();
-		}
-	}
-
-	private List<ClasspathEntry> parseClasspath(String groovyClasspath) throws MalformedURLException {
-		List<ClasspathEntry> result = new ArrayList<ClasspathEntry>();
-		if(!StringUtils.isEmpty(groovyClasspath)) {
-			String[] classpathUrls = groovyClasspath.split(";");
-			for(String classpathUrl: classpathUrls) {
-				ClasspathEntry classpathEntry = new ClasspathEntry(classpathUrl);
-				result.add(classpathEntry);
-			}
-		}
-		return result;
 	}
 
 	public ParameterDefinitionInfo getParameterDefinitionInfo() {
