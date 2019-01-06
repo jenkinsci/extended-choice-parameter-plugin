@@ -8,7 +8,6 @@ package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
 import au.com.bytecode.opencsv.CSVReader;
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Util;
@@ -27,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
-import org.codehaus.groovy.control.CompilerConfiguration;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -37,7 +35,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -80,8 +77,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private Object groovyScriptResult;
 
 	private ScriptResult groovyScriptResultStatus = ScriptResult.NotRun;
-
-	private transient GroovyShell groovyShell;
 
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
@@ -797,24 +792,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 		return binding;
-	}
-
-	private void setBindings(GroovyShell shell, String bindings) throws IOException {
-		if(bindings != null) {
-			Properties p = new Properties();
-			p.load(new StringReader(bindings));
-			for(Map.Entry<Object, Object> entry: p.entrySet()) {
-				shell.setVariable((String)entry.getKey(), entry.getValue());
-			}
-		}
-
-		Jenkins instance = Jenkins.getInstance();
-		shell.setProperty("jenkins", instance);
-
-		if(projectName != null && instance != null) {
-			AbstractProject<?, ?> project = (AbstractProject<?, ?>)instance.getItem(projectName);
-			shell.setProperty("currentProject", project);
-		}
 	}
 
 	private String computeEffectiveValue() {
