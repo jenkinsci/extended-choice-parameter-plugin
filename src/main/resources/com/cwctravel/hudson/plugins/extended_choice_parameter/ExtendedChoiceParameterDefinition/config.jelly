@@ -271,6 +271,12 @@
                 </f:entry>
             </f:advanced>
         </f:radioBlock>
+        <f:radioBlock name="jsonParameterConfigSource" title="JSON Parameter Config Direct JSON" value="2"
+                      checked="${parameterType eq 'json' and not empty instance.jsonScript}">
+            <f:entry field="jsonScript">
+                <f:textarea value="${instance.jsonScript}"/>
+            </f:entry>
+        </f:radioBlock>
         <f:radioBlock name="jsonParameterConfigJavascriptSource" title="JSON Parameter Config Javascript" value="0"
                       checked="${parameterType eq 'json' and not empty instance.javascript}">
             <f:entry field="javascript">
