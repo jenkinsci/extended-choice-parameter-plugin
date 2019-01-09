@@ -29,6 +29,7 @@ import org.apache.tools.ant.taskdefs.Property;
 import org.boon.Boon;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
@@ -473,6 +474,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	//@formatter:off
 	@DataBoundConstructor
+	@Whitelisted
 	public ExtendedChoiceParameterDefinition(String name, 
 			String type, 
 			String value, 
@@ -1228,7 +1230,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public boolean hasUnapprovedScripts() {
 		if (groovyScriptResultStatus != ScriptResult.OK) {
 			try {
-				if (!StringUtils.isBlank(groovyScript)) {
+				if (!StringUtils.isBlank(jsonScript)) {
+					return false;
+				} else if (!StringUtils.isBlank(groovyScript)) {
 					executeGroovyScript(groovyScript, bindings);
 				} else if (!StringUtils.isBlank(groovyScriptFile)) {
 					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
