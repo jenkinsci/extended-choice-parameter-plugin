@@ -676,6 +676,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				return new ExtendedChoiceParameterValue(getName(), defaultValue);
 			}
 		}
+		else if(type.equals(PARAMETER_TYPE_JSON)) {
+			Object test = getJSONEditorOptions();
+			if(test instanceof LazyValueMap) {
+				String defaultValue = Boon.toJson(((LazyValueMap) test).get("startval"));
+				return new ExtendedChoiceParameterValue(getName(), defaultValue);
+			}
+		}
 		return super.getDefaultParameterValue();
 	}
 
