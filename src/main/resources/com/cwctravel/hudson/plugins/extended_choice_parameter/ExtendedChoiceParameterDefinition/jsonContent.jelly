@@ -9,7 +9,7 @@
   
   <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
   
-  <div id="editor_${it.name}_holder"> &amp;nbsp;</div>  
+  <div id="editor_${it.name}_holder"></div>
   <input id="editor_${it.name}_value" type="hidden" name="value" />
   
   <j:set var="jsonEditorOptions" value="${it.getJSONEditorOptions()}"/>
