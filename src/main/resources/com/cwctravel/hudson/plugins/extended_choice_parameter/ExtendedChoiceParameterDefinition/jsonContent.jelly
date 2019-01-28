@@ -9,7 +9,7 @@
   
   <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
   
-  <div id="editor_${it.name}_holder"> &amp;nbsp;</div>  
+  <div id="editor_${it.name}_holder"></div>
   <input id="editor_${it.name}_value" type="hidden" name="value" />
   
   <j:set var="jsonEditorOptions" value="${it.getJSONEditorOptions()}"/>
@@ -33,11 +33,13 @@
 	   (function() {
 	       var mapping = {
 	            html: '',
-	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
-	            bootstrap3: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
+	            bootstrap2: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap2.min.css',
+	            bootstrap3: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap3.min.css',
+                bootstrap4: '${rootURL}/plugin/extended-choice-parameter/css/bootstrap4.min.css',
 	            foundation3: '${rootURL}/plugin/extended-choice-parameter/css/foundation3.css',
 	            foundation4: '${rootURL}/plugin/extended-choice-parameter/css/foundation4.css',
 	            foundation5: '${rootURL}/plugin/extended-choice-parameter/css/foundation5.css',
+                foundation6: '${rootURL}/plugin/extended-choice-parameter/css/foundation6.css',
 	            jqueryui: '${rootURL}/plugin/extended-choice-parameter/css/jquery-ui.css'
            };
 	       
@@ -51,8 +53,9 @@
            var mapping = {
                 foundation2:  '${rootURL}/plugin/extended-choice-parameter/css/general_foundicons.css',
                 foundation3:  '${rootURL}/plugin/extended-choice-parameter/css/foundation-icons.css',
-                fontawesome3: '${rootURL}/plugin/extended-choice-parameter/css/font-awesome3.css',
-                fontawesome4: '${rootURL}/plugin/extended-choice-parameter/css/font-awesome4.css'
+                fontawesome3: '${rootURL}/plugin/extended-choice-parameter/font-awesome3/css/font-awesome3.css',
+                fontawesome4: '${rootURL}/plugin/extended-choice-parameter/font-awesome4/css/font-awesome4.css',
+                fontawesome5: '${rootURL}/plugin/extended-choice-parameter/font-awesome5/css/font-awesome5.css'
            };
            
            document.getElementById('icon_stylesheet').href = mapping['${iconlib}'];

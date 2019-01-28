@@ -22,7 +22,8 @@
   left: -1em;
   cursor: pointer; }
 .jsonview .collapsible {
-  transition: width 1.2s, height 1.2s; }
+  transition: height 1.2s;
+  transition: width 1.2s; }
 .jsonview .collapsible.collapsed {
   height: .8em;
   width: 1em;
@@ -30,14 +31,14 @@
   overflow: hidden;
   margin: 0; }
 .jsonview .collapsible.collapsed:before {
-  content: "…";
+  content: "â€¦";
   width: 1em;
   margin-left: .2em; }
 .jsonview .collapser.collapsed {
   transform: rotate(0deg); }
 .jsonview .q {
   display: inline-block;
-  width: 0;
+  width: 0px;
   color: transparent; }
 .jsonview li {
   position: relative; }
@@ -47,3 +48,5 @@
   padding: 0; }
 .jsonview h1 {
   font-size: 1.2em; }
+
+/*# sourceMappingURL=jquery.jsonview.css.map */
