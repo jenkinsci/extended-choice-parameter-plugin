@@ -1,84 +1,73 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.jenkins-ci.plugins</groupId>
-		<artifactId>plugin</artifactId>
-		<version>3.15</version>
-		<!-- which version of Hudson is this plugin built against? -->
-		<relativePath />
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>3.25</version>
+    </parent>
 
-	<artifactId>extended-choice-parameter</artifactId>
-	<packaging>hpi</packaging>
-	<version>0.79-SNAPSHOT</version>
-	<name>Extended Choice Parameter Plug-In</name>
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/Extended+Choice+Parameter+plugin</url>
+    <artifactId>extended-choice-parameter</artifactId>
+    <packaging>hpi</packaging>
+    <version>0.79-SNAPSHOT</version>
+    <name>Extended Choice Parameter Plug-In</name>
+    <url>https://wiki.jenkins.io/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
-	<properties>
-		<!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
-		<jenkins-war.version>2.127-20180610.103343-1</jenkins-war.version-->
-		<jenkins.version>2.60.3</jenkins.version>
-		<java.level>8</java.level>
-	</properties>
+    <properties>
+        <!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
+        <jenkins-war.version>2.127-20180610.103343-1</jenkins-war.version-->
+        <jenkins.version>2.60.3</jenkins.version>
+        <java.level>8</java.level>
+    </properties>
 
-	<developers>
-		<developer>
-			<id>vimil</id>
-			<name>Vimil Saju</name>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>vimil</id>
+            <name>Vimil Saju</name>
+        </developer>
+    </developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.0</version>
-		</dependency>
+    <dependencies>
         <dependency>
-          <groupId>org.jenkins-ci.plugins</groupId>
-          <artifactId>jquery</artifactId>
-          <version>1.11.2-0</version>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
-          <groupId>org.jenkins-ci.plugins</groupId>
-          <artifactId>script-security</artifactId>
-          <version>1.19</version>
-        </dependency>        
-		<dependency>
-			<groupId>io.fastjson</groupId>
-			<artifactId>boon</artifactId>
-			<version>0.33</version>
-		</dependency>
-	</dependencies>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jquery</artifactId>
+            <version>1.11.2-0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>script-security</artifactId>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fastjson</groupId>
+            <artifactId>boon</artifactId>
+            <version>0.33</version>
+        </dependency>
+    </dependencies>
 
-	<!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
-	<repositories>
-		<repository>
-			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
-		</repository>
-	</repositories>
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<distributionManagement>
-		<repository>
-			<id>maven.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/releases/</url>
-	   </repository>
-	    <snapshotRepository>
-	      <id>maven.jenkins-ci.org</id>
-	      <url>http://repo.jenkins-ci.org/snapshots/</url>
-	    </snapshotRepository>	   
-	</distributionManagement>
-	<scm>
-		<connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
-	  <tag>extended-choice-parameter-0.66</tag>
-  </scm>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
+        <tag>extended-choice-parameter-0.66</tag>
+    </scm>
 </project>

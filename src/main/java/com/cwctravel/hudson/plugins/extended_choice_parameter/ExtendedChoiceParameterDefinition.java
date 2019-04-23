@@ -789,16 +789,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				contextField.setAccessible(true);
 				contextField.set(groovyShell, groovyBinding);
 			}
-			catch(NoSuchFieldException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-			catch(SecurityException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-			catch(IllegalArgumentException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			}
-			catch(IllegalAccessException e) {
+			catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
 
@@ -1027,12 +1018,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		/* dropdownIds is of a form like this:
 		return name + " dropdown MultiLevelMultiSelect 0," 
-				   // next select the source of the genome -- each genome gets a seperate dropdown id:"
+				   // next select the source of the genome -- each genome gets a separate dropdown id:"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18,dropdown MultiLevelMultiSelect 0 ZZ23,"
-				 // next select the cell type of the source -- each source gets a seperate dropdown id
+				 // next select the cell type of the source -- each source gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma, dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma,"
-				 // next select the name from the cell type -- each cell type gets a seperate dropdown id
+				 // next select the name from the cell type -- each cell type gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma LY1,"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma MM1S,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma BE2C,"
@@ -1275,10 +1266,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = !checkScriptApproval(script, descriptionGroovyClasspath, true);
 			}
 		}
-		catch(IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
-		catch(URISyntaxException e) {
+		catch(IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
@@ -1302,10 +1290,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				scriptApproval.configuring(groovyScript, GroovyLanguage.get(), ApprovalContext.create());
 				scriptApproval.using(groovyScript, GroovyLanguage.get());
 			}
-			catch(UnapprovedUsageException uUE) {
-				result = false;
-			}
-			catch(UnapprovedClasspathException uCE) {
+			catch(UnapprovedUsageException | UnapprovedClasspathException e) {
 				result = false;
 			}
 
@@ -1317,10 +1302,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 						try {
 							scriptApproval.using(classpathDirDigestEntry);
 						}
-						catch(UnapprovedUsageException uUE) {
-							result = false;
-						}
-						catch(UnapprovedClasspathException uCE) {
+						catch(UnapprovedUsageException | UnapprovedClasspathException e) {
 							result = false;
 						}
 					}
@@ -1332,10 +1314,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					try {
 						scriptApproval.using(classpathEntry);
 					}
-					catch(UnapprovedUsageException uUE) {
-						result = false;
-					}
-					catch(UnapprovedClasspathException uCE) {
+					catch(UnapprovedUsageException | UnapprovedClasspathException e) {
 						result = false;
 					}
 				}
@@ -1492,10 +1471,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 			result = executeGroovyScript(script, bindings, groovyClasspath);
 		}
-		catch(IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
-		catch(URISyntaxException e) {
+		catch(IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
@@ -1517,10 +1493,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					}
 					result = Util.replaceMacro(input, envVars);
 				}
-				catch(IOException e) {
-					LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				}
-				catch(InterruptedException e) {
+				catch(IOException | InterruptedException e) {
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				}
 			}
