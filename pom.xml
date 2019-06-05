@@ -9,7 +9,7 @@
 
     <artifactId>extended-choice-parameter</artifactId>
     <packaging>hpi</packaging>
-    <version>0.79</version>
+    <version>0.79-SNAPSHOT</version>
     <name>Extended Choice Parameter Plug-In</name>
     <url>https://wiki.jenkins.io/display/JENKINS/Extended+Choice+Parameter+plugin</url>
 
