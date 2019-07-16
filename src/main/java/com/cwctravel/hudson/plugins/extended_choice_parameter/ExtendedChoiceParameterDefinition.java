@@ -60,7 +60,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyCodeSource;
 import groovy.lang.GroovyShell;
@@ -341,38 +341,38 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 
 			//@formatter:off
-			return new ExtendedChoiceParameterDefinition(name, 
-														type, 														
-														propertyValue, 
+			return new ExtendedChoiceParameterDefinition(name,
+														type,
+														propertyValue,
 														projectName,
-														propertyFile, 
-														groovyScript, 
-														groovyScriptFile, 
-														bindings, 
-														groovyClasspath, 
-														propertyKey, 
-														defaultPropertyValue, 
-														defaultPropertyFile, 
-														defaultGroovyScript, 
-														defaultGroovyScriptFile, 
-														defaultBindings, 
-														defaultGroovyClasspath, 
-														defaultPropertyKey, 
-														descriptionPropertyValue, 
-														descriptionPropertyFile, 
-														descriptionGroovyScript, 
-														descriptionGroovyScriptFile, 
-														descriptionBindings, 
-														descriptionGroovyClasspath, 
+														propertyFile,
+														groovyScript,
+														groovyScriptFile,
+														bindings,
+														groovyClasspath,
+														propertyKey,
+														defaultPropertyValue,
+														defaultPropertyFile,
+														defaultGroovyScript,
+														defaultGroovyScriptFile,
+														defaultBindings,
+														defaultGroovyClasspath,
+														defaultPropertyKey,
+														descriptionPropertyValue,
+														descriptionPropertyFile,
+														descriptionGroovyScript,
+														descriptionGroovyScriptFile,
+														descriptionBindings,
+														descriptionGroovyClasspath,
 														descriptionPropertyKey,
 														javascriptFile,
 														javascript,
 														saveJSONParameterToFile,
-														quoteValue, 
-														visibleItemCount, 
-														description, 
+														quoteValue,
+														visibleItemCount,
+														description,
 														multiSelectDelimiter);
-			//@formatter:on			
+			//@formatter:on
 		}
 	}
 
@@ -436,36 +436,36 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	//@formatter:off
 	@DataBoundConstructor
-	public ExtendedChoiceParameterDefinition(String name, 
-			String type, 
-			String value, 
+	public ExtendedChoiceParameterDefinition(String name,
+			String type,
+			String value,
 			String projectName,
-			String propertyFile, 
+			String propertyFile,
 			String groovyScript,
-			String groovyScriptFile, 
-			String bindings, 
-			String groovyClasspath, 
-			String propertyKey, 
-			String defaultValue, 
+			String groovyScriptFile,
+			String bindings,
+			String groovyClasspath,
+			String propertyKey,
+			String defaultValue,
 			String defaultPropertyFile,
-			String defaultGroovyScript, 
-			String defaultGroovyScriptFile, 
-			String defaultBindings, 
+			String defaultGroovyScript,
+			String defaultGroovyScriptFile,
+			String defaultBindings,
 			String defaultGroovyClasspath,
-			String defaultPropertyKey, 
-			String descriptionPropertyValue, 
-			String descriptionPropertyFile, 
+			String defaultPropertyKey,
+			String descriptionPropertyValue,
+			String descriptionPropertyFile,
 			String descriptionGroovyScript,
-			String descriptionGroovyScriptFile, 
-			String descriptionBindings, 
-			String descriptionGroovyClasspath, 
+			String descriptionGroovyScriptFile,
+			String descriptionBindings,
+			String descriptionGroovyClasspath,
 			String descriptionPropertyKey,
 			String javascriptFile,
 			String javascript,
 			boolean saveJSONParameterToFile,
-			boolean quoteValue, 
-			int visibleItemCount, 
-			String description, 
+			boolean quoteValue,
+			int visibleItemCount,
+			String description,
 			String multiSelectDelimiter) {
 	//@formatter:on
 
@@ -563,10 +563,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		else {
 			String valueStr = computeEffectiveValue();
 			if(valueStr != null) {
-				List<String> result = new ArrayList<String>();
+				List<String> result = new ArrayList<>();
 
 				String[] values = valueStr.split(",");
-				Set<String> valueSet = new HashSet<String>();
+				Set<String> valueSet = new HashSet<>();
 				for(String value: values) {
 					valueSet.add(value);
 				}
@@ -916,7 +916,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private ArrayList<Integer> columnIndicesForDropDowns(String[] headerColumns) {
-		ArrayList<Integer> columnIndicesForDropDowns = new ArrayList<Integer>();
+		ArrayList<Integer> columnIndicesForDropDowns = new ArrayList<>();
 
 		String[] dropDownNames = value.split(",");
 
@@ -965,7 +965,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		List<String[]> dataLines = fileLines.subList(1, fileLines.size());
 
-		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<String, Set<String>>();
+		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<>();
 
 		String prefix = getName() + " dropdown MultiLevelMultiSelect 0";
 		choicesByDropdownId.put(prefix, new LinkedHashSet<String>());
@@ -1017,7 +1017,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return dropdownIdsBuilder.toString();
 
 		/* dropdownIds is of a form like this:
-		return name + " dropdown MultiLevelMultiSelect 0," 
+		return name + " dropdown MultiLevelMultiSelect 0,"
 				   // next select the source of the genome -- each genome gets a separate dropdown id:"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18,dropdown MultiLevelMultiSelect 0 ZZ23,"
 				 // next select the cell type of the source -- each source gets a separate dropdown id
@@ -1033,7 +1033,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public Map<String, String> getChoicesByDropdownId() throws Exception {
 		Map<String, Set<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
-		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
+		Map<String, String> collapsedMap = new LinkedHashMap<>();
 
 		for(Map.Entry<String, Set<String>> dropdownIdEntry: choicesByDropdownId.entrySet()) {
 			StringBuilder choicesBuilder = new StringBuilder();
@@ -1413,7 +1413,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private List<ClasspathEntry> parseClasspath(String groovyClasspath) throws MalformedURLException {
-		List<ClasspathEntry> result = new ArrayList<ClasspathEntry>();
+		List<ClasspathEntry> result = new ArrayList<>();
 		if(!StringUtils.isEmpty(groovyClasspath)) {
 			String[] classpathUrls = groovyClasspath.split(";");
 			for(String classpathUrl: classpathUrls) {
