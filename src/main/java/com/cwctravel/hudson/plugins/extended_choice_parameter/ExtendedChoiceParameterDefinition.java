@@ -81,7 +81,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private ScriptResult groovyScriptResultStatus = ScriptResult.NotRun;
 
-	@Extension
+	@Extension @Symbol({"extendedChoice"})
 	public static class DescriptorImpl extends ParameterDescriptor {
 		@Override
 		public String getDisplayName() {
@@ -318,37 +318,37 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 
 			//@formatter:off
-			return new ExtendedChoiceParameterDefinition(name, 
-														type, 														
-														propertyValue, 
+			return new ExtendedChoiceParameterDefinition(name,
+														type,
+														propertyValue,
 														projectName,
-														propertyFile, 
-														groovyScript, 
+														propertyFile,
+														groovyScript,
 														groovyScriptFile,
 														jsonScript,
 														useGroovySandbox,
-														bindings, 
+														bindings,
 														propertyKey,
-														defaultPropertyValue, 
-														defaultPropertyFile, 
-														defaultGroovyScript, 
-														defaultGroovyScriptFile, 
-														defaultBindings, 
+														defaultPropertyValue,
+														defaultPropertyFile,
+														defaultGroovyScript,
+														defaultGroovyScriptFile,
+														defaultBindings,
 														defaultPropertyKey,
-														descriptionPropertyValue, 
-														descriptionPropertyFile, 
-														descriptionGroovyScript, 
-														descriptionGroovyScriptFile, 
-														descriptionBindings, 
+														descriptionPropertyValue,
+														descriptionPropertyFile,
+														descriptionGroovyScript,
+														descriptionGroovyScriptFile,
+														descriptionBindings,
 														descriptionPropertyKey,
 														javascriptFile,
 														javascript,
 														saveJSONParameterToFile,
-														quoteValue, 
-														visibleItemCount, 
-														description, 
+														quoteValue,
+														visibleItemCount,
+														description,
 														multiSelectDelimiter);
-			//@formatter:on			
+			//@formatter:on
 		}
 	}
 
@@ -476,9 +476,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	//@formatter:off
 	@DataBoundConstructor
 	@Whitelisted
-	public ExtendedChoiceParameterDefinition(String name, 
-			String type, 
-			String value, 
+	public ExtendedChoiceParameterDefinition(String name,
+			String type,
+			String value,
 			String projectName,
 			String propertyFile,
 			String groovyScript,
@@ -489,22 +489,22 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String propertyKey,
 			String defaultValue,
 			String defaultPropertyFile,
-			String defaultGroovyScript  ,
+			String defaultGroovyScript,
 			String defaultGroovyScriptFile,
 			String defaultBindings,
 			String defaultPropertyKey,
-			String descriptionPropertyValue, 
-			String descriptionPropertyFile, 
+			String descriptionPropertyValue,
+			String descriptionPropertyFile,
 			String descriptionGroovyScript,
-			String descriptionGroovyScriptFile, 
-			String descriptionBindings, 
+			String descriptionGroovyScriptFile,
+			String descriptionBindings,
 			String descriptionPropertyKey,
 			String javascriptFile,
 			String javascript,
 			boolean saveJSONParameterToFile,
-			boolean quoteValue, 
-			int visibleItemCount, 
-			String description, 
+			boolean quoteValue,
+			int visibleItemCount,
+			String description,
 			String multiSelectDelimiter) {
 	//@formatter:on
 
@@ -601,10 +601,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		else {
 			String valueStr = computeEffectiveValue();
 			if(valueStr != null) {
-				List<String> result = new ArrayList<String>();
+				List<String> result = new ArrayList<>();
 
 				String[] values = valueStr.split(",");
-				Set<String> valueSet = new HashSet<String>();
+				Set<String> valueSet = new HashSet<>();
 				for(String value: values) {
 					valueSet.add(value);
 				}
@@ -912,7 +912,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private ArrayList<Integer> columnIndicesForDropDowns(String[] headerColumns) {
-		ArrayList<Integer> columnIndicesForDropDowns = new ArrayList<Integer>();
+		ArrayList<Integer> columnIndicesForDropDowns = new ArrayList<>();
 
 		String[] dropDownNames = value.split(",");
 
@@ -961,7 +961,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 		List<String[]> dataLines = fileLines.subList(1, fileLines.size());
 
-		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<String, Set<String>>();
+		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<>();
 
 		String prefix = getName() + " dropdown MultiLevelMultiSelect 0";
 		choicesByDropdownId.put(prefix, new LinkedHashSet<String>());
@@ -1013,13 +1013,13 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return dropdownIdsBuilder.toString();
 
 		/* dropdownIds is of a form like this:
-		return name + " dropdown MultiLevelMultiSelect 0," 
-				   // next select the source of the genome -- each genome gets a seperate dropdown id:"
+		return name + " dropdown MultiLevelMultiSelect 0,"
+				   // next select the source of the genome -- each genome gets a separate dropdown id:"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18,dropdown MultiLevelMultiSelect 0 ZZ23,"
-				 // next select the cell type of the source -- each source gets a seperate dropdown id
+				 // next select the cell type of the source -- each source gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma, dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma,"
-				 // next select the name from the cell type -- each cell type gets a seperate dropdown id
+				 // next select the name from the cell type -- each cell type gets a separate dropdown id
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Diffuse large B-cell lymphoma LY1,"
 				 + name + " dropdown MultiLevelMultiSelect 0 HG18 Multiple Myeloma MM1S,"
 				 + name + " dropdown MultiLevelMultiSelect 0 ZZ23 Neuroblastoma BE2C,"
@@ -1029,7 +1029,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public Map<String, String> getChoicesByDropdownId() throws Exception {
 		Map<String, Set<String>> choicesByDropdownId = calculateChoicesByDropdownId();
 
-		Map<String, String> collapsedMap = new LinkedHashMap<String, String>();
+		Map<String, String> collapsedMap = new LinkedHashMap<>();
 
 		for(Map.Entry<String, Set<String>> dropdownIdEntry: choicesByDropdownId.entrySet()) {
 			StringBuilder choicesBuilder = new StringBuilder();
@@ -1246,9 +1246,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
 					executeGroovyScript(script, bindings);
 				}
-			} catch(IOException e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			} catch(URISyntaxException e) {
+			} catch(IOException e | URISyntaxException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
@@ -1306,10 +1304,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 			result = executeGroovyScript(script, bindings);
 		}
-		catch(IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-		}
-		catch(URISyntaxException e) {
+		catch(IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
@@ -1331,10 +1326,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					}
 					result = Util.replaceMacro(input, envVars);
 				}
-				catch(IOException e) {
-					LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				}
-				catch(InterruptedException e) {
+				catch(IOException | InterruptedException e) {
 					LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				}
 			}
