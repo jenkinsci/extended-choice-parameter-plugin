@@ -6,7 +6,7 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 import groovy.lang.Binding;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -28,6 +28,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 import org.boon.Boon;
 import org.boon.core.value.LazyValueMap;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
@@ -767,7 +768,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private Object executeGroovyScript(String groovyScript, String bindings) throws URISyntaxException, IOException {
 		if (groovyScriptResultStatus == null || groovyScriptResultStatus != ScriptResult.OK || groovyScriptResult == null) {
 			try {
-				Jenkins jenkins = Jenkins.get();
+				Jenkins jenkins = Jenkins.getInstance();
 				ClassLoader classLoader = jenkins.getPluginManager().uberClassLoader;
 				SecureGroovyScript secureGroovyScript = new SecureGroovyScript(groovyScript, useGroovySandbox, null);
 				secureGroovyScript.configuringWithNonKeyItem();
@@ -1246,7 +1247,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
 					executeGroovyScript(script, bindings);
 				}
-			} catch(IOException e | URISyntaxException e) {
+			} catch(IOException | URISyntaxException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
