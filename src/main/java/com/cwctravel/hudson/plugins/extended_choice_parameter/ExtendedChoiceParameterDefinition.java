@@ -1458,7 +1458,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		return result;
 	}
 
-	public Object getJSONEditorOptions() {
+	public JSONObject getJSONEditorOptions() {
 		Object result = null;
 		try {
 			String script = null;
@@ -1474,7 +1474,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		catch(IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
-		return result;
+		return (JSONObject) result;
 	}
 
 	private String expandVariables(String input) {

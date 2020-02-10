@@ -13,17 +13,13 @@
   <input id="editor_${it.name}_value" type="hidden" name="value" />
   
   <j:set var="jsonEditorOptions" value="${it.getJSONEditorOptions()}"/>
-  <j:set var="theme" value="${jsonEditorOptions.get('theme')}"/>
-  <j:set var="iconlib" value="${jsonEditorOptions.get('iconlib')}"/>
-  
-  <j:invokeStatic var="jsonEditorOptionsJSON" className="org.boon.Boon" method="toJson">
-    <j:arg value="${jsonEditorOptions}" type="java.lang.Object" />
-  </j:invokeStatic>
+  <j:set var="theme" value="${jsonEditorOptions.optString('theme')}"/>
+  <j:set var="iconlib" value="${jsonEditorOptions.optString('iconlib')}"/>
   
   <j:set  var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
     
   <script>       
-      var editor_${normalizedParameterName} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptionsJSON});
+      var editor_${normalizedParameterName} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptions});
   
       editor_${normalizedParameterName}.on('change',function() {
 		  document.getElementById("editor_${it.name}_value").value = JSON.stringify(editor_${normalizedParameterName}.getValue());
@@ -62,7 +58,7 @@
       <j:if test="${not empty jsonEditorScript}">
         (function(editor, valueInput) {            
         	<j:out value="${jsonEditorScript}"/>
-        })(editor_${normalizedParameterName}, document.getElementById("editor_${it.name}_value"));
+        })(editor_${normalizedParameterName});
       </j:if>
   </script>
 
