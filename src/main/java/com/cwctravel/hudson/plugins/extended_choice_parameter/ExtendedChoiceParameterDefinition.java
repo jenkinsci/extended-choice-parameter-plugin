@@ -718,7 +718,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private Object executeGroovyScript(String groovyScript, String bindings, String groovyClasspath) throws URISyntaxException, IOException {
 		Object groovyValue = null;
-
 		if(checkScriptApproval(groovyScript, groovyClasspath, false)) {
 			GroovyShell groovyShell = getGroovyShell(groovyClasspath);
 			GroovyCodeSource codeSource = new GroovyCodeSource(groovyScript, computeMD5Hash(groovyScript), "/groovy/shell");
@@ -1459,7 +1458,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	public Object getJSONEditorOptions() {
-		Object result = null;
+	    Object result = null;
 		try {
 			String script = null;
 			if(!StringUtils.isBlank(groovyScript)) {
@@ -1468,7 +1467,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			else {
 				script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
 			}
-
 			result = executeGroovyScript(script, bindings, groovyClasspath);
 		}
 		catch(IOException | URISyntaxException e) {

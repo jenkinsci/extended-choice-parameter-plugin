@@ -16,10 +16,10 @@
   <j:set var="theme" value="${jsonEditorOptions.get('theme')}"/>
   <j:set var="iconlib" value="${jsonEditorOptions.get('iconlib')}"/>
   
-  <j:invokeStatic var="jsonEditorOptionsJSON" className="org.boon.Boon" method="toJson">
+  <j:invokeStatic var="jsonEditorOptionsJSON" className="groovy.json.JsonOutput" method="toJson">
     <j:arg value="${jsonEditorOptions}" type="java.lang.Object" />
   </j:invokeStatic>
-  
+
   <j:set  var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
     
   <script>       
@@ -60,7 +60,7 @@
       </j:if>
       
       <j:if test="${not empty jsonEditorScript}">
-        (function(editor, valueInput) {            
+        (function(editor, valueInput) {
         	<j:out value="${jsonEditorScript}"/>
         })(editor_${normalizedParameterName}, document.getElementById("editor_${it.name}_value"));
       </j:if>
