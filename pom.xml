@@ -11,7 +11,7 @@
     <packaging>hpi</packaging>
     <version>0.80-SNAPSHOT</version>
     <name>Extended Choice Parameter Plug-In</name>
-    <url>https://wiki.jenkins.io/display/JENKINS/Extended+Choice+Parameter+plugin</url>
+    <url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
 
     <properties>
         <!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
