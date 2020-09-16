@@ -1,0 +1,22 @@
+[[extended-choice-parameter-plugin]]
+= Extended Choice Parameter Plugin
+
+link:https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/master/[image:https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/master/badge/icon[Build]]
+link:https://github.com/jenkinsci/extended-choice-parameter-plugin/graphs/contributors[image:https://img.shields.io/github/contributors/jenkinsci/extended-choice-parameter-plugin.svg?color=blue[Contributors]]
+link:https://plugins.jenkins.io/extended-choice-parameter/[image:https://img.shields.io/jenkins/plugin/i/extended-choice-parameter.svg?color=blue&label=installations[Jenkins Plugin Installs]]
+link:https://plugins.jenkins.io/extended-choice-parameter/[image:https://img.shields.io/jenkins/plugin/v/extended-choice-parameter.svg[Plugin]]
+
+[WARNING]
+.Security issues
+====
+Older versions of this plugin may not be safe to use.  Please review the following warnings before
+using an older version:
+
+* https://jenkins.io/security/advisory/2017-04-10/[Arbitrary code execution
+  vulnerability]
+====
+
+Add extended functionality to Choice parameter.
+
+For info on how to use groovy script feature see this
+http://stackoverflow.com/questions/24730186/jenkins-extended-parameter-plugin-groovy-script[link].
