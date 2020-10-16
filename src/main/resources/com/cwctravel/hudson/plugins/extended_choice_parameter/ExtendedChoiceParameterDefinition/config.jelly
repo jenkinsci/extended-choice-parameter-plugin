@@ -89,7 +89,7 @@
 	        <f:checkbox checked="${instance.quoteValue}"/>
 	      </f:entry>
           
-      <f:section title="Choose Source for Value">
+      <f:advanced title="Choose Source for Value">
           <f:radioBlock name="propertySource" title="Value" value="0" checked="${parameterType eq 'basic' and empty instance.propertyFile and not empty instance.value}">
               <f:entry title="Value" field="propertyValue">
                 <f:textbox value="${instance.value}"/>
@@ -132,9 +132,9 @@
                   </f:entry>                  
               </f:advanced>
           </f:radioBlock>
-      </f:section>
+      </f:advanced>
               
-	  <f:section title="Choose Source for Default Value">
+	  <f:advanced title="Choose Source for Default Value">
 	      <f:radioBlock name="defaultPropertySource" title="Default Value" value="0" checked="${parameterType eq 'basic' and not empty instance.defaultValue}">
 	        <f:entry field="defaultPropertyValue">
 	            <f:textbox value="${instance.defaultValue}"/>
@@ -177,9 +177,9 @@
                   </f:entry>   	              
 	          </f:advanced>
 	      </f:radioBlock>
-	  </f:section>  
+	  </f:advanced>
 	  
-      <f:section title="Choose Source for Value Description">
+      <f:advanced title="Choose Source for Value Description">
           <f:radioBlock name="descriptionPropertySource" title="Description" value="0" checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyValue}">
             <f:entry field="descriptionPropertyValue">
                 <f:textbox value="${instance.descriptionPropertyValue}"/>
@@ -222,7 +222,7 @@
                   </f:entry>                  
               </f:advanced>
           </f:radioBlock>
-      </f:section>   
+      </f:advanced>
   </f:radioBlock>
   <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1" checked="${parameterType eq 'multilevel'}">
         <f:entry name="type" title="Parameter Type" field="type">
