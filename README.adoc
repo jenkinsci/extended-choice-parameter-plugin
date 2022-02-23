@@ -16,7 +16,7 @@ using an older version:
   vulnerability]
 ====
 
-Add extended functionality to Choice parameter
+Add extended functionality to Choice parameter.
 
 For info on how to use groovy script feature see this
 http://stackoverflow.com/questions/24730186/jenkins-extended-parameter-plugin-groovy-script[link].
