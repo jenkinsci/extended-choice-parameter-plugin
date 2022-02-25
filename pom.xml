@@ -9,13 +9,12 @@
 
     <artifactId>extended-choice-parameter</artifactId>
     <packaging>hpi</packaging>
-    <version>${revision}${changelist}</version>
+    <version>${changelist}</version>
     <name>Extended Choice Parameter Plug-In</name>
     <url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
 
     <properties>
-        <revision>0.85</revision>
-        <changelist>-SNAPSHOT</changelist>
+        <changelist>999999-SNAPSHOT</changelist>
         <!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
         <jenkins-war.version>2.127-20180610.103343-1</jenkins-war.version-->
         <jenkins.version>2.60.3</jenkins.version>
