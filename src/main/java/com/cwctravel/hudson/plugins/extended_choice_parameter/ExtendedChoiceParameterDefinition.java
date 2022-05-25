@@ -59,6 +59,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.verb.POST;
 
 import com.opencsv.CSVReader;
 import groovy.lang.Binding;
@@ -114,6 +115,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
 
+		@POST
 		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
 				@QueryParameter final String type) throws IOException, ServletException {
 			if(StringUtils.isBlank(propertyFile)) {
@@ -158,16 +160,19 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 
+		@POST
 		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
 				@QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(propertyFile, propertyKey, type);
 		}
 
+		@POST
 		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
 				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
+		@POST
 		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
 				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
