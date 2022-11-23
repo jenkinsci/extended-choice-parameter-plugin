@@ -1,4 +1,5 @@
-#!/usr/bin/env groovy
-
-/* `buildPlugin` step provided by: https://github.com/jenkins-infra/pipeline-library  */
-buildPlugin()
+/*
+ See the documentation for more options:
+ https://github.com/jenkins-infra/pipeline-library/
+*/
+buildPlugin(useContainerAgent: true)

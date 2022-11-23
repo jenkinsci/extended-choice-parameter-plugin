@@ -1,1 +1,2 @@
 _extends: .github
+tag-template: extended-choice-parameter-$NEXT_MINOR_VERSION
