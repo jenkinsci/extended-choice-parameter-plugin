@@ -1,69 +1,95 @@
-<?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>plugin</artifactId>
-        <version>3.47</version>
-    </parent>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <artifactId>extended-choice-parameter</artifactId>
-    <packaging>hpi</packaging>
-    <version>${changelist}</version>
-    <name>Extended Choice Parameter Plug-In</name>
-    <url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>4.41</version>
+    <relativePath/>
+  </parent>
 
-    <properties>
-        <changelist>999999-SNAPSHOT</changelist>
-        <!--jenkins-core.version>2.127-20180610.103314-1</jenkins-core.version>
-        <jenkins-war.version>2.127-20180610.103343-1</jenkins-war.version-->
-        <jenkins.version>2.60.3</jenkins.version>
-        <java.level>8</java.level>
-    </properties>
+  <groupId>io.jenkins.plugins</groupId>
+  <artifactId>extended-choice-parameter</artifactId>
+  <version>${revision}${changelist}</version>
+  <packaging>hpi</packaging>
 
-    <developers>
-        <developer>
-            <id>vimil</id>
-            <name>Vimil Saju</name>
-        </developer>
-    </developers>
+  <name>Extended Choice Parameter Plugin</name>
+  <url>https://github.com/${gitHubRepo}</url>
 
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>vimil</id>
+      <name>Vimil Saju</name>
+    </developer>
+    <developer>
+      <id>chonton</id>
+      <name>chas honton</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/${gitHubRepo}</connection>
+    <developerConnection>scm:git:https://github.com/${gitHubRepo}</developerConnection>
+    <tag>${scmTag}</tag>
+    <url>https://github.com/${gitHubRepo}</url>
+  </scm>
+
+  <properties>
+    <revision>0.85</revision>
+    <changelist>-SNAPSHOT</changelist>
+
+    <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+    <jenkins.version>2.332.4</jenkins.version>
+    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
+  </properties>
+
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>4.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>jquery</artifactId>
-            <version>1.12.4-0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>script-security</artifactId>
-            <version>1.19</version>
-        </dependency>
+      <dependency>
+        <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
+        <groupId>io.jenkins.tools.bom</groupId>
+        <artifactId>bom-2.332.x</artifactId>
+        <version>1451.v15f1fdb_772a_f</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>4.6</version>
+    </dependency>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>https://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>script-security</artifactId>
+      <version>1172.v35f6a_0b_8207e</version>
+    </dependency>
+  </dependencies>
 
-    <scm>
-        <connection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/extended-choice-parameter-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/extended-choice-parameter-plugin</url>
-        <tag>${scmTag}</tag>
-    </scm>
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
