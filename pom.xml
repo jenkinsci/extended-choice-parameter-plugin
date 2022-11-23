@@ -12,7 +12,7 @@
 
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>extended-choice-parameter</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Extended Choice Parameter Plugin</name>
@@ -44,8 +44,7 @@
   </scm>
 
   <properties>
-    <revision>0.85</revision>
-    <changelist>-SNAPSHOT</changelist>
+    <changelist>999999-SNAPSHOT</changelist>
 
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
     <jenkins.version>2.332.4</jenkins.version>
