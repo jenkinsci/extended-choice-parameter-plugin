@@ -10,7 +10,6 @@
     <relativePath/>
   </parent>
 
-  <groupId>io.jenkins.plugins</groupId>
   <artifactId>extended-choice-parameter</artifactId>
   <version>${changelist}</version>
   <packaging>hpi</packaging>
