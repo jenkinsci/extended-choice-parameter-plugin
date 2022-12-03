@@ -142,10 +142,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				}
 				property.execute();
 			}
-			catch(MalformedURLException e) {
-				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
-			}
-			catch(BuildException e) {
+			catch(MalformedURLException | BuildException e) {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 
@@ -767,22 +764,20 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
 		if(groovyShell == null) {
-			Jenkins jenkins = Jenkins.getInstanceOrNull();
-			if(jenkins != null) {
-				ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
+			Jenkins jenkins = Jenkins.get();
+			ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
 
-				if(cl == null) {
-					cl = Thread.currentThread().getContextClassLoader();
-				}
-
-				CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-				if(!StringUtils.isBlank(groovyClasspath)) {
-					compilerConfiguration.setClasspath(groovyClasspath);
-				}
-
-				Binding groovyBinding = getGroovyBinding();
-				groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
+			if(cl == null) {
+				cl = Thread.currentThread().getContextClassLoader();
 			}
+
+			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+			if(!StringUtils.isBlank(groovyClasspath)) {
+				compilerConfiguration.setClasspath(groovyClasspath);
+			}
+
+			Binding groovyBinding = getGroovyBinding();
+			groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 		}
 		else {
 			if(!StringUtils.isBlank(groovyClasspath)) {
@@ -842,10 +837,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 
-		Jenkins instance = Jenkins.getInstanceOrNull();
+		Jenkins instance = Jenkins.get();
 		shell.setProperty("jenkins", instance);
 
-		if(projectName != null && instance != null) {
+		if(projectName != null) {
 			AbstractProject<?, ?> project = (AbstractProject<?, ?>)instance.getItem(projectName);
 			shell.setProperty("currentProject", project);
 		}
