@@ -19,6 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +41,9 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReaderBuilder;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -137,10 +142,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				}
 				property.execute();
 			}
-			catch(MalformedURLException e) {
-				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
-			}
-			catch(BuildException e) {
+			catch(MalformedURLException | BuildException e) {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 
@@ -762,22 +764,20 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 
 	private synchronized GroovyShell getGroovyShell(String groovyClasspath) {
 		if(groovyShell == null) {
-			Jenkins jenkins = Jenkins.getInstance();
-			if(jenkins != null) {
-				ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
+			Jenkins jenkins = Jenkins.get();
+			ClassLoader cl = jenkins.getPluginManager().uberClassLoader;
 
-				if(cl == null) {
-					cl = Thread.currentThread().getContextClassLoader();
-				}
-
-				CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
-				if(!StringUtils.isBlank(groovyClasspath)) {
-					compilerConfiguration.setClasspath(groovyClasspath);
-				}
-
-				Binding groovyBinding = getGroovyBinding();
-				groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
+			if(cl == null) {
+				cl = Thread.currentThread().getContextClassLoader();
 			}
+
+			CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+			if(!StringUtils.isBlank(groovyClasspath)) {
+				compilerConfiguration.setClasspath(groovyClasspath);
+			}
+
+			Binding groovyBinding = getGroovyBinding();
+			groovyShell = new GroovyShell(cl, groovyBinding, compilerConfiguration);
 		}
 		else {
 			if(!StringUtils.isBlank(groovyClasspath)) {
@@ -837,10 +837,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			}
 		}
 
-		Jenkins instance = Jenkins.getInstance();
+		Jenkins instance = Jenkins.get();
 		shell.setProperty("jenkins", instance);
 
-		if(projectName != null && instance != null) {
+		if(projectName != null) {
 			AbstractProject<?, ?> project = (AbstractProject<?, ?>)instance.getItem(projectName);
 			shell.setProperty("currentProject", project);
 		}
@@ -939,10 +939,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		String resolvedPropertyFile = expandVariables(propertyFile);
 		File file = new File(resolvedPropertyFile);
 		List<String[]> fileLines = Collections.emptyList();
+		CSVParser csvParser = new CSVParserBuilder().withSeparator('\t').build();
 		if(file.isFile()) {
 			CSVReader csvReader = null;
 			try {
-				csvReader = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"), '\t');
+				csvReader = new CSVReaderBuilder(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();
 				fileLines = csvReader.readAll();
 			}
 			finally {
@@ -953,7 +954,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			URL propertyFileUrl = new URL(resolvedPropertyFile);
 			CSVReader csvReader = null;
 			try {
-				csvReader = new CSVReader(new InputStreamReader(propertyFileUrl.openStream(), "UTF-8"), '\t');
+				csvReader = new CSVReaderBuilder(new InputStreamReader(propertyFileUrl.openStream(), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();
 				fileLines = csvReader.readAll();
 			}
 			finally {
