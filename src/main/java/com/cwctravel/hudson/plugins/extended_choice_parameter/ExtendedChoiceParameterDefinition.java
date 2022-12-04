@@ -47,7 +47,6 @@ import com.opencsv.CSVReaderBuilder;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -137,12 +136,11 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					property.setFile(prop);
 				}
 				else {
-					URL propertyFileUrl = new URL(propertyFile);
-					property.setUrl(propertyFileUrl);
+					return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 				}
 				property.execute();
 			}
-			catch(MalformedURLException | BuildException e) {
+			catch(BuildException e) {
 				return FormValidation.warning(Messages.ExtendedChoiceParameterDefinition_PropertyFileDoesntExist(), propertyFile);
 			}
 
@@ -657,23 +655,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			try {
 				String resolvedPropertyFilePath = expandVariables(propertyFilePath);
 				File propertyFile = new File(resolvedPropertyFilePath);
-				if(propertyFile.exists()) {
-					Project project = new Project();
-					Property property = new Property();
-					property.setProject(project);
-					property.setFile(propertyFile);
-					property.execute();
-					return project.getProperty(propertyKey);
-				}
-				else {
-					Project project = new Project();
-					Property property = new Property();
-					property.setProject(project);
-					URL propertyFileUrl = new URL(resolvedPropertyFilePath);
-					property.setUrl(propertyFileUrl);
-					property.execute();
-					return project.getProperty(propertyKey);
-				}
+				Project project = new Project();
+				Property property = new Property();
+				property.setProject(project);
+				property.setFile(propertyFile);
+				property.execute();
+				return project.getProperty(propertyKey);
 			}
 			catch(Exception e) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -938,28 +925,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	Map<String, Set<String>> calculateChoicesByDropdownId() throws Exception {
 		String resolvedPropertyFile = expandVariables(propertyFile);
 		File file = new File(resolvedPropertyFile);
-		List<String[]> fileLines = Collections.emptyList();
+		List<String[]> fileLines;
 		CSVParser csvParser = new CSVParserBuilder().withSeparator('\t').build();
-		if(file.isFile()) {
-			CSVReader csvReader = null;
-			try {
-				csvReader = new CSVReaderBuilder(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();
-				fileLines = csvReader.readAll();
-			}
-			finally {
-				IOUtils.closeQuietly(csvReader);
-			}
-		}
-		else {
-			URL propertyFileUrl = new URL(resolvedPropertyFile);
-			CSVReader csvReader = null;
-			try {
-				csvReader = new CSVReaderBuilder(new InputStreamReader(propertyFileUrl.openStream(), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();
-				fileLines = csvReader.readAll();
-			}
-			finally {
-				IOUtils.closeQuietly(csvReader);
-			}
+		try(CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();) {
+			fileLines = csvReader.readAll();
 		}
 
 		if(fileLines.size() < 2) {
