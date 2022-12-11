@@ -6,64 +6,66 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  
+
   <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
-  
-  <div id="editor_${it.name}_holder"> &amp;nbsp;</div>  
-  <input id="editor_${it.name}_value" type="hidden" name="value" />
-  
+
+  <div id="editor_${it.name}_holder">&amp;nbsp;</div>
+  <input id="editor_${it.name}_value" type="hidden" name="value"/>
+
   <j:set var="jsonEditorOptions" value="${it.getJSONEditorOptions()}"/>
   <j:set var="theme" value="${jsonEditorOptions.get('theme')}"/>
   <j:set var="iconlib" value="${jsonEditorOptions.get('iconlib')}"/>
-  
+
   <j:invokeStatic var="jsonEditorOptionsJSON" className="groovy.json.JsonOutput" method="toJson">
-    <j:arg value="${jsonEditorOptions}" type="java.lang.Object" />
+    <j:arg value="${jsonEditorOptions}" type="java.lang.Object"/>
   </j:invokeStatic>
 
-  <j:set  var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
-    
-  <script>       
-      var editor_${normalizedParameterName} = new JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptionsJSON});
-  
-      editor_${normalizedParameterName}.on('change',function() {
-		  document.getElementById("editor_${it.name}_value").value = JSON.stringify(editor_${normalizedParameterName}.getValue());
-	  });
-	  
-	  <j:if test="${not empty theme}">
-	   (function() {
-	       var mapping = {
-	            html: '',
-	            bootstrap2: '${resURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
-	            bootstrap3: '${resURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
-	            foundation3: '${resURL}/plugin/extended-choice-parameter/css/foundation3.css',
-	            foundation4: '${resURL}/plugin/extended-choice-parameter/css/foundation4.css',
-	            foundation5: '${resURL}/plugin/extended-choice-parameter/css/foundation5.css',
-	            jqueryui: '${resURL}/plugin/extended-choice-parameter/css/jquery-ui.css'
-           };
-	       
-	       document.getElementById('theme_stylesheet').href = mapping['${theme}'];
-	   })();
-	  
-	  </j:if>
-	  
-	  <j:if test="${not empty iconlib}">
-       (function() {
-           var mapping = {
-                foundation2:  '${resURL}/plugin/extended-choice-parameter/css/general_foundicons.css',
-                foundation3:  '${resURL}/plugin/extended-choice-parameter/css/foundation-icons.css',
-                fontawesome3: '${resURL}/plugin/extended-choice-parameter/css/font-awesome3.css',
-                fontawesome4: '${resURL}/plugin/extended-choice-parameter/css/font-awesome4.css'
-           };
-           
-           document.getElementById('icon_stylesheet').href = mapping['${iconlib}'];
-       })();
-      </j:if>
-      
-      <j:if test="${not empty jsonEditorScript}">
-        (function(editor, valueInput) {
-        	<j:out value="${jsonEditorScript}"/>
-        })(editor_${normalizedParameterName}, document.getElementById("editor_${it.name}_value"));
-      </j:if>
+  <j:set var="jsonEditorScript" value="${it.getJSONEditorScript()}"/>
+
+  <script>
+    var editor_${normalizedParameterName} = new
+    JSONEditor(document.getElementById('editor_${it.name}_holder'), ${jsonEditorOptionsJSON});
+
+    editor_${normalizedParameterName}.on('change',function() {
+    document.getElementById("editor_${it.name}_value").value =
+    JSON.stringify(editor_${normalizedParameterName}.getValue());
+    });
+
+    <j:if test="${not empty theme}">
+      (function() {
+      var mapping = {
+      html: '',
+      bootstrap2: '${resURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
+      bootstrap3: '${resURL}/plugin/extended-choice-parameter/css/bootstrap.min.css',
+      foundation3: '${resURL}/plugin/extended-choice-parameter/css/foundation3.css',
+      foundation4: '${resURL}/plugin/extended-choice-parameter/css/foundation4.css',
+      foundation5: '${resURL}/plugin/extended-choice-parameter/css/foundation5.css',
+      jqueryui: '${resURL}/plugin/extended-choice-parameter/css/jquery-ui.css'
+      };
+
+      document.getElementById('theme_stylesheet').href = mapping['${theme}'];
+      })();
+
+    </j:if>
+
+    <j:if test="${not empty iconlib}">
+      (function() {
+      var mapping = {
+      foundation2: '${resURL}/plugin/extended-choice-parameter/css/general_foundicons.css',
+      foundation3: '${resURL}/plugin/extended-choice-parameter/css/foundation-icons.css',
+      fontawesome3: '${resURL}/plugin/extended-choice-parameter/css/font-awesome3.css',
+      fontawesome4: '${resURL}/plugin/extended-choice-parameter/css/font-awesome4.css'
+      };
+
+      document.getElementById('icon_stylesheet').href = mapping['${iconlib}'];
+      })();
+    </j:if>
+
+    <j:if test="${not empty jsonEditorScript}">
+      (function(editor, valueInput) {
+      <j:out value="${jsonEditorScript}"/>
+      })(editor_${normalizedParameterName}, document.getElementById("editor_${it.name}_value"));
+    </j:if>
   </script>
 
 </j:jelly>

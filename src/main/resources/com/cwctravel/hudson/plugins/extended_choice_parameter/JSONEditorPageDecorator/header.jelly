@@ -1,24 +1,30 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-   <script>
-      if(window.Prototype &amp;&amp; JSON) {
-        var _json_stringify = JSON.stringify;
-        JSON.stringify = function(value) {
-            var _array_tojson = Array.prototype.toJSON;
-            delete Array.prototype.toJSON;
-            var r=_json_stringify(value);
-            Array.prototype.toJSON = _array_tojson;
-            return r;
-        };
-     }  
-   </script>     
-   <script type="text/javascript" src="${resURL}/plugin/extended-choice-parameter/js/selectize.min.js"></script>
-   <script type="text/javascript" src="${resURL}/plugin/extended-choice-parameter/js/jsoneditor.min.js"></script>
-   <script type="text/javascript" src="${resURL}/plugin/extended-choice-parameter/js/jquery.jsonview.min.js"></script>
-  
-   <link rel="stylesheet" href="${resURL}/plugin/extended-choice-parameter/css/jquery.jsonview.css" />
-   <link rel='stylesheet' id='icon_stylesheet' href="${resURL}/plugin/extended-choice-parameter/css/selectize.css"></link>
-   <link rel='stylesheet' id='icon_stylesheet' href="${resURL}/plugin/extended-choice-parameter/css/selectize.bootstrap2.css"></link>
-   <link rel='stylesheet' id='theme_stylesheet'></link>
-   <link rel='stylesheet' id='icon_stylesheet'></link>   
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+  xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <script>
+    if(window.Prototype &amp;&amp; JSON) {
+    var _json_stringify = JSON.stringify;
+    JSON.stringify = function(value) {
+    var _array_tojson = Array.prototype.toJSON;
+    delete Array.prototype.toJSON;
+    var r=_json_stringify(value);
+    Array.prototype.toJSON = _array_tojson;
+    return r;
+    };
+    }
+  </script>
+  <script type="text/javascript"
+    src="${resURL}/plugin/extended-choice-parameter/js/selectize.min.js"></script>
+  <script type="text/javascript"
+    src="${resURL}/plugin/extended-choice-parameter/js/jsoneditor.min.js"></script>
+  <script type="text/javascript"
+    src="${resURL}/plugin/extended-choice-parameter/js/jquery.jsonview.min.js"></script>
+
+  <link rel="stylesheet" href="${resURL}/plugin/extended-choice-parameter/css/jquery.jsonview.css"/>
+  <link rel='stylesheet' id='icon_stylesheet'
+    href="${resURL}/plugin/extended-choice-parameter/css/selectize.css"></link>
+  <link rel='stylesheet' id='icon_stylesheet'
+    href="${resURL}/plugin/extended-choice-parameter/css/selectize.bootstrap2.css"></link>
+  <link rel='stylesheet' id='theme_stylesheet'></link>
+  <link rel='stylesheet' id='icon_stylesheet'></link>
 </j:jelly>
