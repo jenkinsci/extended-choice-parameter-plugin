@@ -3,8 +3,7 @@
  See the file license.txt for copying permission. 
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
-  xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   <f:entry title="Name" field="name">
     <f:textbox/>
   </f:entry>
@@ -28,7 +27,7 @@
 
   <f:radioBlock name="parameterGroup" title="Basic Parameter Types" value="0"
     checked="${parameterType eq 'basic'}">
-    <f:entry name="type" title="Parameter Type" field="type">
+    <f:entry title="Parameter Type" field="type">
       <select name="type">
         <j:choose>
           <j:when test="${instance.type eq 'PT_SINGLE_SELECT'}">
@@ -243,7 +242,7 @@
   </f:radioBlock>
   <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1"
     checked="${parameterType eq 'multilevel'}">
-    <f:entry name="type" title="Parameter Type" field="type">
+    <f:entry title="Parameter Type" field="type">
       <select name="type">
         <option value="PT_MULTI_LEVEL_SINGLE_SELECT"
           selected="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' ? 'true' : null}">Multi-Level

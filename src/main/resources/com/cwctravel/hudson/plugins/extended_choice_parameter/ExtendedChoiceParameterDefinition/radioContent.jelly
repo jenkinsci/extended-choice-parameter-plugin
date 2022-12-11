@@ -3,9 +3,7 @@
  See the file license.txt for copying permission. 
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
-  xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
 
   <j:set var="parameterDefinitionInfo" value="${it.parameterDefinitionInfo}"/>
   <j:set var="defaultValueMap" value="${parameterDefinitionInfo.defaultValueMap}"/>
@@ -24,7 +22,7 @@
             <input type="radio" name="${it.name}.value" value="${value}"
               checked="${defaultValueMap[value] eq true?'true':null}"/>
             <label class="attach-previous">
-              <j:out value="${descriptionPropertyValue}"/>
+              <st:out value="${descriptionPropertyValue}"/>
             </label>
           </td>
         </tr>
