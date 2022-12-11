@@ -6,9 +6,9 @@
 
 package com.cwctravel.hudson.plugins.extended_choice_parameter;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,15 +18,13 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,8 +36,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -115,14 +111,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	@Extension @Symbol({"extendedChoice"})
 	public static class DescriptorImpl extends ParameterDescriptor {
 		@Override
+		@NonNull
 		public String getDisplayName() {
 			return Messages.ExtendedChoiceParameterDefinition_DisplayName();
 		}
 
 		@POST
-		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@QueryParameter final String type) throws IOException, ServletException {
-			if(StringUtils.isBlank(propertyFile)) {
+		public FormValidation doCheckPropertyFile(@QueryParameter final String propertyFile,
+				@QueryParameter final String propertyKey, @QueryParameter final String type) {
+			if (StringUtils.isBlank(propertyFile)) {
 				return FormValidation.ok();
 			}
 
@@ -161,28 +158,30 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 
 		@POST
-		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile, @QueryParameter final String propertyKey,
-				@QueryParameter final String type) throws IOException, ServletException {
+		public FormValidation doCheckPropertyKey(@QueryParameter final String propertyFile,
+				@QueryParameter final String propertyKey, @QueryParameter final String type) {
 			return doCheckPropertyFile(propertyFile, propertyKey, type);
 		}
 
 		@POST
-		public FormValidation doCheckDefaultPropertyFile(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
+		public FormValidation doCheckDefaultPropertyFile(
+				@QueryParameter final String defaultPropertyFile,
+				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
 		@POST
-		public FormValidation doCheckDefaultPropertyKey(@QueryParameter final String defaultPropertyFile,
-				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) throws IOException, ServletException {
+		public FormValidation doCheckDefaultPropertyKey(
+				@QueryParameter final String defaultPropertyFile,
+				@QueryParameter final String defaultPropertyKey, @QueryParameter final String type) {
 			return doCheckPropertyFile(defaultPropertyFile, defaultPropertyKey, type);
 		}
 
 		@Override
-		public ExtendedChoiceParameterDefinition newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-			String name = null;
+		public ExtendedChoiceParameterDefinition newInstance(StaplerRequest req, JSONObject formData) {
+			String name;
 			String type = null;
-			String description = null;
+			String description;
 			String multiSelectDelimiter = null;
 			boolean quoteValue = false;
 			boolean saveJSONParameterToFile = false;
@@ -308,12 +307,10 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					if(jsonParameterConfigSourceJSON != null) {
 						if(jsonParameterConfigSourceJSON.getInt("value") == 0) {
 							groovyScript = jsonParameterConfigSourceJSON.getString("groovyScript");
-							groovyScriptFile = null;
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
 						}
 						else if(jsonParameterConfigSourceJSON.getInt("value") == 1) {
-							groovyScript = null;
 							groovyScriptFile = jsonParameterConfigSourceJSON.getString("groovyScriptFile");
 							bindings = jsonParameterConfigSourceJSON.getString("bindings");
 							groovyClasspath = jsonParameterConfigSourceJSON.getString("groovyClasspath");
@@ -324,11 +321,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					if(jsonParameterConfigJavascriptSourceJSON != null) {
 						if(jsonParameterConfigJavascriptSourceJSON.getInt("value") == 0) {
 							javascript = jsonParameterConfigJavascriptSourceJSON.optString("javascript");
-							javascriptFile = null;
 						}
 						else if(jsonParameterConfigJavascriptSourceJSON.getInt("value") == 1) {
 							javascriptFile = jsonParameterConfigJavascriptSourceJSON.optString("javascriptFile");
-							javascript = null;
 						}
 					}
 
@@ -521,7 +516,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Map<String, Boolean> defaultValueMap = null;
 		String effectiveDefaultValue = computeEffectiveDefaultValue();
 		if(!StringUtils.isBlank(effectiveDefaultValue)) {
-			defaultValueMap = new HashMap<String, Boolean>();
+			defaultValueMap = new HashMap<>();
 			String[] defaultValues = StringUtils.split(effectiveDefaultValue, ',');
 			for(String value: defaultValues) {
 				defaultValueMap.put(StringUtils.trim(value), true);
@@ -536,7 +531,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			String[] values = effectiveValue.split(",");
 			String effectiveDescriptionPropertyValue = computeEffectiveDescriptionPropertyValue();
 			if(!StringUtils.isBlank(effectiveDescriptionPropertyValue)) {
-				descriptionPropertyValueMap = new HashMap<String, String>();
+				descriptionPropertyValueMap = new HashMap<>();
 				String[] descriptionPropertyValues = StringUtils.split(effectiveDescriptionPropertyValue, ',');
 				for(int i = 0; i < values.length && i < descriptionPropertyValues.length; i++) {
 					descriptionPropertyValueMap.put(values[i], descriptionPropertyValues[i]);
@@ -553,7 +548,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	@Override
-	public ParameterValue createValue(CLICommand command, String value) throws IOException, InterruptedException {
+	public ParameterValue createValue(CLICommand command, String value) {
 		String[] requestValues = (value != null) ? value.split(",") : null;
 		return createValue(requestValues);
 	}
@@ -571,10 +566,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				List<String> result = new ArrayList<>();
 
 				String[] values = valueStr.split(",");
-				Set<String> valueSet = new HashSet<>();
-				for(String value: values) {
-					valueSet.add(value);
-				}
+				Set<String> valueSet = new HashSet<>(Arrays.asList(values));
 
 				for(String requestValue: requestValues) {
 					if(valueSet.contains(requestValue)) {
@@ -681,7 +673,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String executeGroovyScriptFile(String groovyScriptFile, String bindings, String groovyClasspath, boolean isSingleValued) {
 		String result = null;
 		try {
-			String groovyScript = loadGroovyScriptFile(groovyScriptFile);
+			String groovyScript = expandVariablesLoadFile(groovyScriptFile);
 			result = executeGroovyScriptAndProcessGroovyValue(groovyScript, bindings, groovyClasspath, isSingleValued);
 		}
 		catch(Exception e) {
@@ -689,12 +681,6 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		}
 		return result;
 
-	}
-
-	private String loadGroovyScriptFile(String groovyScriptFile) throws IOException {
-		String resolvedGroovyScriptFile = expandVariables(groovyScriptFile);
-		String groovyScript = Util.loadFile(new File(resolvedGroovyScriptFile));
-		return groovyScript;
 	}
 
 	private String executeGroovyScriptAndProcessGroovyValue(String groovyScript, String bindings, String groovyClasspath, boolean isSingleValued) {
@@ -733,7 +719,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	}
 
 	private Binding getGroovyBinding() {
-		Binding groovyBinding = null;
+		Binding groovyBinding;
 
 		StaplerRequest currentRequest = Stapler.getCurrentRequest();
 		if(currentRequest != null) {
@@ -927,7 +913,9 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		File file = new File(resolvedPropertyFile);
 		List<String[]> fileLines;
 		CSVParser csvParser = new CSVParserBuilder().withSeparator('\t').build();
-		try(CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8)).withCSVParser(csvParser).build();) {
+		try (CSVReader csvReader = new CSVReaderBuilder(
+				new InputStreamReader(Files.newInputStream(file.toPath()),
+						StandardCharsets.UTF_8)).withCSVParser(csvParser).build()) {
 			fileLines = csvReader.readAll();
 		}
 
@@ -942,7 +930,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		Map<String, Set<String>> choicesByDropdownId = new LinkedHashMap<>();
 
 		String prefix = getName() + " dropdown MultiLevelMultiSelect 0";
-		choicesByDropdownId.put(prefix, new LinkedHashSet<String>());
+		choicesByDropdownId.put(prefix, new LinkedHashSet<>());
 
 		for(int i = 0; i < columnIndicesForDropDowns.size(); ++i) {
 			String prettyCurrentColumnName = value.split(",")[i];
@@ -965,7 +953,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 					currentLevelDropdownIdBuilder.append(dataLine[column]);
 				}
 				if(i != columnIndicesForDropDowns.size() - 1) {
-					choicesByDropdownId.put(currentLevelDropdownIdBuilder.toString(), new LinkedHashSet<String>());
+					choicesByDropdownId.put(currentLevelDropdownIdBuilder.toString(), new LinkedHashSet<>());
 				}
 				Set<String> choicesForPriorDropdown = choicesByDropdownId.get(priorLevelDropdownIdBuilder.toString());
 				choicesForPriorDropdown.add("Select a " + prettyCurrentColumnName + "...");
@@ -1220,7 +1208,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = !checkScriptApproval(groovyScript, groovyClasspath, true);
 			}
 			else if(!StringUtils.isBlank(groovyScriptFile)) {
-				String script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
+				String script = expandVariablesLoadFile(groovyScriptFile);
 				result = !checkScriptApproval(script, groovyClasspath, true);
 			}
 
@@ -1228,43 +1216,45 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = !checkScriptApproval(defaultGroovyScript, defaultGroovyClasspath, true);
 			}
 			else if(!StringUtils.isBlank(defaultGroovyScriptFile)) {
-				String script = Util.loadFile(new File(expandVariables(defaultGroovyScriptFile)));
+				String script = expandVariablesLoadFile(defaultGroovyScriptFile);
 				result = !checkScriptApproval(script, defaultGroovyClasspath, true);
 			}
 
 			if(!StringUtils.isBlank(descriptionGroovyScript)) {
 				result = !checkScriptApproval(descriptionGroovyScript, descriptionGroovyClasspath, true);
-			}
-			else if(!StringUtils.isBlank(descriptionGroovyScriptFile)) {
-				String script = Util.loadFile(new File(expandVariables(descriptionGroovyScriptFile)));
+			} else if (!StringUtils.isBlank(descriptionGroovyScriptFile)) {
+				String script = expandVariablesLoadFile(descriptionGroovyScriptFile);
 				result = !checkScriptApproval(script, descriptionGroovyClasspath, true);
 			}
-		}
-		catch(IOException | URISyntaxException e) {
+		} catch (IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return result;
 	}
 
+	private String expandVariablesLoadFile(String fileName) throws IOException {
+		return Util.loadFile(new File(expandVariables(fileName)), StandardCharsets.UTF_8);
+	}
+
 	private boolean checkScriptApproval(String groovyScript, String groovyClasspath,
-			boolean impersonateAnonymousUser) throws IOException, URISyntaxException, MalformedURLException {
+			boolean impersonateAnonymousUser) throws IOException, URISyntaxException {
 		boolean result = true;
 		Authentication authentication = Jenkins.getAuthentication();
 		try {
 			ScriptApproval scriptApproval = ScriptApproval.get();
 
-			Jenkins instance = Jenkins.getInstance();
-			AbstractProject<?, ?> project = (AbstractProject<?, ?>)(projectName != null && instance != null ? instance.getItem(projectName) : null);
+			Jenkins instance = Jenkins.get();
+			AbstractProject<?, ?> project =
+					(AbstractProject<?, ?>) (projectName != null ? instance.getItem(projectName) : null);
 
-			if(impersonateAnonymousUser) {
+			if (impersonateAnonymousUser) {
 				SecurityContextHolder.getContext().setAuthentication(Jenkins.ANONYMOUS);
 			}
 
 			try {
 				scriptApproval.configuring(groovyScript, GroovyLanguage.get(), ApprovalContext.create());
 				scriptApproval.using(groovyScript, GroovyLanguage.get());
-			}
-			catch(UnapprovedUsageException | UnapprovedClasspathException e) {
+			} catch (UnapprovedUsageException | UnapprovedClasspathException e) {
 				result = false;
 			}
 
@@ -1310,29 +1300,25 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 			URI classpathEntryURI = classpathEntry.getURL().toURI();
 			File dirFile = new File(classpathEntryURI);
 			final int[] fileCountHolder = new int[1];
-			final List<Object[]> files = new ArrayList<Object[]>();
+			final List<Object[]> files = new ArrayList<>();
 			new DirScanner.Full().scan(dirFile, new FileVisitor() {
 				@Override
 				public void visit(File file, String relativePath) throws IOException {
 					if(file.isFile()) {
 						fileCountHolder[0]++;
-						if(fileCountHolder[0] <= 500) {
+						if (fileCountHolder[0] <= 500) {
 							files.add(new Object[] {file, relativePath});
-						}
-						else {
+						} else {
 							throw new IOException("too many files in directory");
 						}
 					}
 				}
 			});
 
-			Collections.sort(files, new Comparator<Object[]>() {
-				@Override
-				public int compare(Object[] o1, Object[] o2) {
-					String relativePath1 = (String)o1[1];
-					String relativePath2 = (String)o2[1];
-					return relativePath1.compareTo(relativePath2);
-				}
+			files.sort((o1, o2) -> {
+				String relativePath1 = (String) o1[1];
+				String relativePath2 = (String) o2[1];
+				return relativePath1.compareTo(relativePath2);
 			});
 
 			File digestFile = createDigest(project, classpathEntryURI, files);
@@ -1345,44 +1331,31 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 		String classpathEntryStr = classpathEntryURI.toString();
 		String digestFileName = getName() + computeMD5Hash(classpathEntryStr) + ".dig";
 		File digestFile = new File(project.getRootDir(), digestFileName);
-		PrintWriter pW = new PrintWriter(digestFile, "UTF-8");
-		try {
+		try (PrintWriter pW = new PrintWriter(digestFile, "UTF-8")) {
 			pW.println(classpathEntryStr);
-			for(Object[] fileInfo: fileInfos) {
-				File file = (File)fileInfo[0];
-				String relativePath = (String)fileInfo[1];
+			for (Object[] fileInfo : fileInfos) {
+				File file = (File) fileInfo[0];
+				String relativePath = (String) fileInfo[1];
 				String fileHash = hashFile(file);
 				pW.println(relativePath + "::" + fileHash);
 			}
-		}
-		finally {
-			pW.close();
 		}
 		return digestFile;
 	}
 
 	private String hashFile(File file) throws IOException {
-		InputStream is = new FileInputStream(file);
+		MessageDigest digest;
 		try {
-			DigestInputStream input = null;
-			try {
-				MessageDigest digest = MessageDigest.getInstance("SHA-1");
-				input = new DigestInputStream(new BufferedInputStream(is), digest);
-				byte[] buffer = new byte[1024];
-				while(input.read(buffer) != -1);
-				return Util.toHexString(digest.digest());
-			}
-			catch(NoSuchAlgorithmException x) {
-				throw new AssertionError(x);
-			}
-			finally {
-				if(input != null) {
-					input.close();
-				}
-			}
+			digest = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException x) {
+			throw new AssertionError(x);
 		}
-		finally {
-			is.close();
+		InputStream is = Files.newInputStream(file.toPath());
+		try (DigestInputStream input = new DigestInputStream(new BufferedInputStream(is), digest)) {
+			byte[] buffer = new byte[1024];
+			while (input.read(buffer) != -1) {
+			}
+			return Util.toHexString(digest.digest());
 		}
 	}
 
@@ -1423,7 +1396,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 				result = javascript;
 			}
 			else if(!StringUtils.isBlank(javascriptFile)) {
-				result = Util.loadFile(new File(expandVariables(javascriptFile)));
+				result = expandVariablesLoadFile(javascriptFile);
 			}
 		}
 		catch(IOException e) {
@@ -1435,12 +1408,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	public Object getJSONEditorOptions() {
 	    Object result = null;
 		try {
-			String script = null;
+			String script;
 			if(!StringUtils.isBlank(groovyScript)) {
 				script = groovyScript;
 			}
 			else {
-				script = Util.loadFile(new File(expandVariables(groovyScriptFile)));
+				script = expandVariablesLoadFile(groovyScriptFile);
 			}
 			result = executeGroovyScript(script, bindings, groovyClasspath);
 		}
@@ -1453,14 +1426,15 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
 	private String expandVariables(String input) {
 		String result = input;
 		if(input != null) {
-			Jenkins instance = Jenkins.getInstance();
-			AbstractProject<?, ?> project = (AbstractProject<?, ?>)(projectName != null && instance != null ? instance.getItem(projectName) : null);
-			if(project != null) {
+			Jenkins instance = Jenkins.get();
+			AbstractProject<?, ?> project =
+					(AbstractProject<?, ?>) (projectName != null ? instance.getItem(projectName) : null);
+			if (project != null) {
 				EnvVars envVars;
 				try {
 					envVars = project.getEnvironment(null, new LogTaskListener(LOGGER, Level.SEVERE));
 					User user = User.current();
-					if(user != null) {
+					if (user != null) {
 						String userId = user.getId();
 						envVars.put("USER_ID", userId);
 					}
