@@ -1,4 +1,3 @@
-
 <!--
  Copyright (c) 2013 Costco, Vimil Saju
  See the file license.txt for copying permission. 
@@ -6,33 +5,37 @@
 
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
-	xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-	<j:invokeStatic var="currentThread" className="java.lang.Thread" method="currentThread" />
-    <j:invoke var="projectClass" on="${currentThread.contextClassLoader}" method="loadClass">
-      <j:arg value="hudson.model.Job"/>
-    </j:invoke>
-    
-    <j:invoke var="parameterDefinitionPropertyClass" on="${currentThread.contextClassLoader}" method="loadClass">
-      <j:arg value="hudson.model.ParametersDefinitionProperty"/>
-    </j:invoke>
-    
-    <j:set var="project" value="${request.findAncestorObject(projectClass)}" />
-	<j:set var="parameterDefinitionProperty" value="${project.getProperty(parameterDefinitionPropertyClass)}"/>
-	<j:set var="parameterDefinition" value="${parameterDefinitionProperty.getParameterDefinition(it.name)}"/>
-	
-	<f:entry name="value" title="${it.name}" description="${it.description}">
-	    <j:choose>
-	          <j:when test="${parameterDefinition.type eq 'PT_JSON'}">
-	               <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
-	               <div id="jsonParameter${normalizedParameterName}"><!-- empty div--></div>
-	               <script>
-	                   jQuery("#jsonParameter${normalizedParameterName}").JSONView(${it.value}, { collapsed: true });	                   
-	               </script>
-	          </j:when>
-	          <j:otherwise>
-	               ${it.value}      
-	          </j:otherwise> 
-	    </j:choose>           
-	</f:entry>
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+  <j:invokeStatic var="currentThread" className="java.lang.Thread" method="currentThread"/>
+  <j:invoke var="projectClass" on="${currentThread.contextClassLoader}" method="loadClass">
+    <j:arg value="hudson.model.Job"/>
+  </j:invoke>
+
+  <j:invoke var="parameterDefinitionPropertyClass" on="${currentThread.contextClassLoader}"
+    method="loadClass">
+    <j:arg value="hudson.model.ParametersDefinitionProperty"/>
+  </j:invoke>
+
+  <j:set var="project" value="${request.findAncestorObject(projectClass)}"/>
+  <j:set var="parameterDefinitionProperty"
+    value="${project.getProperty(parameterDefinitionPropertyClass)}"/>
+  <j:set var="parameterDefinition"
+    value="${parameterDefinitionProperty.getParameterDefinition(it.name)}"/>
+
+  <f:entry name="value" title="${it.name}" description="${it.description}">
+    <j:choose>
+      <j:when test="${parameterDefinition.type eq 'PT_JSON'}">
+        <j:set var="normalizedParameterName" value="${it.name.replace('.', '_')}"/>
+        <div id="jsonParameter${normalizedParameterName}"><!-- empty div--></div>
+        <script>
+          jQuery("#jsonParameter${normalizedParameterName}").JSONView(${it.value}, { collapsed: true
+          });
+        </script>
+      </j:when>
+      <j:otherwise>
+        ${it.value}
+      </j:otherwise>
+    </j:choose>
+  </f:entry>
 </j:jelly>

@@ -3,282 +3,313 @@
  See the file license.txt for copying permission. 
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+  xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:entry title="Name" field="name">
-    <f:textbox />
+    <f:textbox/>
   </f:entry>
   <f:entry title="Description" field="description">
-    <f:textbox />
+    <f:textbox/>
   </f:entry>
 
   <j:choose>
-    <j:when test="${instance.type eq 'PT_SINGLE_SELECT' or instance.type eq 'PT_MULTI_SELECT' or instance.type eq 'PT_RADIO' or instance.type eq 'PT_CHECKBOX' or instance.type eq 'PT_TEXTBOX' or instance.type eq 'PT_HIDDEN'}">
-        <j:set var="parameterType" value="basic"/>
+    <j:when
+      test="${instance.type eq 'PT_SINGLE_SELECT' or instance.type eq 'PT_MULTI_SELECT' or instance.type eq 'PT_RADIO' or instance.type eq 'PT_CHECKBOX' or instance.type eq 'PT_TEXTBOX' or instance.type eq 'PT_HIDDEN'}">
+      <j:set var="parameterType" value="basic"/>
     </j:when>
-    <j:when test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' or instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
-        <j:set var="parameterType" value="multilevel"/>
+    <j:when
+      test="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' or instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT'}">
+      <j:set var="parameterType" value="multilevel"/>
     </j:when>
     <j:when test="${instance.type eq 'PT_JSON'}">
-        <j:set var="parameterType" value="json"/>
-    </j:when>    
+      <j:set var="parameterType" value="json"/>
+    </j:when>
   </j:choose>
-      
-  <f:radioBlock name="parameterGroup" title="Basic Parameter Types" value="0" checked="${parameterType eq 'basic'}">
-        <f:entry name="type" title="Parameter Type" field="type">
-            <select name="type">
-                <j:choose>
-                    <j:when test="${instance.type eq 'PT_SINGLE_SELECT'}">
-                        <option value="PT_SINGLE_SELECT" selected="selected">Single Select</option>
-                    </j:when>
-                    <j:otherwise>
-                       <option value="PT_SINGLE_SELECT">Single Select</option>
-                    </j:otherwise>
-                </j:choose>
-                <j:choose>
-                   <j:when test="${instance.type eq 'PT_MULTI_SELECT'}">       
-                       <option value="PT_MULTI_SELECT" selected="selected">Multi Select</option>
-                   </j:when>
-                   <j:otherwise>
-                       <option value="PT_MULTI_SELECT">Multi Select</option>
-                   </j:otherwise>    
-                </j:choose>
-                <j:choose>
-                   <j:when test="${instance.type eq 'PT_RADIO'}">       
-                       <option value="PT_RADIO" selected="selected">Radio Buttons</option>
-                   </j:when>
-                   <j:otherwise>
-                       <option value="PT_RADIO">Radio Buttons</option>
-                   </j:otherwise>    
-                </j:choose>   
-                <j:choose>
-                   <j:when test="${instance.type eq 'PT_CHECKBOX'}">       
-                       <option value="PT_CHECKBOX" selected="selected">Check Boxes</option>
-                   </j:when>
-                   <j:otherwise>
-                       <option value="PT_CHECKBOX">Check Boxes</option>
-                   </j:otherwise>    
-                </j:choose>    
-                <j:choose>
-                   <j:when test="${instance.type eq 'PT_TEXTBOX'}">       
-                       <option value="PT_TEXTBOX" selected="selected">Text Box</option>
-                   </j:when>
-                   <j:otherwise>
-                       <option value="PT_TEXTBOX">Text Box</option>
-                   </j:otherwise>
-                </j:choose>      
-                <j:choose>
-                   <j:when test="${instance.type eq 'PT_HIDDEN'}">       
-                       <option value="PT_HIDDEN" selected="selected">Hidden</option>
-                   </j:when>
-                   <j:otherwise>
-                       <option value="PT_HIDDEN">Hidden</option>
-                   </j:otherwise>
-                </j:choose>                                         
-            </select>
-          </f:entry>
-      
-          <f:entry title="Number of Visible Items" field="visibleItemCount">
-            <f:textbox value="${visibleItemCount}"/>
-          </f:entry>
-          
-          <f:entry title="Delimiter" field="multiSelectDelimiter">
-            <f:textbox value="${multiSelectDelimiter}"/>
-          </f:entry>
-          
-          <f:entry title="Quote Value" field="quoteValue">
-	        <f:checkbox checked="${instance.quoteValue}"/>
-	      </f:entry>
-          
-      <f:advanced title="Choose Source for Value">
-          <f:radioBlock name="propertySource" title="Value" value="0" checked="${parameterType eq 'basic' and empty instance.propertyFile and not empty instance.value}">
-              <f:entry title="Value" field="propertyValue">
-                <f:textbox value="${instance.value}"/>
-              </f:entry>
-          </f:radioBlock>
-          
-          <f:radioBlock name="propertySource" title="Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.propertyFile}">
-              <f:entry field="propertyFile">
-                <f:textbox value="${instance.propertyFile}"/>
-              </f:entry>
-              <f:entry title="Property Key" field="propertyKey">
-                <f:textbox value="${instance.propertyKey}"/>
-              </f:entry>    
-          </f:radioBlock> 
-          
-          <f:radioBlock name="propertySource" title="Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.groovyScript}">
-              <f:entry field="groovyScript">
-                <f:textarea value="${instance.groovyScript}"/>
-              </f:entry>
-              <f:advanced>
-                  <f:entry field="bindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.bindings}" />
-                  </f:entry>
-                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.groovyClasspath}" />
-                  </f:entry>
-              </f:advanced>     
-          </f:radioBlock>
-          
-          <f:radioBlock name="propertySource" title="Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.groovyScriptFile}">      
-              <f:entry field="groovyScriptFile">
-                <f:textbox value="${instance.groovyScriptFile}"/>
-              </f:entry>    
-              <f:advanced>
-                  <f:entry field="bindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.bindings}" />
-                  </f:entry>
-                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.groovyClasspath}" />
-                  </f:entry>                  
-              </f:advanced>
-          </f:radioBlock>
-      </f:advanced>
-              
-	  <f:advanced title="Choose Source for Default Value">
-	      <f:radioBlock name="defaultPropertySource" title="Default Value" value="0" checked="${parameterType eq 'basic' and not empty instance.defaultValue}">
-	        <f:entry field="defaultPropertyValue">
-	            <f:textbox value="${instance.defaultValue}"/>
-	        </f:entry>
-	      </f:radioBlock>
-	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.defaultPropertyFile}">
-	          <f:entry field="defaultPropertyFile">
-	            <f:textbox value="${instance.defaultPropertyFile}"/>
-	          </f:entry>
-	          <f:entry title="Default Property Key" field="defaultPropertyKey">
-	            <f:textbox value="${instance.defaultPropertyKey}"/>
-	          </f:entry>
-	      </f:radioBlock>   
-	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScript}">
-	          <f:entry field="defaultGroovyScript">
-	            <f:textarea value="${instance.defaultGroovyScript}"/>
-	          </f:entry>
-	          <f:advanced>
-	              <f:entry field="defaultBindings" title="${%Variable bindings}">
-	                  <f:textarea value="${instance.defaultBindings}" />
-	              </f:entry>
-                  <f:entry field="defaultGroovyClasspath" title="${%Default Groovy Classpath}">
-                      <f:textarea value="${instance.defaultGroovyClasspath}" />
-                  </f:entry>    	              
-	          </f:advanced>     
-	      </f:radioBlock>
-	      
-	      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScriptFile}">        
-	          <f:entry field="defaultGroovyScriptFile">
-	            <f:textbox value="${instance.defaultGroovyScriptFile}"/>
-	          </f:entry>    
-	          <f:advanced>
-	              <f:entry field="defaultBindings" title="${%Variable bindings}">
-	                  <f:textarea value="${instance.defaultBindings}" />
-	              </f:entry>
-                  <f:entry field="defaultGroovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.defaultGroovyClasspath}" />
-                  </f:entry>   	              
-	          </f:advanced>
-	      </f:radioBlock>
-	  </f:advanced>
-	  
-      <f:advanced title="Choose Source for Value Description">
-          <f:radioBlock name="descriptionPropertySource" title="Description" value="0" checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyValue}">
-            <f:entry field="descriptionPropertyValue">
-                <f:textbox value="${instance.descriptionPropertyValue}"/>
-            </f:entry>
-          </f:radioBlock>
-          
-          <f:radioBlock name="descriptionPropertySource" title="Description Property File" value="1" checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyFile}">
-              <f:entry field="descriptionPropertyFile">
-                <f:textbox value="${instance.descriptionPropertyFile}"/>
-              </f:entry>
-              <f:entry title="Description Property Key" field="descriptionPropertyKey">
-                <f:textbox value="${instance.descriptionPropertyKey}"/>
-              </f:entry>
-          </f:radioBlock>   
-          
-          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script" value="2" checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScript}">
-              <f:entry field="descriptionGroovyScript">
-                <f:textarea value="${instance.descriptionGroovyScript}"/>
-              </f:entry>
-              <f:advanced>
-                  <f:entry field="descriptionBindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.descriptionBindings}" />
-                  </f:entry>
-                  <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.descriptionGroovyClasspath}" />
-                  </f:entry>                      
-              </f:advanced>     
-          </f:radioBlock>
-          
-          <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script File" value="3" checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScriptFile}">        
-              <f:entry field="descriptionGroovyScriptFile">
-                <f:textbox value="${instance.descriptionGroovyScriptFile}"/>
-              </f:entry>    
-              <f:advanced>
-                  <f:entry field="descriptionBindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.descriptionBindings}" />
-                  </f:entry>
-                  <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.descriptionGroovyClasspath}" />
-                  </f:entry>                  
-              </f:advanced>
-          </f:radioBlock>
-      </f:advanced>
-  </f:radioBlock>
-  <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1" checked="${parameterType eq 'multilevel'}">
-        <f:entry name="type" title="Parameter Type" field="type">
-            <select name="type">
-                <option value="PT_MULTI_LEVEL_SINGLE_SELECT" selected="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' ? 'true' : null}">Multi-Level Single Select</option>
-                <option value="PT_MULTI_LEVEL_MULTI_SELECT" selected="${instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT' ? 'true' : null}">Multi-Level Multi Select</option>
-            </select>
-        </f:entry>  
-        
-        <f:entry title="Property File" field="propertyFile">
-           <f:textbox value="${instance.propertyFile}"/>
-        </f:entry>
-        
+
+  <f:radioBlock name="parameterGroup" title="Basic Parameter Types" value="0"
+    checked="${parameterType eq 'basic'}">
+    <f:entry name="type" title="Parameter Type" field="type">
+      <select name="type">
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_SINGLE_SELECT'}">
+            <option value="PT_SINGLE_SELECT" selected="selected">Single Select</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_SINGLE_SELECT">Single Select</option>
+          </j:otherwise>
+        </j:choose>
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_MULTI_SELECT'}">
+            <option value="PT_MULTI_SELECT" selected="selected">Multi Select</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_MULTI_SELECT">Multi Select</option>
+          </j:otherwise>
+        </j:choose>
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_RADIO'}">
+            <option value="PT_RADIO" selected="selected">Radio Buttons</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_RADIO">Radio Buttons</option>
+          </j:otherwise>
+        </j:choose>
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_CHECKBOX'}">
+            <option value="PT_CHECKBOX" selected="selected">Check Boxes</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_CHECKBOX">Check Boxes</option>
+          </j:otherwise>
+        </j:choose>
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_TEXTBOX'}">
+            <option value="PT_TEXTBOX" selected="selected">Text Box</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_TEXTBOX">Text Box</option>
+          </j:otherwise>
+        </j:choose>
+        <j:choose>
+          <j:when test="${instance.type eq 'PT_HIDDEN'}">
+            <option value="PT_HIDDEN" selected="selected">Hidden</option>
+          </j:when>
+          <j:otherwise>
+            <option value="PT_HIDDEN">Hidden</option>
+          </j:otherwise>
+        </j:choose>
+      </select>
+    </f:entry>
+
+    <f:entry title="Number of Visible Items" field="visibleItemCount">
+      <f:textbox value="${visibleItemCount}"/>
+    </f:entry>
+
+    <f:entry title="Delimiter" field="multiSelectDelimiter">
+      <f:textbox value="${multiSelectDelimiter}"/>
+    </f:entry>
+
+    <f:entry title="Quote Value" field="quoteValue">
+      <f:checkbox checked="${instance.quoteValue}"/>
+    </f:entry>
+
+    <f:advanced title="Choose Source for Value">
+      <f:radioBlock name="propertySource" title="Value" value="0"
+        checked="${parameterType eq 'basic' and empty instance.propertyFile and not empty instance.value}">
         <f:entry title="Value" field="propertyValue">
-           <f:textbox value="${instance.value}"/>
+          <f:textbox value="${instance.value}"/>
         </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="propertySource" title="Property File" value="1"
+        checked="${parameterType eq 'basic' and not empty instance.propertyFile}">
+        <f:entry field="propertyFile">
+          <f:textbox value="${instance.propertyFile}"/>
+        </f:entry>
+        <f:entry title="Property Key" field="propertyKey">
+          <f:textbox value="${instance.propertyKey}"/>
+        </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="propertySource" title="Groovy Script" value="2"
+        checked="${parameterType eq 'basic' and not empty instance.groovyScript}">
+        <f:entry field="groovyScript">
+          <f:textarea value="${instance.groovyScript}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="bindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.bindings}"/>
+          </f:entry>
+          <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+            <f:textarea value="${instance.groovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+
+      <f:radioBlock name="propertySource" title="Groovy Script File" value="3"
+        checked="${parameterType eq 'basic' and not empty instance.groovyScriptFile}">
+        <f:entry field="groovyScriptFile">
+          <f:textbox value="${instance.groovyScriptFile}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="bindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.bindings}"/>
+          </f:entry>
+          <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+            <f:textarea value="${instance.groovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+    </f:advanced>
+
+    <f:advanced title="Choose Source for Default Value">
+      <f:radioBlock name="defaultPropertySource" title="Default Value" value="0"
+        checked="${parameterType eq 'basic' and not empty instance.defaultValue}">
+        <f:entry field="defaultPropertyValue">
+          <f:textbox value="${instance.defaultValue}"/>
+        </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="defaultPropertySource" title="Default Property File" value="1"
+        checked="${parameterType eq 'basic' and not empty instance.defaultPropertyFile}">
+        <f:entry field="defaultPropertyFile">
+          <f:textbox value="${instance.defaultPropertyFile}"/>
+        </f:entry>
+        <f:entry title="Default Property Key" field="defaultPropertyKey">
+          <f:textbox value="${instance.defaultPropertyKey}"/>
+        </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script" value="2"
+        checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScript}">
+        <f:entry field="defaultGroovyScript">
+          <f:textarea value="${instance.defaultGroovyScript}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="defaultBindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.defaultBindings}"/>
+          </f:entry>
+          <f:entry field="defaultGroovyClasspath" title="${%Default Groovy Classpath}">
+            <f:textarea value="${instance.defaultGroovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+
+      <f:radioBlock name="defaultPropertySource" title="Default Groovy Script File" value="3"
+        checked="${parameterType eq 'basic' and not empty instance.defaultGroovyScriptFile}">
+        <f:entry field="defaultGroovyScriptFile">
+          <f:textbox value="${instance.defaultGroovyScriptFile}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="defaultBindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.defaultBindings}"/>
+          </f:entry>
+          <f:entry field="defaultGroovyClasspath" title="${%Groovy Classpath}">
+            <f:textarea value="${instance.defaultGroovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+    </f:advanced>
+
+    <f:advanced title="Choose Source for Value Description">
+      <f:radioBlock name="descriptionPropertySource" title="Description" value="0"
+        checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyValue}">
+        <f:entry field="descriptionPropertyValue">
+          <f:textbox value="${instance.descriptionPropertyValue}"/>
+        </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="descriptionPropertySource" title="Description Property File" value="1"
+        checked="${parameterType eq 'basic' and not empty instance.descriptionPropertyFile}">
+        <f:entry field="descriptionPropertyFile">
+          <f:textbox value="${instance.descriptionPropertyFile}"/>
+        </f:entry>
+        <f:entry title="Description Property Key" field="descriptionPropertyKey">
+          <f:textbox value="${instance.descriptionPropertyKey}"/>
+        </f:entry>
+      </f:radioBlock>
+
+      <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script" value="2"
+        checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScript}">
+        <f:entry field="descriptionGroovyScript">
+          <f:textarea value="${instance.descriptionGroovyScript}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="descriptionBindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.descriptionBindings}"/>
+          </f:entry>
+          <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
+            <f:textarea value="${instance.descriptionGroovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+
+      <f:radioBlock name="descriptionPropertySource" title="Description Groovy Script File"
+        value="3"
+        checked="${parameterType eq 'basic' and not empty instance.descriptionGroovyScriptFile}">
+        <f:entry field="descriptionGroovyScriptFile">
+          <f:textbox value="${instance.descriptionGroovyScriptFile}"/>
+        </f:entry>
+        <f:advanced>
+          <f:entry field="descriptionBindings" title="${%Variable bindings}">
+            <f:textarea value="${instance.descriptionBindings}"/>
+          </f:entry>
+          <f:entry field="descriptionGroovyClasspath" title="${%Groovy Classpath}">
+            <f:textarea value="${instance.descriptionGroovyClasspath}"/>
+          </f:entry>
+        </f:advanced>
+      </f:radioBlock>
+    </f:advanced>
   </f:radioBlock>
-  <f:radioBlock name="parameterGroup" title="JSON Parameter Type" value="2" checked="${parameterType eq 'json'}">           
-        <f:radioBlock name="jsonParameterConfigSource" title="JSON Parameter Config Groovy Script" value="0" checked="${parameterType eq 'json' and not empty instance.groovyScript}">
-             <f:entry field="groovyScript">
-                  <f:textarea value="${instance.groovyScript}"/>
-             </f:entry>
-             <f:advanced>
-                  <f:entry field="bindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.bindings}" />
-                  </f:entry>
-                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.groovyClasspath}" />
-                  </f:entry>
-             </f:advanced>    
-         </f:radioBlock>
-         <f:radioBlock name="jsonParameterConfigSource" title="JSON Parameter Config Groovy Script File" value="1" checked="${parameterType eq 'json' and not empty instance.groovyScriptFile}">
-            <f:entry field="groovyScriptFile">
-                   <f:textbox value="${instance.groovyScriptFile}"/>
-            </f:entry>
-            <f:advanced>
-                  <f:entry field="bindings" title="${%Variable bindings}">
-                      <f:textarea value="${instance.bindings}" />
-                  </f:entry>
-                  <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
-                      <f:textarea value="${instance.groovyClasspath}" />
-                  </f:entry>
-            </f:advanced>    
-         </f:radioBlock>
-         <f:radioBlock name="jsonParameterConfigJavascriptSource" title="JSON Parameter Config Javascript" value="0" checked="${parameterType eq 'json' and not empty instance.javascript}">
-             <f:entry field="javascript">
-                  <f:textarea value="${instance.javascript}"/>
-             </f:entry>
-         </f:radioBlock>
-         <f:radioBlock name="jsonParameterConfigJavascriptSource" title="JSON Parameter Config Javascript File" value="1" checked="${parameterType eq 'json' and not empty instance.javascriptFile}">
-            <f:entry field="javascriptFile">
-                   <f:textbox value="${instance.javascriptFile}"/>
-            </f:entry>
-         </f:radioBlock>
-         <f:entry field="saveJSONParameterToFile" title="${%Save Parameter to File}">
-            <f:checkbox value="${instance.saveJSONParameterToFile}"/>
-        </f:entry>         
-   </f:radioBlock>	  
+  <f:radioBlock name="parameterGroup" title="Multi-level Parameter Types" value="1"
+    checked="${parameterType eq 'multilevel'}">
+    <f:entry name="type" title="Parameter Type" field="type">
+      <select name="type">
+        <option value="PT_MULTI_LEVEL_SINGLE_SELECT"
+          selected="${instance.type eq 'PT_MULTI_LEVEL_SINGLE_SELECT' ? 'true' : null}">Multi-Level
+          Single Select
+        </option>
+        <option value="PT_MULTI_LEVEL_MULTI_SELECT"
+          selected="${instance.type eq 'PT_MULTI_LEVEL_MULTI_SELECT' ? 'true' : null}">Multi-Level
+          Multi Select
+        </option>
+      </select>
+    </f:entry>
+
+    <f:entry title="Property File" field="propertyFile">
+      <f:textbox value="${instance.propertyFile}"/>
+    </f:entry>
+
+    <f:entry title="Value" field="propertyValue">
+      <f:textbox value="${instance.value}"/>
+    </f:entry>
+  </f:radioBlock>
+  <f:radioBlock name="parameterGroup" title="JSON Parameter Type" value="2"
+    checked="${parameterType eq 'json'}">
+    <f:radioBlock name="jsonParameterConfigSource" title="JSON Parameter Config Groovy Script"
+      value="0" checked="${parameterType eq 'json' and not empty instance.groovyScript}">
+      <f:entry field="groovyScript">
+        <f:textarea value="${instance.groovyScript}"/>
+      </f:entry>
+      <f:advanced>
+        <f:entry field="bindings" title="${%Variable bindings}">
+          <f:textarea value="${instance.bindings}"/>
+        </f:entry>
+        <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+          <f:textarea value="${instance.groovyClasspath}"/>
+        </f:entry>
+      </f:advanced>
+    </f:radioBlock>
+    <f:radioBlock name="jsonParameterConfigSource" title="JSON Parameter Config Groovy Script File"
+      value="1" checked="${parameterType eq 'json' and not empty instance.groovyScriptFile}">
+      <f:entry field="groovyScriptFile">
+        <f:textbox value="${instance.groovyScriptFile}"/>
+      </f:entry>
+      <f:advanced>
+        <f:entry field="bindings" title="${%Variable bindings}">
+          <f:textarea value="${instance.bindings}"/>
+        </f:entry>
+        <f:entry field="groovyClasspath" title="${%Groovy Classpath}">
+          <f:textarea value="${instance.groovyClasspath}"/>
+        </f:entry>
+      </f:advanced>
+    </f:radioBlock>
+    <f:radioBlock name="jsonParameterConfigJavascriptSource"
+      title="JSON Parameter Config Javascript" value="0"
+      checked="${parameterType eq 'json' and not empty instance.javascript}">
+      <f:entry field="javascript">
+        <f:textarea value="${instance.javascript}"/>
+      </f:entry>
+    </f:radioBlock>
+    <f:radioBlock name="jsonParameterConfigJavascriptSource"
+      title="JSON Parameter Config Javascript File" value="1"
+      checked="${parameterType eq 'json' and not empty instance.javascriptFile}">
+      <f:entry field="javascriptFile">
+        <f:textbox value="${instance.javascriptFile}"/>
+      </f:entry>
+    </f:radioBlock>
+    <f:entry field="saveJSONParameterToFile" title="${%Save Parameter to File}">
+      <f:checkbox value="${instance.saveJSONParameterToFile}"/>
+    </f:entry>
+  </f:radioBlock>
 </j:jelly>

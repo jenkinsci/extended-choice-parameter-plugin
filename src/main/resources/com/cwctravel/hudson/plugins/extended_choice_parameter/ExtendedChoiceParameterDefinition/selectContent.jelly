@@ -7,14 +7,16 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
   xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
   xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  
+
   <j:set var="parameterDefinitionInfo" value="${it.parameterDefinitionInfo}"/>
   <j:set var="defaultValueMap" value="${parameterDefinitionInfo.defaultValueMap}"/>
-  <j:set var="descriptionPropertyValueMap" value="${parameterDefinitionInfo.descriptionPropertyValueMap}"/>
+  <j:set var="descriptionPropertyValueMap"
+    value="${parameterDefinitionInfo.descriptionPropertyValueMap}"/>
   <j:set var="effectiveValue" value="${parameterDefinitionInfo.effectiveValue}"/>
-  
+
   <j:forEach var="value" items="${effectiveValue}">
-    <j:set var="descriptionPropertyValue" value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>   
+    <j:set var="descriptionPropertyValue"
+      value="${not empty descriptionPropertyValueMap[value] ? descriptionPropertyValueMap[value]: value}"/>
     <j:choose>
       <j:when test="${defaultValueMap[value] eq true}">
         <option value="${value}" selected="selected">${descriptionPropertyValue}</option>
@@ -22,6 +24,6 @@
       <j:otherwise>
         <option value="${value}">${descriptionPropertyValue}</option>
       </j:otherwise>
-    </j:choose> 
+    </j:choose>
   </j:forEach>
 </j:jelly>
