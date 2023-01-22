@@ -128,6 +128,9 @@ set to the specified Jenkins project.
 
 ### visibleItemCount
 
+If specified, this will limit the amount of options displayed by creating a scrolldown list 
+with the only the specified amount visible at once.
+
 ## More
 
 For info on how to use groovy script feature see
