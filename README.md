@@ -126,6 +126,8 @@ set to the specified Jenkins project.
 
 ### quoteValue
 
+If true, the value or selected values will be formatted with quotes.
+
 ### visibleItemCount
 
 If specified, this will limit the amount of options displayed by creating a scrolldown list 
