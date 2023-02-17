@@ -86,17 +86,36 @@ The default when empty is ','
 If specified, this adds a currentProject entry to the groovy script context. The entry's value is
 set to the specified Jenkins project.
 
+### quoteValue
+
+If true, the value or selected values will be formatted with quotes.
+
+### visibleItemCount
+
+If specified, this will limit the amount of options displayed by creating a scrolldown list 
+with the only the specified amount visible at once.
+
 ### groovyScript
 
+A groovy script used to generate the list of values.
+
 ### groovyScriptFile
+
+A file containing a groovy script used to generate the list of values.
+
+### defaultGroovyScript
+
+A groovy script used to generate the list of values used in the
+initial selection of the single-select or mult-select box.
+
+### defaultGroovyScriptFile
+
+A file containing a groovy script used to generate the list of values used in the
+initial selection of the single-select or mult-select box.
 
 ### bindings
 
 ### groovyClasspath
-
-### defaultGroovyScript
-
-### defaultGroovyScriptFile
 
 ### defaultBindings
 
@@ -123,10 +142,6 @@ set to the specified Jenkins project.
 ### javascript
 
 ### saveJSONParameterToFile
-
-### quoteValue
-
-### visibleItemCount
 
 ## More
 
