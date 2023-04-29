@@ -5,6 +5,25 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/extended-choice-parameter.svg?color=blue&label=installations)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
 [![Plugin](https://img.shields.io/jenkins/plugin/v/extended-choice-parameter.svg)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
 
+# END OF FEATURE
+This release will probably be last release for certain parameters.
+
+## File Inputs and Outputs
+Any file I/O will be removed in a future version.  Use another step to read or write files:
+- [Pipeline Utility Steps](https://github.com/jenkinsci/pipeline-utility-steps-plugin/blob/master/docs/STEPS.md)
+
+## Groovy Scripting
+Any Groovy Scripting will be removed in a future version.  Use
+[pipeline](https://plugins.jenkins.io/ui/search?sort=relevance&categories=&labels=&view=Tiles&page=1&query=pipeline) 
+or another plugin to execute groovy:
+- [Groovy](https://plugins.jenkins.io/groovy/)
+
+# ALTERNATIVES
+There are other parameter plugins to use for user inputs.
+- [Active Choices](https://plugins.jenkins.io/uno-choice/)
+- [Extensible Choice](https://plugins.jenkins.io/extensible-choice-parameter/)
+- [Editable Choice](https://plugins.jenkins.io/editable-choice/)
+
 ## Introduction
 
 The `extended-choice-parameter-plugin` creates various types of choice fields for use with the
@@ -30,7 +49,7 @@ The name of the parameter.
 
 The type of parameter
 
-- Single Select: user chooses a single selection from a drop down menu, populated by either explicit
+- Single Select: user chooses a single selection from a drop-down menu, populated by either explicit
   values (see Value field below) or a property file (see Property File and Property Key fields
   below)
 - Multi Select: a user can choose multiple selections from a multi-line box, populated by either
@@ -38,7 +57,7 @@ The type of parameter
   fields below)
 - Check Boxes: user can check off zero or more check boxes, labeled by either explicit values (see
   Value field below) or a property file (see Property File and Property Key fields below)
-- Multi-Level Single Select: user chooses a selection from a drop down, and then a another drop down
+- Multi-Level Single Select: user chooses a selection from a drop-down, and then a another drop down
   appears with selections that depend on the first value, and upon second selection a third drop
   down may appear depending on the first two selections, and so on.
 - Multi-Level Multi Select: same as single select, but after all levels are chosen, a button appears
