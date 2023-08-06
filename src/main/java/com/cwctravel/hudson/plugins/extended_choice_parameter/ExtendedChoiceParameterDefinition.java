@@ -499,7 +499,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
         String[] descriptionPropertyValues =
             StringUtils.split(effectiveDescriptionPropertyValue, ',');
         for (int i = 0; i < values.length && i < descriptionPropertyValues.length; i++) {
-          descriptionPropertyValueMap.put(values[i], descriptionPropertyValues[i]);
+          descriptionPropertyValueMap.put(StringUtils.trim(values[i]), StringUtils.trim(descriptionPropertyValues[i]));
         }
       }
     }
