@@ -1,6 +1,6 @@
 # Extended Choice Parameter Plugin
 
-[![Build](https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/master)<br/>
+[![Build](https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/main/badge/icon)](https://ci.jenkins.io/job/Plugins/job/extended-choice-parameter-plugin/job/main)<br/>
 [![Contributors](https://img.shields.io/github/contributors/jenkinsci/extended-choice-parameter-plugin.svg?color=blue)](https://github.com/jenkinsci/extended-choice-parameter-plugin/graphs/contributors)<br/>
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/extended-choice-parameter.svg?color=blue&label=installations)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
 [![Plugin](https://img.shields.io/jenkins/plugin/v/extended-choice-parameter.svg)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
