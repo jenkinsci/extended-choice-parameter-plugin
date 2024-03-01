@@ -5,8 +5,16 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/extended-choice-parameter.svg?color=blue&label=installations)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
 [![Plugin](https://img.shields.io/jenkins/plugin/v/extended-choice-parameter.svg)](https://plugins.jenkins.io/extended-choice-parameter)<br/>
 
-# END OF FEATURE
-This release will probably be last release for certain parameters.
+# END OF LIFE
+Given the age of this plugin and the number of security issues with the code base, no further development is expected. There are
+many excellent alternatives that may suit your purpose.
+
+# ALTERNATIVES
+There are other parameter plugins to use for user inputs.
+- [Json Editor Parameter](https://plugins.jenkins.io/json-editor-parameter/)
+- [Active Choices](https://plugins.jenkins.io/uno-choice/)
+- [Extensible Choice](https://plugins.jenkins.io/extensible-choice-parameter/)
+- [Editable Choice](https://plugins.jenkins.io/editable-choice/)
 
 ## File Inputs and Outputs
 Any file I/O will be removed in a future version.  Use another step to read or write files:
@@ -17,12 +25,6 @@ Any Groovy Scripting will be removed in a future version.  Use
 [pipeline](https://plugins.jenkins.io/ui/search?sort=relevance&categories=&labels=&view=Tiles&page=1&query=pipeline) 
 or another plugin to execute groovy:
 - [Groovy](https://plugins.jenkins.io/groovy/)
-
-# ALTERNATIVES
-There are other parameter plugins to use for user inputs.
-- [Active Choices](https://plugins.jenkins.io/uno-choice/)
-- [Extensible Choice](https://plugins.jenkins.io/extensible-choice-parameter/)
-- [Editable Choice](https://plugins.jenkins.io/editable-choice/)
 
 ## Introduction
 
