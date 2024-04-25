@@ -529,7 +529,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
       if (valueStr != null) {
         List<String> result = new ArrayList<>();
 
-        String[] values = valueStr.split(",\\s*");
+        String[] values = valueStr.trim().split("\\s*,\\s*");
         Set<String> valueSet = new HashSet<>(Arrays.asList(values));
 
         for (String requestValue : requestValues) {
