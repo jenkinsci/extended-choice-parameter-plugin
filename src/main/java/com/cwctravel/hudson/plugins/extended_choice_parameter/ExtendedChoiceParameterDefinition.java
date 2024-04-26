@@ -529,12 +529,12 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
       if (valueStr != null) {
         List<String> result = new ArrayList<>();
 
-        String[] values = valueStr.split(",");
+        String[] values = valueStr.trim().split("\\s*,\\s*");
         Set<String> valueSet = new HashSet<>(Arrays.asList(values));
 
         for (String requestValue : requestValues) {
-          if (valueSet.contains(requestValue)) {
-            result.add(requestValue);
+          if (valueSet.contains(requestValue.trim())) {
+            result.add(requestValue.trim());
           }
         }
 
