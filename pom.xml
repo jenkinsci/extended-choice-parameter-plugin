@@ -46,7 +46,8 @@
     <changelist>999999-SNAPSHOT</changelist>
 
     <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.baseline>2.361</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.4</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
   </properties>
 
@@ -56,7 +57,7 @@
         <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
         <!-- https://mvnrepository.com/artifact/io.jenkins.tools.bom/bom-2.361.x -->
           <groupId>io.jenkins.tools.bom</groupId>
-          <artifactId>bom-2.361.x</artifactId>
+          <artifactId>bom-${jenkins.baseline}.x</artifactId>
           <version>2102.v854b_fec19c92</version>
         <type>pom</type>
         <scope>import</scope>
