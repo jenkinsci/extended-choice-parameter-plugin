@@ -17,7 +17,7 @@
     <j:arg value="hudson.model.ParametersDefinitionProperty"/>
   </j:invoke>
 
-  <j:set var="project" value="${request.findAncestorObject(projectClass)}"/>
+  <j:set var="project" value="${request2.findAncestorObject(projectClass)}"/>
   <j:set var="parameterDefinitionProperty"
     value="${project.getProperty(parameterDefinitionPropertyClass)}"/>
   <j:set var="parameterDefinition"
