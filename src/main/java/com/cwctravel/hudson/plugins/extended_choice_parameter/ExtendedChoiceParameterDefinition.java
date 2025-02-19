@@ -76,7 +76,7 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.languages.GroovyLanguage;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
 
 public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
@@ -184,7 +184,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
     }
 
     @Override
-    public ExtendedChoiceParameterDefinition newInstance(StaplerRequest req, JSONObject formData) {
+    public ExtendedChoiceParameterDefinition newInstance(StaplerRequest2 req, JSONObject formData) {
       String name;
       String type = null;
       String description;
@@ -223,7 +223,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
       description = formData.getString("description");
 
       AbstractProject<?, ?> project =
-          Stapler.getCurrentRequest().findAncestorObject(AbstractProject.class);
+          Stapler.getCurrentRequest2().findAncestorObject(AbstractProject.class);
       if (project != null) {
         projectName = project.getName();
       }
@@ -507,7 +507,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
   }
 
   @Override
-  public ParameterValue createValue(StaplerRequest request) {
+  public ParameterValue createValue(StaplerRequest2 request) {
     String[] requestValues = request.getParameterValues(getName());
     return createValue(requestValues);
   }
@@ -546,7 +546,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
   }
 
   @Override
-  public ParameterValue createValue(StaplerRequest request, JSONObject jO) {
+  public ParameterValue createValue(StaplerRequest2 request, JSONObject jO) {
     Object value = jO.get("value");
     String strValue = "";
     if (value instanceof String) {
@@ -688,7 +688,7 @@ public class ExtendedChoiceParameterDefinition extends ParameterDefinition {
   private Binding getGroovyBinding() {
     Binding groovyBinding;
 
-    StaplerRequest currentRequest = Stapler.getCurrentRequest();
+    StaplerRequest2 currentRequest = Stapler.getCurrentRequest2();
     if (currentRequest != null) {
       groovyBinding = (Binding) currentRequest.getAttribute(ATTR_REQUEST_GROOVY_BINDING);
       if (groovyBinding == null) {
