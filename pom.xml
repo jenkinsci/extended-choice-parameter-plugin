@@ -58,7 +58,7 @@
         <!-- https://mvnrepository.com/artifact/io.jenkins.tools.bom/bom-2.361.x -->
           <groupId>io.jenkins.tools.bom</groupId>
           <artifactId>bom-${jenkins.baseline}.x</artifactId>
-          <version>3850.vb_c5319efa_e29</version>
+          <version>4710.v016f0a_07e34d</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
